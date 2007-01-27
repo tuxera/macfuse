@@ -30,6 +30,8 @@
 
   * The installer package does a better job of cleaning up previously installed MacFUSE files.
 
+  * There is now a check that we are installing on at least a 10.4 system.
+
   * There is an uninstall program.
 
   * The sshfs.app GUI wrapper has been open sourced.
