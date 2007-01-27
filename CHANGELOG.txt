@@ -4,6 +4,8 @@
 
   * Fixed a potential kernel panic while unmounting forcibly.
 
+  * Fixed a kernel panic that could be triggered at vnode-reclaim time if MacFUSE didn't validate the type of the vnode at vnode-creation time.
+
   * The user-space library has better termination behavior.
 
     Details: It handles SIGTERM/SIGINT hopefully properly now, and will try to automatically unmount the file system under most circumstances. Even when a file system daemon misbehaves and refuses to cooperate during termination, you should be able to force-quit the daemon and unmounting should proceed. Overall, this should result in much better experience, especially during file system development (when your daemons might be dying and misbehaving all the time).
