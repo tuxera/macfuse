@@ -6,7 +6,7 @@
 
   * The user-space library has better termination behavior.
 
-    Details: It handles SIGTERM hopefully properly now, and will try to automatically unmount the file system under most circumstances. Even when a file system daemon misbehaves and refuses to cooperate during termination, you should be able to force-quit the daemon and unmounting should proceed. Overall, this should result in much better experience, especially during file system development (when your daemons might be dying and misbehaving all the time).
+    Details: It handles SIGTERM/SIGINT hopefully properly now, and will try to automatically unmount the file system under most circumstances. Even when a file system daemon misbehaves and refuses to cooperate during termination, you should be able to force-quit the daemon and unmounting should proceed. Overall, this should result in much better experience, especially during file system development (when your daemons might be dying and misbehaving all the time).
 
   * There is improved support for operation without buffer caching (the 'noubc' option).
 
@@ -16,7 +16,7 @@
 
   * mount_fusefs now sends notifications to OS X's distributed notification center as a file system is being mounted.
 
-    Details: See Apple's documentation for CFNotificationCenterAddObserver() & family to see how to receive these notifications. There is one notification sent right after a successful mount, one after the file system has initialized (the daemon has acknowledged FUSE_INIT), and another if there has been a timeout waiting for the file system to initialize. All these notifications are sent for an object called "com.google.filesystems.fusefs.unotifications". There is also a user-data dictionary in each notification. The dictionary at least contains the mount-path in question. See fusefs/common/fuse_mount.h for the names of these notification, etc.
+    Details: There is one notification sent right after a successful mount, one after the file system has initialized (the daemon has acknowledged FUSE_INIT), and another if there has been a timeout waiting for the file system to initialize. All these notifications are sent for an object called "com.google.filesystems.fusefs.unotifications". There is also a user-data dictionary in each notification. The dictionary at least contains the mount-path in question. See fusefs/common/fuse_mount.h for the names of these notification, etc. To learn how to receive these notifications, see the documentation for CFNotificationCenterAddObserver().
 
   * There is a new option ('init_timeout') that can be used to specify how long mount_fusefs to wait for the file system to initialize/stabilize (basically, for the daemon to send a response to FUSE_INIT).
 
