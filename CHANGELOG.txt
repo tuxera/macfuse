@@ -2,6 +2,12 @@
 
 == MacFUSE 0.1.9 ==
 
+  * The installer package does a better job of cleaning up previously installed MacFUSE files.
+
+  * There is now a check that we are installing on at least a 10.4 system.
+
+  * There is an uninstall program.
+
   * Fixed a potential kernel panic while unmounting forcibly.
 
   * Fixed a kernel panic that could be triggered at vnode-reclaim time if MacFUSE didn't validate the type of the vnode at vnode-creation time.
@@ -31,12 +37,6 @@
   * The personality named "NTFS" in the fusefs.fs bundle is now called "NTFS-3g".
 
     Details: This fixes the problem where Disk Utility and Startup Disk preference pane get confused because the description they are looking for is not found in fusefs.fs's plist.
-
-  * The installer package does a better job of cleaning up previously installed MacFUSE files.
-
-  * There is now a check that we are installing on at least a 10.4 system.
-
-  * There is an uninstall program.
 
   * The sshfs.app GUI wrapper has been open sourced.
 
