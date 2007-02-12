@@ -1,12 +1,73 @@
 = Changes and Feature Additions in MacFUSE Core Binary Releases =
 
-== MacFUSE 0.1.9 ==
+== MacFUSE 0.2.0 (February 11, 2007) ==
+
+  * New option: 'novncache'.
+
+  Details: The new mount option 'novncache' can be used to turn off VFS name caching (name -> vnode lookups) in the kernel. This is useful when you want lookup operations to go to the file system daemon every time. This is useful in conjunction with the existing 'noubc' and 'noreadahead' options. So, if you use the combination '-onovncache,noubc,noreadahead', you should have a mount that will bypass most of the fcaching and go to the daemon every time. Of course, this would be slower. NOTE that if you're dealing with 32-bit executables, the situation is a bit more complex because of the "Task Working Set" caching mechanism in Mac OS X.
+
+  * New option: 'nolocalcaches'.
+
+  Details: 'nolocalcaches' is a meta option that is equivalent to 'noreadahead,noubc,novncache'. In particular, you can use '-onolocalcaches' along with the sshfs option '-ocache=no' to get file system behavior wherein most calls go to the server every time, resulting in a more up-to-date view of the remote file system, albeit with some overhead.
+
+  * New option: 'direct_io'.
+
+  Details: The 'direct_io' mount option from Linux FUSE is now supported. This option can be used both at a file level or for the entire mount. To use it at a file level, your file system daemon should set the direct_io field of the fuse_file_info structure to 1 in the open() method. To use it for the entire mount, specify it as a mount-time option. 'direct_io' implies 'novncache', 'noubc', 'noreadahead' for the file (vnode) in question. Additionally, it forces the file system to be written synchronously ('nosyncwrites' is disabled for the /entire mount/, not just the file in question). But what does this option do (besides altering these above options)? Well, on Mac OS X, it introduces another read path from the kernel to the MacFUSE file system daemon. The new path does not go through the buffer cache (or the cluster layer). This allows you to specify one file size in the getattr() method and supply /less/ data in the read() method. Without the 'direct_io' option, MacFUSE will pad the missing data with zeros and return success. With the 'direct_io' option, MacFUSE will simply return the 'short' data and the read() call will not fail. This is useful when you don't know the size of the data for one reason or another (it's expensive to compute the size; it's not really possible to compute the size because you're streaming the data; etc.) Please NOTE: if an application insists on wanting the exact amount of data that you advertised in getattr(), 'direct_io' can't do anything about that, of course. The Finder is one such application.
+
+  * Improved MacFUSE version tracking.
+
+  Details: The MacFUSE kernel extension now logs a version message when you load it. The message is of the form:
+
+  MacFUSE: starting (version 0.2.0, Feb 10 2007, 10:34:26)
+
+  The date/time shown is a build timestamp. You can also view the version of a loaded MacFUSE kernel extension by using the sysctl command from the Terminal (just type 'sysctl macfuse' on the command line). This will allow a better approximation of which build you are running. Additionally, the mount_fusefs command now checks the version of the loaded fusefs.kext and bails out (by default) if there's a version mismatch between itself and the kext. If you really must, you can override this behavior by setting the MOUNT_FUSEFS_IGNORE_VERSION_MISMATCH environment variable.
+
+  * Advanced 'reverse' (user->kernel) interface for file system daemons.
+
+  Details: There's a preliminary advanced interface that file systems can use (don't use it just yet, unless you know exactly what you're doing and why) to do some weird things like: mark an existing vnode as "gone" (a variant of the revoke() system call), purge a node's in-kernel attribute cache, VFS name cache, or UBC. This interface will certainly change and evolve in future, so please don't create any dependencies on it yet.
+
+  * Paremetrized the upper limit on the size of an extended attribute that you can set on files in a MacFUSE file system.
+
+   Details: The limit (FUSE_MAXATTRIBUTESIZE) is defined in fusefs/common/fuse_param.h, and is 128KB by default. This matters because if you want to support _writing_ larger extended attributes, you will need to tweak this parameter and recompile fusefs.kext. The 128KB value is not ad-hoc. The FUSE user-space library has an upper limit (approximately 128KB) on the size of the kernel channel" buffer--you will _also_ have to increase this limit and recompile the user-space library. Besides, the following points apply to extended attribute sizes in Mac OS X:
+  - HFS+ supports a maximum inline attribute size of 3802 bytes.
+  - However, HFS+ does support arbitrary sizes for resource forks, even though a resource fork is advertised as an extended attribute ("com.apple.resourceFork"). It's not a "real" extended attribute though--HFS+ intercepts this one and handles it itself.
+  - The extended attribute handling code in the xnu kernel has an upper limit of 128KB on extended attribute data.
+
+  * Better support for extended attributes in general.
+
+  Details: MacFUSE now tries to be rather clever when dealing with extended attributes. If a user-space file system implements xattr functions, MacFUSE will pass on { get, list, remove, set }xattr() calls to user space. There are 2 exceptions to this: if the extended attributes happen to be those corresponding to Finder Info or Resource Forks. The reason for this: well, since regular extended attributes are subject to an upper limit (128KB by default), if we want arbitrary size resource forks, we have to treat them differently (like HFS+ does). MacFUSE treats them differently by telling the kernel to store them as Apple Double ("._") files. MacFUSE will also cause other attributes to be stored in Apple Double files if the file system daemon doesn't implement setxattr(). In fact, MacFUSE "learns" on the very first setxattr() call if the daemon implements this method or not--based on the return value. If the daemon doesn't implement the call, future setxattr() calls will not even go to user space: they will be short-circuited in the kernel, which will use Apple Double files. One noteworthy point here is that the kernel's generic xattr handling code (specifically the part that deals with Apple Double files) requires file locking (the O_EXLOCK flag to open) to work. This brings us to the next changelog item.
+
+  * Support for advisory locking.
+
+  Details: Actually, MacFUSE always "had" advisory locking support. A file system in Mac OS X can get such locking for free by simply setting a flag. Unfortunately, Apple "forgot" to export this flag (rather, the function that sets this flag). Therefore, kernel extensions currently cannot set this flag without some sort of a kludge. Since advisory locking is rather critical now because extended attributes support requires it, I've decided to turn this flag on through cheap kludgy means (hardcoding the offset of a field in an Apple-private data structure). On the bright side, this means extended attributes will work nicely and you have locking available. On the flip side, if the aforementioned offset ever changes suddenly in a Mac OS X release, you might have a kernel panic :-) Apple really needs to export this function.
+
+  * Support for Mac OS X Extended Security (Access Control Lists), new option: 'extended_security'.
+
+  Details: You can now pass the 'extended_security' option at mount-time to enable support for ACLs on a MacFUSE file system. The ACLs that you get are identical to those in HFS+, except that they are stored in Apple Double ("._") files instead of being stored in the HFS+ attributes B-Tree. Of course, you can use the same commands ("chmod +a 'singh deny read'", "ls -le", etc.) to work with these ACLs. See the man page of chmod for details. IMPORTANT: If you want the kernel to *honor* these ACLs while accessing the file system, you also need to pass the 'noauthopaque' option at mount time. Without this option, the kernel will try to talk to the user-space daemon for authorizations. CAVEAT: The Apple Double files used to store ACLs have the default owner, group, permissions as a normal file would.
+
+  * Support for the kqueue/kevent notification mechanism.
+
+  Details: MacFUSE now implements the necessary kernel functions for supporting the kqueue/kevent kernel event notification mechanism. See kqueue(2) on how you can use kqueue() and kevent() to use this mechanism on a MacFUSE file system. NOTE that implementing this mechanism in the kernel requires using unsupported Apple programming interfaces, which means that in future, it is possible that some revision of Mac OS X will not let this work. Therefore, the entire kqueue/kevent support in MacFUSE is a compile-time option that's conrolled by the MACFUSE_ENABLE_UNSUPPORTED macro in fusefs/common/fuse_param.h.
+
+  * Improved support for asynchronous writes (the 'nosyncwrites' option).
+
+  Details: Heh, I "improved" support for the 'nosyncwrites' option in at least two earlier releases, but I keep forgetting some detail. I'll need to explain the MacFUSE architecture to clarify why this is a bit tricky, but suffice it to say that asynchronous writes are never as easy on a "distributed"/"remote" file system as they are on a "local" file system. Unlike NFS on Mac OS X, MacFUSE doesn't have a special-purpose buffer cache either. That said, 'nosyncwrites' now follows sync-on-close semantics. As long as you have a file open, writes are asynchronous, but when you close the file, MacFUSE will sync it.
+
+  * Statistics available through the sysctl interface: values of some in-kernel counters and constants can be seen through the sysctl interface (try "sysctl macfuse" on the command line).
+
+  * Fixed a rather bad accounting bug that caused a certain type of MacFUSE-allocated memory to be not freed until the time you unmounted the MacFUSE volume.
+
+  * User-Space library updated to FUSE 2.6.3.
+
+  * Miscellaneous Improvements: many parts of the kernel extension have been tweaked and improved.
+
+== MacFUSE 0.1.9 (January 28, 2007) ==
 
   * The installer package does a better job of cleaning up previously installed MacFUSE files.
 
   * There is now a check that we are installing on at least a 10.4 system.
 
-  * There is an uninstall program.
+  * There is an uninstall program (/System/Library/Filesystems/fusefs.fs/uninstall-macfuse-core.sh).
 
   * Fixed a potential kernel panic while unmounting forcibly.
 
@@ -44,7 +105,7 @@
 
   * There was no 0.1.8 release.
 
-== MacFUSE 0.1.7 ==
+== MacFUSE 0.1.7 (January 22, 2007) ==
 
   * The file `/usr/local/bin/mount_fusefs` is removed. The `mount_fusefs` in the `fusefs.fs` bundle is the actual binary used by the user-space FUSE library. This obviates the need to have `/usr/local/bin` in your path, making it a bit easier to write fuse file system apps.
 
@@ -65,3 +126,15 @@
   * From now on, no more tarballs. We'll only have package installers.
 
   * The versioning scheme has changed to the simpler form `x.y.z`.
+
+== MacFUSE 0.1.0b006 (January 14, 2007) ==
+
+  * First installer DMG.
+
+== MacFUSE 0.1.0b005 (January 11, 2007) ==
+
+  * Minor bugfix revision.
+
+== MacFUSE 0.1.0b004 (January 9, 2007) ==
+
+  * Initial binary release.
