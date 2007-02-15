@@ -1,5 +1,9 @@
 = Changes and Feature Additions in MacFUSE Core Binary Releases =
 
+== MacFUSE 0.2.1 (February 15, 2007) ==
+
+  * In MacFUSE 0.2.0, the 'volname' option erroneously got "merged" with the 'extended_security' option (if you set one, you incorrectly get the other). Since 'extended_security' is more experimental in nature currently, it shouldn't be enabled every time you use 'volname'. This is a minor release to fix this issue.
+
 == MacFUSE 0.2.0 (February 11, 2007) ==
 
   * New option: 'novncache'.
@@ -28,7 +32,7 @@
 
   * Paremetrized the upper limit on the size of an extended attribute that you can set on files in a MacFUSE file system.
 
-   Details: The limit (FUSE_MAXATTRIBUTESIZE) is defined in fusefs/common/fuse_param.h, and is 128KB by default. This matters because if you want to support _writing_ larger extended attributes, you will need to tweak this parameter and recompile fusefs.kext. The 128KB value is not ad-hoc. The FUSE user-space library has an upper limit (approximately 128KB) on the size of the kernel channel" buffer--you will _also_ have to increase this limit and recompile the user-space library. Besides, the following points apply to extended attribute sizes in Mac OS X:
+   Details: The limit (FUSE_MAXATTRIBUTESIZE) is defined in fusefs/common/fuse_param.h, and is 128KB by default. This matters because if you want to support _writing_ larger extended attributes, you will need to tweak this parameter and recompile fusefs.kext. The 128KB value is not ad-hoc. The FUSE user-space library has an upper limit (approximately 128KB) on the size of the kernel channel" buffer--you will _also_ have to increase this limit and recompile the user-space library (see MIN_BUFSIZE in fuse_kern_chan.c). Besides, the following points apply to extended attribute sizes in Mac OS X:
   - HFS+ supports a maximum inline attribute size of 3802 bytes.
   - However, HFS+ does support arbitrary sizes for resource forks, even though a resource fork is advertised as an extended attribute ("com.apple.resourceFork"). It's not a "real" extended attribute though--HFS+ intercepts this one and handles it itself.
   - The extended attribute handling code in the xnu kernel has an upper limit of 128KB on extended attribute data.
