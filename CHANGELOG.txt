@@ -1,5 +1,25 @@
 = Changes and Feature Additions in MacFUSE Core Binary Releases =
 
+== MacFUSE 0.2.4 (April ?, 2007)
+
+  * direct_io now supports both reads and writes. The "direct" write code path has not been tested in this release.
+
+  * In the previous release, with direct_io, a read would return no data if the advertized file size was 0 bytes. This release removes file size check for direct_io, which means that a synthetic file system can simply return 0 as the file size.
+
+  * O_CREAT was incorrectly stripped out as an open() call went up to user space--it no longer.
+
+  * Since the FUSE API does not provide for renaming a volume, MacFUSE no longer lets a volume's name be edited (in the Finder, for example). The previous behavior usually led to confusion as a successful rename was in-memory only. 
+
+  * Improved vnode revocation behavior when files disappear behind the scenes.
+
+  * MacFUSE will now send a synchronous FUSE_FLUSH message at close time to the user file system daemon.
+
+  * Miscellaneous code cleanup.
+
+== MacFUSE 0.2.3
+
+  * There was no 0.2.3 release.
+
 == MacFUSE 0.2.2 (February 25, 2007) ==
 
   * Fixed a bug which, depending upon the size of a file being read, and the user/kernel buffer sizes involved, could lead to the tail of the read data being zeroed.
