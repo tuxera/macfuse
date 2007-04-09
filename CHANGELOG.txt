@@ -1,6 +1,6 @@
 = Changes and Feature Additions in MacFUSE Core Binary Releases =
 
-== MacFUSE 0.2.4 (April ?, 2007)
+== MacFUSE 0.2.4 (April 9, 2007)
 
   * direct_io now supports both reads and writes. The "direct" write code path has not been tested in this release.
 
