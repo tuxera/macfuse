@@ -1,5 +1,19 @@
 = Changes and Feature Additions in MacFUSE Core Binary Releases =
 
+== MacFUSE 0.2.5 (April 20, 2007) ==
+
+  * Alert panel for displaying file system daemon timeouts
+
+  Details: A common complaint of MacFUSE users (especially those using sshfs) is that the Finder, and sometimes other parts of the Mac OS X user interface, do not handle disruption in network connectivity well. Since version 0.1.9, MacFUSE has had the 'daemon_timeout' option, which can be used to specify a timeout for the user-space file system to respond. If the kernel doesn't hear back from the daemon within that time, it will mark the file system as "dead". This will stop the Finder from "beachballing", but will also eject the volume instantly. To be more precise, it will arrange for the volume to be ejected. If you didn't specify the 'daemon_timeout' option, the kernel would wait forever, although you can still kill the daemon or forcibly unmount the volume. MacFUSE 0.2.5 makes the situation more flexible. Now, there is a 'daemon_timeout' (10 seconds) to begin with. If the daemon hasn't responded for that time, the kernel will show an alert dialog giving the user two choices: "Continue to Wait" or "Eject". Choosing the former will make the dialog disappear and the kernel will wait until either the daemon resumes responding or there's another timeout, at which point it will show the dialog again. Choosing "Eject" will arrange for the volume to be ejected instantly. The alert dialog itself has a timeout. If the user doesn't choose within some time (20 seconds), the dialog will disappear and the kernel will assume "Continue to Wait".
+
+  * Killing the file system daemon after unmount
+
+  Details: After a successful unmount, sometimes (or often, depending on the circumstances) the user-space file system daemon doesn't exit, but continues to "hang around". The hang is benign in that you can easily get rid of the daemon (send it a SIGABRT or SIGKILL), but it's annoying nevertheless. The reason for this hang is the less than stellar behavior of Pthread cancellation on Mac OS X (and the FUSE library's dependence on pthread_cancel() and such). This is nontrivial to fix. MacFUSE 0.2.5 introduces a new option 'kill_on_unmount'. If this option is specified, the kernel would send a SIGKILL to the daemon as the very last step of unmounting. This isn't so bad because before this, the kernel sends a synchronous FUSE_DESTROY message to the daemon, so the latter will still have an opportunity to shut things down gracefully.
+
+  * __asm__ no longer redefined in the FUSE library
+
+  Details: As a hack to get things working cheaply on Mac OS X, I had originally redefined __asm__(x) to nothing because the FUSE user library uses __asm__ with the ".symver" directive, which isn't available on Mac OS X. This is fine if the user file system daemon doesn't need to use __asm__ itself (unlikely). The daemon could include other headers that have __asm__ in there somewhere. In any case, redefining __asm__ is ugly, so the code no longer does that.
+
 == MacFUSE 0.2.4 (April 9, 2007) ==
 
   * direct_io now supports both reads and writes. The "direct" write code path has not been tested in this release.
