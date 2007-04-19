@@ -14,6 +14,10 @@
 
   Details: MacFUSE 0.2.5 pings Disk Arbitration by default (that is, it acts as if the `ping_diskarb` option was specified on the command line). For backward compatibility, you can still specify `ping_diskarb`. Conversely, if you do NOT want Disk Arbitration to be pinged, you now have to explicitly specify a new option: `noping_diskarb`.
 
+  * Default format string for file systems with unspecified subtype
+ 
+  Details: If a user-space file system daemon does not specify its subtype, and if the type cannot be inferred by the MacFUSE mount utility, MacFUSE will now use the string "Generic MacFUSE File System (MacFUSE)" instead of letting the Finder show the volume as of an unknown format.
+
   * `__asm__` no longer redefined in the FUSE library
 
   Details: As a hack to get things working cheaply on Mac OS X, I had originally redefined `__asm__(x)` to nothing because the FUSE user library uses `__asm__` with the ".symver" directive, which isn't available on Mac OS X. This is fine if the user file system daemon doesn't need to use `__asm__` itself (unlikely). The daemon could include other headers that have `__asm__` in there somewhere. In any case, redefining `__asm__` is ugly, so the code no longer does that and uses other changes.
