@@ -1,5 +1,23 @@
 = Changes and Feature Additions in MacFUSE Core Binary Releases =
 
+== MacFUSE 0.3.0 (May 7, 2007) ==
+
+  * User-space FUSE library updated to version 2.6.5 of FUSE.
+
+  * Minor fix to the user-space FUSE library to deal better with a missing mount-point argument.
+
+  * "Not responding" alert panel default timeout changed to 20 seconds (up from 10 seconds). Some reorganization of the alert panel.
+
+  * The `noauthopaque` and `noauthopaqueaccess` options are now deprecated. MacFUSE will now use an adaptive approach to determining whether a given file system daemon implements the `access()` method, and based on the outcome, MacFUSE will use the appropriate permissions handling.
+
+  * Fix for dealing with an issue regarding "remote" (unbeknownst to MacFUSE) deletion of a file.
+
+  * Fix for one condition that can lead to the "vnode reclaimed with valid fufh" kernel panic.
+
+  * Miscellaneous tweakings.
+
+  * Although not part of MacFUSE Core, there is an updated version of the sshfs file system available with several critical changes. For details, see [MACFUSE_FS_SSHFS].
+
 == MacFUSE 0.2.5 (April 19, 2007) ==
 
   * Alert panel for displaying file system daemon timeouts
