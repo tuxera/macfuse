@@ -1,10 +1,12 @@
 = Changes and Feature Additions in MacFUSE Core Binary Releases =
 
-== MacFUSE 0.4.0 (June ?, 2007) ==
+== MacFUSE 0.4.0 (June 5, 2007) ==
 
   * Support for custom volume icons in the user-space library (see [CUSTOM_VOLUME_ICON] for details). You can specify a volume icon through the new `volicon` option.
 
-  * New option `defer_auth` that causes MacFUSE to a permissions handling model in which neither MacFUSE nor the local kernel will attempt to handle permissions. Regardless of ownership and as-seen permissions, operations will initially go through to the file system daemon, and it's up to the daemon to do what it pleases. For example, in the case of sshfs, no matter what uid, gid, or permissions you see, what happens eventually upon a file operation will depend on what the SFTP server does.
+  * The installation or upgrading of MacFUSE will no longer prompt for a system restart. Note that a restart was never _required_--it was only _recommended_ (you could, if you wanted to, close the Installer window instead of clicking on the `Restart` button). The MacFUSE kernel extension can be unloaded/loaded dynamically, so a restart doesn't have to be a requirement. However, if a MacFUSE volume is mounted when you upgrade MacFUSE, a subsequent mount will not work with the older kernel extension that's in kernel memory and can't be unloaded because it's busy. The new behavior is for `load_fusefs` to try to dynamically unload the old kernel extension if possible. If such unloading succeeds (or if it wasn't needed because nothing old was loaded), then everything is good. If the unloading fails, you will now see a warning dialog that tells you to either eject all currently mounted MacFUSE volumes or to restart the system.
+
+  * New option `defer_auth` that causes MacFUSE to use a permissions handling model in which neither MacFUSE nor the local kernel will attempt to handle permissions. Regardless of ownership and as-seen permissions, operations will initially go through to the file system daemon, and it's up to the daemon to do what it pleases. For example, in the case of sshfs, no matter what uid, gid, or permissions you see, what happens eventually upon a file operation will depend on what the SFTP server does.
 
   * The `allow_root` option, whose handling was disabled until now, can now be used. Only a user who is a member of the MacFUSE Admin Group can use this option. The superuser can designate any single group id as the MacFUSE Admin Group--through the `sysctl` command (the specific sysctl variable to set is `macfuse.tunables.admin_group`). Note that by default, this variable contains the group ID of `admin` group on Mac OS X. The use of `allow_root` is *strongly discouraged* as it can make the system considerably more vulnerable to security threats.
 
@@ -12,7 +14,7 @@
 
   * Fix for a rare (but possible) unmount-time hang. The same fix also fixes a rare (but possible) NULL-pointer dereference in the kernel.
 
-  * The locations of where things are installed have changed. The kernel extension (`fusefs.kext`) is no longer installed under `/Library/Extensions/`. Instead, the file system bundle (`/System/Library/Filesystems/fusefs.fs/`) now contains everything "under one roof". Moreover, `fusefs.fs` now contains a `Support/` subdirectory that in turn contains `fusefs.kext`, `load_fusefs`, and `mount_fusefs`.
+  * The locations of where things are installed have changed. The kernel extension (`fusefs.kext`) is no longer installed under `/Library/Extensions/`. Instead, the file system bundle (`/System/Library/Filesystems/fusefs.fs/`) now contains everything "under one roof" (except the user-space library). Moreover, `fusefs.fs` now contains a `Support/` subdirectory that in turn contains `fusefs.kext`, `load_fusefs`, `mount_fusefs`, and the uninstall script (`uninstall-macfuse-core.sh`).
 
 == MacFUSE 0.3.0 (May 7, 2007) ==
 
