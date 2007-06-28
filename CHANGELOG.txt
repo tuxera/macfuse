@@ -1,5 +1,11 @@
 = Changes and Feature Additions in MacFUSE Core Binary Releases =
 
+== MacFUSE 0.5.0 (July ?, 2007) ==
+
+  * When direct I/O mode is enabled, execution of programs residing on the file system is now disabled. This is because memory mapping files from a direct I/O mounted file system is not supported. To be precise, the mmap() call will appear to succeed (the file system can't force it to fail from within the kernel), but paging in or paging out memory will fail.
+
+  * [Untested] support for FUSE_INTERRUPT.
+
 == MacFUSE 0.4.0 (June 5, 2007) ==
 
   * Support for custom volume icons in the user-space library (see [CUSTOM_VOLUME_ICON] for details). You can specify a volume icon through the new `volicon` option.
