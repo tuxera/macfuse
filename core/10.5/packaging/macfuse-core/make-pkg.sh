@@ -135,7 +135,7 @@ sudo /Developer/Tools/SetFile -a C "$VOLUME_PATH"
 sudo cp "$INSTALL_RESOURCES/License.rtf" "$VOLUME_PATH"/License.rtf
 
 # Copy over the CHANGELOG.txt.
-sudo cp "../../CHANGELOG.txt" "$VOLUME_PATH"/CHANGELOG.txt
+sudo cp "../../../../CHANGELOG.txt" "$VOLUME_PATH"/CHANGELOG.txt
 
 # Detach the volume.
 hdiutil detach "$VOLUME_PATH"
