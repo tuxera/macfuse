@@ -4,13 +4,15 @@
 #
 # Creates the "MacFUSE Core.pkg"  
 
-MACFUSE_VERSION=$1
-BUILD_DIR="/tmp/macfuse-core-$MACFUSE_VERSION"
+OS_VERSION=$1
+MACFUSE_VERSION=$2
+
+BUILD_DIR="/tmp/macfuse-core-$OS_VERSION-$MACFUSE_VERSION"
 
 PACKAGEMAKER="/Developer/Tools/packagemaker"
 
 OUTPUT_PACKAGE="$BUILD_DIR/MacFUSE Core.pkg"
-SRC_TARBALL="$BUILD_DIR/macfuse-core-$MACFUSE_VERSION.tar.bz2"
+SRC_TARBALL="$BUILD_DIR/macfuse-core-$OS_VERSION-$MACFUSE_VERSION.tar.bz2"
 
 DISTRIBUTION_FOLDER="$BUILD_DIR/Distribution_folder"
 INSTALL_RESOURCES="./Install_resources"
