@@ -9,7 +9,8 @@ MACFUSE_VERSION=$2
 
 BUILD_DIR="/tmp/macfuse-core-$OS_VERSION-$MACFUSE_VERSION"
 
-PACKAGEMAKER="/Developer/Tools/packagemaker"
+PATH=/Developer/usr/bin:/Developer/Tools:$PATH
+PACKAGEMAKER=packagemaker
 
 OUTPUT_PACKAGE="$BUILD_DIR/MacFUSE Core.pkg"
 SRC_TARBALL="$BUILD_DIR/macfuse-core-$OS_VERSION-$MACFUSE_VERSION.tar.bz2"
