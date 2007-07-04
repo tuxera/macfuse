@@ -1,16 +1,16 @@
 // !$*UTF8*$!
 {
 	089C1669FE841209C02AAC07 /* Project object */ = {
+		activeArchitecture = i386;
 		activeBuildConfigurationName = Release;
-		activeExecutable = 540966F30C33BEC900F5E227 /* mount_fusefs */;
-		activeTarget = 540966160C33B4CB00F5E227 /* mount_fusefs */;
+		activeExecutable = 540966F60C33BEC900F5E227 /* load_fusefs */;
+		activeTarget = 32A4FEB80562C75700D090E7 /* fusefs */;
 		addToTargets = (
 			54D47B7F0B4F610000A8FE1C /* load_fusefs */,
 		);
 		breakpoints = (
 			54F9A8BB0ACFAE410090FCAF /* fuse_main.c:86 */,
 		);
-		breakpointsGroup = 5403C7EC0ACA9BB300CD9322 /* XCBreakpointsBucket */;
 		codeSenseManager = 5494A9290ACA12160020068B /* Code sense */;
 		executables = (
 			540966F30C33BEC900F5E227 /* mount_fusefs */,
@@ -51,7 +51,7 @@
 				PBXFileTableDataSourceColumnWidthsKey = (
 					22,
 					300,
-					489,
+					489.58349609375,
 				);
 				PBXFileTableDataSourceColumnsKey = (
 					PBXExecutablesDataSource_ActiveFlagID,
@@ -138,8 +138,8 @@
 				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
-					200,
-					422,
+					562,
+					60,
 					20,
 					48,
 					43,
@@ -155,8 +155,8 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 204765346;
-			PBXWorkspaceStateSaveDate = 204765346;
+			PBXPerProjectTemplateStateSaveDate = 204983665;
+			PBXWorkspaceStateSaveDate = 204983665;
 		};
 		sourceControlManager = 5494A9280ACA12160020068B /* Source Control */;
 		userBuildSettings = {
@@ -173,13 +173,6 @@
 	32A4FEB80562C75700D090E7 /* fusefs */ = {
 		activeExec = 0;
 	};
-	5403C7EC0ACA9BB300CD9322 /* XCBreakpointsBucket */ = {
-		isa = XCBreakpointsBucket;
-		name = "Project Breakpoints";
-		objects = (
-			54F9A8BB0ACFAE410090FCAF /* fuse_main.c:86 */,
-		);
-	};
 	540966160C33B4CB00F5E227 /* mount_fusefs */ = {
 		activeExec = 0;
 		executables = (
@@ -188,12 +181,12 @@
 	};
 	540966F30C33BEC900F5E227 /* mount_fusefs */ = {
 		isa = PBXExecutable;
-		activeArgIndex = 2147483647;
 		activeArgIndices = (
 		);
 		argumentStrings = (
 		);
 		autoAttachOnCrash = 1;
+		breakpointsEnabled = 1;
 		configStateDict = {
 		};
 		customDataFormattersEnabled = 1;
@@ -211,12 +204,12 @@
 	};
 	540966F60C33BEC900F5E227 /* load_fusefs */ = {
 		isa = PBXExecutable;
-		activeArgIndex = 2147483647;
 		activeArgIndices = (
 		);
 		argumentStrings = (
 		);
 		autoAttachOnCrash = 1;
+		breakpointsEnabled = 1;
 		configStateDict = {
 		};
 		customDataFormattersEnabled = 1;
@@ -391,10 +384,12 @@
 		);
 		breakpointStyle = 0;
 		continueAfterActions = 0;
+		countType = 0;
 		delayBeforeContinue = 0;
 		fileReference = 1A224C3CFF42312311CA2CB7 /* fuse_main.c */;
 		functionName = "init_stuff()";
 		hitCount = 0;
+		ignoreCount = 0;
 		lineNumber = 86;
 		modificationTime = 181382721.07612;
 		state = 1;
