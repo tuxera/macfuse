@@ -517,7 +517,7 @@ diff -Naur old/lib/mount.c new/lib/mount.c
 +#endif
 diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 --- old/lib/mount_bsd.c	2006-05-03 07:46:04.000000000 -0700
-+++ new/lib/mount_bsd.c	2007-07-06 00:00:25.000000000 -0700
++++ new/lib/mount_bsd.c	2007-07-06 00:08:27.000000000 -0700
 @@ -6,6 +6,12 @@
      See the file COPYING.LIB.
  */
@@ -531,7 +531,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
  #include "fuse_i.h"
  #include "fuse_opt.h"
  
-@@ -21,8 +27,117 @@
+@@ -21,8 +27,183 @@
  #include <string.h>
  #include <paths.h>
  
@@ -642,6 +642,72 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 +    return result;
 +}
 +
++static int
++post_notification(char   *name,
++                  char   *udata_keys[],
++                  char   *udata_values[],
++                  CFIndex nf_num)
++{
++    CFIndex i;
++    CFStringRef nf_name   = NULL;
++    CFStringRef nf_object = NULL;
++    CFMutableDictionaryRef nf_udata  = NULL;
++
++    CFNotificationCenterRef distributedCenter;
++    CFStringEncoding encoding = kCFStringEncodingASCII;
++
++    distributedCenter = CFNotificationCenterGetDistributedCenter();
++
++    if (!distributedCenter) {
++        return -1;
++    }
++
++    nf_name = CFStringCreateWithCString(kCFAllocatorDefault, name, encoding);
++      
++    nf_object = CFStringCreateWithCString(kCFAllocatorDefault,
++                                          LIBFUSE_UNOTIFICATIONS_OBJECT,
++                                          encoding);
++ 
++    nf_udata = CFDictionaryCreateMutable(kCFAllocatorDefault,
++                                         nf_num,
++                                         &kCFCopyStringDictionaryKeyCallBacks,
++                                         &kCFTypeDictionaryValueCallBacks);
++
++    if (!nf_name || !nf_object || !nf_udata) {
++        goto out;
++    }
++
++    for (i = 0; i < nf_num; i++) {
++        CFStringRef a_key = CFStringCreateWithCString(kCFAllocatorDefault,
++                                                      udata_keys[i],
++                                                      kCFStringEncodingASCII);
++        CFStringRef a_value = CFStringCreateWithCString(kCFAllocatorDefault,
++                                                        udata_values[i],
++                                                        kCFStringEncodingASCII);
++        CFDictionarySetValue(nf_udata, a_key, a_value);
++        CFRelease(a_key);
++        CFRelease(a_value);
++    }
++
++    CFNotificationCenterPostNotification(distributedCenter,
++                                         nf_name, nf_object, nf_udata, false);
++
++out:
++    if (nf_name) {
++        CFRelease(nf_name);
++    }
++
++    if (nf_object) {
++        CFRelease(nf_object);
++    }
++
++    if (nf_udata) {
++        CFRelease(nf_udata);
++    }
++
++    return 0;
++}
++
 +#else
  #define FUSERMOUNT_PROG         "mount_fusefs"
  #define FUSE_DEV_TRUNK          "/dev/fuse"
@@ -649,7 +715,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
  
  enum {
      KEY_ALLOW_ROOT,
-@@ -30,6 +145,11 @@
+@@ -30,6 +211,11 @@
      KEY_HELP,
      KEY_VERSION,
      KEY_KERN
@@ -661,7 +727,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
  };
  
  struct mount_opts {
-@@ -108,11 +228,46 @@
+@@ -108,11 +294,46 @@
      FUSE_OPT_KEY("noprivate",           KEY_KERN),
      FUSE_OPT_KEY("noneglect_shares",    KEY_KERN),
      FUSE_OPT_KEY("nopush_symlinks_in",  KEY_KERN),
@@ -708,7 +774,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
      FUSE_OPT_END
  };
  
-@@ -149,6 +304,18 @@
+@@ -149,6 +370,18 @@
      case KEY_KERN:
          return fuse_opt_add_opt(&mo->kernel_opts, arg);
  
@@ -727,7 +793,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
      case KEY_HELP:
          mount_help();
          mo->ishelp = 1;
-@@ -199,8 +366,21 @@
+@@ -199,8 +432,21 @@
      if (rv)
          return;
  
@@ -749,7 +815,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
  }
  
  void fuse_kern_unmount(const char *mountpoint, int fd)
-@@ -222,13 +402,29 @@
+@@ -222,13 +468,29 @@
      if (*ep != '\0')
          return;
  
@@ -779,7 +845,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
      int ibg, len;
  
      len = sizeof(ibg);
-@@ -237,6 +433,7 @@
+@@ -237,6 +499,7 @@
          return 0;
  
      return ibg;
@@ -787,7 +853,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
  }
  
  
-@@ -247,6 +444,55 @@
+@@ -247,6 +510,55 @@
      char *fdnam, *dev;
      int pid;
  
@@ -809,7 +875,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 +                        (CFURLRef)0,
 +                        (CFURLRef)0,
 +                        (CFURLRef)0,
-+                        CFSTR("Operating System Too New"),
++                        CFSTR("MacFUSE Version Too Old"),
 +                        CFSTR("The installed MacFUSE version is too old for the operating system. Please upgrade your MacFUSE installation to one that is compatible with the currently running operating system."),
 +                        CFSTR("OK")
 +                    );
@@ -843,7 +909,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
      fdnam = getenv("FUSE_DEV_FD");
  
      if (fdnam) {
-@@ -267,12 +513,29 @@
+@@ -267,12 +579,29 @@
  
      dev = getenv("FUSE_DEV_NAME");
  
@@ -879,7 +945,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
      }
  
  mount:
-@@ -322,11 +585,31 @@
+@@ -322,11 +651,31 @@
              perror("fuse: failed to exec mount program");
              exit(1);
          }
@@ -911,7 +977,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
  
  out:
      return fd;
-@@ -360,4 +643,6 @@
+@@ -360,4 +709,6 @@
      return res;
  }
  
