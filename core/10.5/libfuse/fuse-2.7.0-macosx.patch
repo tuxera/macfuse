@@ -1,6 +1,6 @@
 diff -Naur old/README.MacFUSE new/README.MacFUSE
 --- old/README.MacFUSE	1969-12-31 16:00:00.000000000 -0800
-+++ new/README.MacFUSE	2007-07-05 19:45:52.000000000 -0700
++++ new/README.MacFUSE	2007-07-05 20:31:07.000000000 -0700
 @@ -0,0 +1,7 @@
 +MacFUSE Project Page:
 +
@@ -11,7 +11,7 @@ diff -Naur old/README.MacFUSE new/README.MacFUSE
 +CFLAGS="-D__FreeBSD__=10 -D_POSIX_C_SOURCE=200112L -O -g -arch i386 -arch ppc -isysroot /Developer/SDKs/MacOSX10.5.sdk" LDFLAGS="-arch i386 -arch ppc -framework CoreFoundation" ./configure --prefix=/usr/local --disable-dependency-tracking
 diff -Naur old/configure new/configure
 --- old/configure	2007-07-02 04:49:44.000000000 -0700
-+++ new/configure	2007-07-05 19:45:52.000000000 -0700
++++ new/configure	2007-07-05 20:31:07.000000000 -0700
 @@ -11293,7 +11293,8 @@
  fi
  
@@ -24,7 +24,7 @@ diff -Naur old/configure new/configure
  echo $ECHO_N "checking for library containing dlopen... $ECHO_C" >&6; }
 diff -Naur old/example/fusexmp.c new/example/fusexmp.c
 --- old/example/fusexmp.c	2007-05-20 04:05:42.000000000 -0700
-+++ new/example/fusexmp.c	2007-07-05 19:45:52.000000000 -0700
++++ new/example/fusexmp.c	2007-07-05 20:31:07.000000000 -0700
 @@ -47,8 +47,25 @@
      int res;
  
@@ -102,7 +102,7 @@ diff -Naur old/example/fusexmp.c new/example/fusexmp.c
      return 0;
 diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
 --- old/example/fusexmp_fh.c	2007-05-20 04:05:43.000000000 -0700
-+++ new/example/fusexmp_fh.c	2007-07-05 19:45:52.000000000 -0700
++++ new/example/fusexmp_fh.c	2007-07-05 20:31:07.000000000 -0700
 @@ -34,8 +34,9 @@
      int res;
  
@@ -212,7 +212,7 @@ diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
      .access	= xmp_access,
 diff -Naur old/fuse.pc.in new/fuse.pc.in
 --- old/fuse.pc.in	2006-12-02 05:38:07.000000000 -0800
-+++ new/fuse.pc.in	2007-07-05 19:45:52.000000000 -0700
++++ new/fuse.pc.in	2007-07-05 20:31:07.000000000 -0700
 @@ -4,7 +4,7 @@
  includedir=@includedir@
  
@@ -223,9 +223,35 @@ diff -Naur old/fuse.pc.in new/fuse.pc.in
  Libs: -L${libdir} -lfuse @libfuse_libs@
 -Cflags: -I${includedir}/fuse -D_FILE_OFFSET_BITS=64
 +Cflags: -I${includedir}/fuse -D__FreeBSD__=10 -D_FILE_OFFSET_BITS=64
+diff -Naur old/include/fuse.h new/include/fuse.h
+--- old/include/fuse.h	2007-07-02 04:32:15.000000000 -0700
++++ new/include/fuse.h	2007-07-05 23:40:58.000000000 -0700
+@@ -817,4 +817,22 @@
+ }
+ #endif
+ 
++#if (__FreeBSD__ >= 10)
++
++#define LIBFUSE_BUNDLE_IDENTIFIER "com.google.filesystems.libfuse"
++
++#define LIBFUSE_UNOTIFICATIONS_OBJECT                 \
++    LIBFUSE_BUNDLE_IDENTIFIER ".unotifications"
++
++#define LIBFUSE_UNOTIFICATIONS_NOTIFY_OSISTOONEW      \
++    LIBFUSE_BUNDLE_IDENTIFIER ".osistoonew"
++
++#define LIBFUSE_UNOTIFICATIONS_NOTIFY_OSISTOOOLD      \
++    LIBFUSE_BUNDLE_IDENTIFIER ".osistooold"
++
++#define LIBFUSE_UNOTIFICATIONS_NOTIFY_VERSIONMISMATCH \
++    LIBFUSE_BUNDLE_IDENTIFIER ".versionmismatch"
++
++#endif
++
+ #endif /* _FUSE_H_ */
 diff -Naur old/lib/Makefile.in new/lib/Makefile.in
 --- old/lib/Makefile.in	2007-07-02 04:49:57.000000000 -0700
-+++ new/lib/Makefile.in	2007-07-05 19:45:52.000000000 -0700
++++ new/lib/Makefile.in	2007-07-05 20:31:07.000000000 -0700
 @@ -62,8 +62,12 @@
  	modules/subdir.c modules/iconv.c mount.c mount_util.c \
  	mount_util.h mount_bsd.c
@@ -267,7 +293,7 @@ diff -Naur old/lib/Makefile.in new/lib/Makefile.in
  libulockmgr_la_LDFLAGS = -version-number 1:0:1
 diff -Naur old/lib/fuse.c new/lib/fuse.c
 --- old/lib/fuse.c	2007-07-02 04:33:08.000000000 -0700
-+++ new/lib/fuse.c	2007-07-05 19:45:52.000000000 -0700
++++ new/lib/fuse.c	2007-07-05 20:31:07.000000000 -0700
 @@ -1172,6 +1172,16 @@
  
  static void curr_time(struct timespec *now)
@@ -317,7 +343,7 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
 +#endif
 diff -Naur old/lib/fuse_kern_chan.c new/lib/fuse_kern_chan.c
 --- old/lib/fuse_kern_chan.c	2007-05-20 04:05:46.000000000 -0700
-+++ new/lib/fuse_kern_chan.c	2007-07-05 19:45:52.000000000 -0700
++++ new/lib/fuse_kern_chan.c	2007-07-05 20:31:07.000000000 -0700
 @@ -75,9 +75,23 @@
      return 0;
  }
@@ -344,7 +370,7 @@ diff -Naur old/lib/fuse_kern_chan.c new/lib/fuse_kern_chan.c
  #define MIN_BUFSIZE 0x21000
 diff -Naur old/lib/fuse_lowlevel.c new/lib/fuse_lowlevel.c
 --- old/lib/fuse_lowlevel.c	2007-07-02 04:32:17.000000000 -0700
-+++ new/lib/fuse_lowlevel.c	2007-07-05 19:45:52.000000000 -0700
++++ new/lib/fuse_lowlevel.c	2007-07-05 20:31:07.000000000 -0700
 @@ -1407,9 +1407,11 @@
      return 0;
  }
@@ -366,7 +392,7 @@ diff -Naur old/lib/fuse_lowlevel.c new/lib/fuse_lowlevel.c
 +#endif
 diff -Naur old/lib/fuse_mt.c new/lib/fuse_mt.c
 --- old/lib/fuse_mt.c	2007-04-25 09:14:26.000000000 -0700
-+++ new/lib/fuse_mt.c	2007-07-05 19:45:52.000000000 -0700
++++ new/lib/fuse_mt.c	2007-07-05 20:31:07.000000000 -0700
 @@ -112,4 +112,6 @@
      return fuse_session_loop_mt(fuse_get_session(f));
  }
@@ -376,7 +402,7 @@ diff -Naur old/lib/fuse_mt.c new/lib/fuse_mt.c
 +#endif
 diff -Naur old/lib/fuse_session.c new/lib/fuse_session.c
 --- old/lib/fuse_session.c	2007-04-25 09:14:26.000000000 -0700
-+++ new/lib/fuse_session.c	2007-07-05 19:45:52.000000000 -0700
++++ new/lib/fuse_session.c	2007-07-05 20:31:07.000000000 -0700
 @@ -15,6 +15,9 @@
  #include <string.h>
  #include <assert.h>
@@ -431,7 +457,7 @@ diff -Naur old/lib/fuse_session.c new/lib/fuse_session.c
      struct fuse_session *se = (struct fuse_session *) malloc(sizeof(*se));
 diff -Naur old/lib/fuse_signals.c new/lib/fuse_signals.c
 --- old/lib/fuse_signals.c	2007-04-25 09:14:26.000000000 -0700
-+++ new/lib/fuse_signals.c	2007-07-05 19:45:52.000000000 -0700
++++ new/lib/fuse_signals.c	2007-07-05 20:31:07.000000000 -0700
 @@ -13,12 +13,34 @@
  #include <signal.h>
  
@@ -469,7 +495,7 @@ diff -Naur old/lib/fuse_signals.c new/lib/fuse_signals.c
  static int set_one_signal_handler(int sig, void (*handler)(int))
 diff -Naur old/lib/helper.c new/lib/helper.c
 --- old/lib/helper.c	2007-07-02 04:32:17.000000000 -0700
-+++ new/lib/helper.c	2007-07-05 19:45:52.000000000 -0700
++++ new/lib/helper.c	2007-07-05 20:31:07.000000000 -0700
 @@ -259,6 +259,10 @@
      if (fd)
          *fd = fuse_chan_fd(ch);
@@ -507,7 +533,7 @@ diff -Naur old/lib/helper.c new/lib/helper.c
 +#endif
 diff -Naur old/lib/mount.c new/lib/mount.c
 --- old/lib/mount.c	2007-07-02 04:32:17.000000000 -0700
-+++ new/lib/mount.c	2007-07-05 19:45:52.000000000 -0700
++++ new/lib/mount.c	2007-07-05 20:31:07.000000000 -0700
 @@ -579,5 +579,7 @@
      return res;
  }
@@ -518,7 +544,7 @@ diff -Naur old/lib/mount.c new/lib/mount.c
 +#endif
 diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 --- old/lib/mount_bsd.c	2006-05-03 07:46:04.000000000 -0700
-+++ new/lib/mount_bsd.c	2007-07-05 19:45:52.000000000 -0700
++++ new/lib/mount_bsd.c	2007-07-05 23:41:52.000000000 -0700
 @@ -6,6 +6,12 @@
      See the file COPYING.LIB.
  */
@@ -532,13 +558,14 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
  #include "fuse_i.h"
  #include "fuse_opt.h"
  
-@@ -21,8 +27,78 @@
+@@ -21,8 +27,184 @@
  #include <string.h>
  #include <paths.h>
  
 +#if (__FreeBSD__ >= 10)
 +
 +#include <libproc.h>
++#include <sys/utsname.h>
 +
 +#define FUSERMOUNT_PROG  "/System/Library/Filesystems/fusefs.fs/Support/mount_fusefs"
 +#define FUSE_DEV_TRUNK   "/dev/fuse"
@@ -549,6 +576,38 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 +#include <AssertMacros.h>
 +
 +static const char *MacFUSE = "MacFUSE version 0.5.0, " __DATE__ ", " __TIME__;
++static int quiet_mode = 0;
++
++static long
++os_version_major(void)
++{
++    int ret = 0;
++    long major = 0;
++    char *c = NULL;
++    struct utsname u;
++    size_t oldlen;
++
++    oldlen = sizeof(u.release);
++
++    ret = sysctlbyname("kern.osrelease", u.release, &oldlen, NULL, 0);
++    if (ret != 0) {
++        return -1;
++    }
++
++    c = strchr(u.release, '.');
++    if (c == NULL) {
++        return -1;
++    }
++
++    *c = '\0';
++
++    major = strtol(u.release, NULL, 10);
++    if ((errno == EINVAL) || (errno == ERANGE)) {
++        return -1;
++    }
++
++    return major;
++}
 +
 +__unused static int
 +checkloadable_unused(void)
@@ -573,6 +632,13 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 +    int result = -1;
 +    int pid, terminated_pid;
 +    union wait status;
++    long major;
++
++    major = os_version_major();
++
++    if (major < 9) { /* not Mac OS X 10.5+ */
++        return EINVAL;
++    }
 +
 +    pid = fork();
 +
@@ -604,6 +670,72 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 +    return result;
 +}
 +
++static int
++post_notification(char   *name,
++                  char   *udata_keys[],
++                  char   *udata_values[],
++                  CFIndex nf_num)
++{
++    CFIndex i;
++    CFStringRef nf_name   = NULL;
++    CFStringRef nf_object = NULL;
++    CFMutableDictionaryRef nf_udata  = NULL;
++
++    CFNotificationCenterRef distributedCenter;
++    CFStringEncoding encoding = kCFStringEncodingASCII;
++
++    distributedCenter = CFNotificationCenterGetDistributedCenter();
++
++    if (!distributedCenter) {
++        return -1;
++    }
++
++    nf_name = CFStringCreateWithCString(kCFAllocatorDefault, name, encoding);
++      
++    nf_object = CFStringCreateWithCString(kCFAllocatorDefault,
++                                          LIBFUSE_UNOTIFICATIONS_OBJECT,
++                                          encoding);
++ 
++    nf_udata = CFDictionaryCreateMutable(kCFAllocatorDefault,
++                                         nf_num,
++                                         &kCFCopyStringDictionaryKeyCallBacks,
++                                         &kCFTypeDictionaryValueCallBacks);
++
++    if (!nf_name || !nf_object || !nf_udata) {
++        goto out;
++    }
++
++    for (i = 0; i < nf_num; i++) {
++        CFStringRef a_key = CFStringCreateWithCString(kCFAllocatorDefault,
++                                                      udata_keys[i],
++                                                      kCFStringEncodingASCII);
++        CFStringRef a_value = CFStringCreateWithCString(kCFAllocatorDefault,
++                                                        udata_values[i],
++                                                        kCFStringEncodingASCII);
++        CFDictionarySetValue(nf_udata, a_key, a_value);
++        CFRelease(a_key);
++        CFRelease(a_value);
++    }
++
++    CFNotificationCenterPostNotification(distributedCenter,
++                                         nf_name, nf_object, nf_udata, false);
++
++out:
++    if (nf_name) {
++        CFRelease(nf_name);
++    }
++
++    if (nf_object) {
++        CFRelease(nf_object);
++    }
++
++    if (nf_udata) {
++        CFRelease(nf_udata);
++    }
++
++    return 0;
++}
++
 +#else
  #define FUSERMOUNT_PROG         "mount_fusefs"
  #define FUSE_DEV_TRUNK          "/dev/fuse"
@@ -611,18 +743,19 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
  
  enum {
      KEY_ALLOW_ROOT,
-@@ -30,6 +106,10 @@
+@@ -30,6 +212,11 @@
      KEY_HELP,
      KEY_VERSION,
      KEY_KERN
 +#if (__FreeBSD__ >= 10)
 +    ,
 +    KEY_DIO,
++    KEY_QUIET,
 +#endif
  };
  
  struct mount_opts {
-@@ -108,11 +188,45 @@
+@@ -108,11 +295,46 @@
      FUSE_OPT_KEY("noprivate",           KEY_KERN),
      FUSE_OPT_KEY("noneglect_shares",    KEY_KERN),
      FUSE_OPT_KEY("nopush_symlinks_in",  KEY_KERN),
@@ -656,6 +789,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 +    FUSE_OPT_KEY("noubc",               KEY_KERN),
 +    FUSE_OPT_KEY("novncache",           KEY_KERN),
 +    FUSE_OPT_KEY("ping_diskarb",        KEY_KERN),
++    FUSE_OPT_KEY("quiet",               KEY_QUIET),
 +    FUSE_OPT_KEY("subtype=",            KEY_KERN),
 +    FUSE_OPT_KEY("volname=",            KEY_KERN),
 +#else
@@ -668,7 +802,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
      FUSE_OPT_END
  };
  
-@@ -149,6 +263,14 @@
+@@ -149,6 +371,18 @@
      case KEY_KERN:
          return fuse_opt_add_opt(&mo->kernel_opts, arg);
  
@@ -678,12 +812,16 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 +              (fuse_opt_add_arg(outargs, "-odirect_io") == -1))
 +            return -1;
 +        return 0;
++
++    case KEY_QUIET:
++        quiet_mode = 1;
++        return 0;
 +#endif
 +
      case KEY_HELP:
          mount_help();
          mo->ishelp = 1;
-@@ -199,8 +321,21 @@
+@@ -199,8 +433,21 @@
      if (rv)
          return;
  
@@ -705,7 +843,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
  }
  
  void fuse_kern_unmount(const char *mountpoint, int fd)
-@@ -222,8 +357,21 @@
+@@ -222,8 +469,21 @@
      if (*ep != '\0')
          return;
  
@@ -727,7 +865,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
  }
  
  /* Check if kernel is doing init in background */
-@@ -233,8 +381,13 @@
+@@ -233,8 +493,13 @@
  
      len = sizeof(ibg);
  
@@ -741,7 +879,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
  
      return ibg;
  }
-@@ -246,6 +399,36 @@
+@@ -246,6 +511,56 @@
      int fd;
      char *fdnam, *dev;
      int pid;
@@ -756,18 +894,38 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 +    if (checkloadable()) {
 +        int result = loadkmod();
 +        if (result) {
-+            if (result == EBUSY) {
-+                CFOptionFlags responseFlags;
-+                CFUserNotificationDisplayNotice(
-+                    (CFTimeInterval)0,
-+                    kCFUserNotificationCautionAlertLevel,
-+                    (CFURLRef)0,
-+                    (CFURLRef)0,
-+                    (CFURLRef)0,
-+                    CFSTR("MacFUSE Version Mismatch"),
-+                    CFSTR("MacFUSE has been updated but an incompatible or old version of the MacFUSE kernel extension is already loaded. It failed to unload, possibly because a MacFUSE volume is currently mounted.\n\nPlease eject all MacFUSE volumes and try again, or simply restart the system for changes to take effect."),
-+                    CFSTR("OK")
-+                );
++            CFOptionFlags responseFlags;
++            if (result == EINVAL) {
++                if (!quiet_mode) {
++                    CFUserNotificationDisplayNotice(
++                        (CFTimeInterval)0,
++                        kCFUserNotificationCautionAlertLevel,
++                        (CFURLRef)0,
++                        (CFURLRef)0,
++                        (CFURLRef)0,
++                        CFSTR("Operating System Too Old"),
++                        CFSTR("The installed MacFUSE version is too new for the operating system version. Please downgrade your MacFUSE installation to one that is compatible with the currently running operating system."),
++                        CFSTR("OK")
++                    );
++                }
++                post_notification(
++                    LIBFUSE_UNOTIFICATIONS_NOTIFY_OSISTOOOLD,
++                    NULL, NULL, 0);
++            } else if (result == EBUSY) {
++                if (!quiet_mode) {
++                    CFUserNotificationDisplayNotice(
++                        (CFTimeInterval)0,
++                        kCFUserNotificationCautionAlertLevel,
++                        (CFURLRef)0,
++                        (CFURLRef)0,
++                        (CFURLRef)0,
++                        CFSTR("MacFUSE Version Mismatch"),
++                        CFSTR("MacFUSE has been updated but an incompatible or old version of the MacFUSE kernel extension is already loaded. It failed to unload, possibly because a MacFUSE volume is currently mounted.\n\nPlease eject all MacFUSE volumes and try again, or simply restart the system for changes to take effect."),
++                        CFSTR("OK")
++                    );
++                }
++                post_notification(LIBFUSE_UNOTIFICATIONS_NOTIFY_VERSIONMISMATCH,
++                                  NULL, NULL, 0);
 +            }
 +            fprintf(stderr, "fusefs file system is not available (%d)\n",
 +                    result);
@@ -778,7 +936,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
  
      fdnam = getenv("FUSE_DEV_FD");
  
-@@ -267,19 +450,40 @@
+@@ -267,19 +582,40 @@
  
      dev = getenv("FUSE_DEV_NAME");
  
@@ -825,7 +983,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
  
      if (pid == -1) {
          perror("fuse: fork() failed");
-@@ -287,8 +491,16 @@
+@@ -287,8 +623,16 @@
          return -1;
      }
  
@@ -842,7 +1000,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
              /*
               * If init is not backgrounded, we have to call the mount util
               * backgrounded, to avoid deadlock.
-@@ -318,15 +530,49 @@
+@@ -318,15 +662,49 @@
              argv[a++] = fdnam;
              argv[a++] = mountpoint;
              argv[a++] = NULL;
@@ -892,7 +1050,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
  
  out:
      return fd;
-@@ -360,4 +606,6 @@
+@@ -360,4 +738,6 @@
      return res;
  }
  
@@ -901,7 +1059,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 +#endif
 diff -Naur old/lib/ulockmgr.c new/lib/ulockmgr.c
 --- old/lib/ulockmgr.c	2007-07-02 04:32:17.000000000 -0700
-+++ new/lib/ulockmgr.c	2007-07-05 19:45:52.000000000 -0700
++++ new/lib/ulockmgr.c	2007-07-05 20:31:07.000000000 -0700
 @@ -18,9 +18,19 @@
  #include <assert.h>
  #include <signal.h>
@@ -938,6 +1096,6 @@ diff -Naur old/lib/ulockmgr.c new/lib/ulockmgr.c
  
 diff -Naur old/run_configure.sh new/run_configure.sh
 --- old/run_configure.sh	1969-12-31 16:00:00.000000000 -0800
-+++ new/run_configure.sh	2007-07-05 19:47:16.000000000 -0700
++++ new/run_configure.sh	2007-07-05 20:31:07.000000000 -0700
 @@ -0,0 +1 @@
 +CFLAGS="-D__FreeBSD__=10 -D_POSIX_C_SOURCE=200112L -O -g -arch i386 -arch ppc -isysroot /Developer/SDKs/MacOSX10.5.sdk" LDFLAGS="-arch i386 -arch ppc -framework CoreFoundation" ./configure --prefix=/usr/local --disable-dependency-tracking
