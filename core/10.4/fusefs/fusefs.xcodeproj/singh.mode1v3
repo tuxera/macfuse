@@ -166,7 +166,7 @@
 	<key>FavBarConfig</key>
 	<dict>
 		<key>PBXProjectModuleGUID</key>
-		<string>54692B0A0C37AC1E0014BBD6</string>
+		<string>547D60760C3DEAC10013119E</string>
 		<key>XCBarModuleItemNames</key>
 		<dict/>
 		<key>XCBarModuleItems</key>
@@ -256,7 +256,7 @@
 							<array>
 								<string>089C166AFE841209C02AAC07</string>
 								<string>1C37FBAC04509CD000000102</string>
-								<string>547D605B0C3DE1B80013119E</string>
+								<string>547D60650C3DEAA80013119E</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
@@ -367,9 +367,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>547D605C0C3DE1B80013119E</string>
+				<string>547D60740C3DEAC10013119E</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>547D605D0C3DE1B80013119E</string>
+				<string>547D60750C3DEAC10013119E</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -500,7 +500,7 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>/work/macfuse/core/10.5/fusefs/fusefs.xcodeproj</string>
+		<string>/work/macfuse/core/10.4/fusefs/fusefs.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
 	<string>271 134 1049 607 0 0 1440 878 </string>
@@ -511,8 +511,6 @@
 			<false/>
 			<key>Identifier</key>
 			<string>windowTool.build</string>
-			<key>IsVertical</key>
-			<true/>
 			<key>Layout</key>
 			<array>
 				<dict>
@@ -541,6 +539,8 @@
 							<string>301pt</string>
 						</dict>
 						<dict>
+							<key>BecomeActive</key>
+							<true/>
 							<key>ContentConfiguration</key>
 							<dict>
 								<key>PBXProjectModuleGUID</key>
@@ -579,8 +579,8 @@
 			<true/>
 			<key>TableOfContents</key>
 			<array>
-				<string>544011DB0C37CD7E0044A0F1</string>
-				<string>544011DC0C37CD7E0044A0F1</string>
+				<string>1C78EAA5065D492600B07095</string>
+				<string>1C78EAA6065D492600B07095</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
@@ -588,10 +588,6 @@
 			<string>xcode.toolbar.config.buildV3</string>
 			<key>WindowString</key>
 			<string>592 295 749 583 0 0 1440 878 </string>
-			<key>WindowToolGUID</key>
-			<string>544011DB0C37CD7E0044A0F1</string>
-			<key>WindowToolIsVisible</key>
-			<false/>
 		</dict>
 		<dict>
 			<key>FirstTimeWindowDisplayed</key>
