@@ -761,7 +761,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 +    FUSE_OPT_KEY("noubc",               KEY_KERN),
 +    FUSE_OPT_KEY("novncache",           KEY_KERN),
 +    FUSE_OPT_KEY("ping_diskarb",        KEY_KERN),
-+    FUSE_OPT_KEY("quiet",               KEY_KERN),
++    FUSE_OPT_KEY("quiet",               KEY_QUIET),
 +    FUSE_OPT_KEY("subtype=",            KEY_KERN),
 +    FUSE_OPT_KEY("volname=",            KEY_KERN),
 +#else
