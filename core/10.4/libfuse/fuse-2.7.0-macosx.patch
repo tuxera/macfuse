@@ -1,6 +1,6 @@
 diff -Naur old/README.MacFUSE new/README.MacFUSE
 --- old/README.MacFUSE	1969-12-31 16:00:00.000000000 -0800
-+++ new/README.MacFUSE	2007-07-05 23:45:07.000000000 -0700
++++ new/README.MacFUSE	2007-07-13 23:54:38.000000000 -0700
 @@ -0,0 +1,7 @@
 +MacFUSE Project Page:
 +
@@ -11,7 +11,7 @@ diff -Naur old/README.MacFUSE new/README.MacFUSE
 +CFLAGS="-D__FreeBSD__=10 -D_POSIX_C_SOURCE=200112L -O -g -arch i386 -arch ppc -isysroot /Developer/SDKs/MacOSX10.4u.sdk" LDFLAGS="-arch i386 -arch ppc -framework CoreFoundation" ./configure --prefix=/usr/local --disable-dependency-tracking
 diff -Naur old/configure new/configure
 --- old/configure	2007-07-02 04:49:44.000000000 -0700
-+++ new/configure	2007-07-05 23:45:07.000000000 -0700
++++ new/configure	2007-07-13 23:54:38.000000000 -0700
 @@ -11293,7 +11293,8 @@
  fi
  
@@ -24,7 +24,7 @@ diff -Naur old/configure new/configure
  echo $ECHO_N "checking for library containing dlopen... $ECHO_C" >&6; }
 diff -Naur old/example/fusexmp.c new/example/fusexmp.c
 --- old/example/fusexmp.c	2007-05-20 04:05:42.000000000 -0700
-+++ new/example/fusexmp.c	2007-07-05 23:45:07.000000000 -0700
++++ new/example/fusexmp.c	2007-07-13 23:54:38.000000000 -0700
 @@ -47,8 +47,25 @@
      int res;
  
@@ -102,7 +102,7 @@ diff -Naur old/example/fusexmp.c new/example/fusexmp.c
      return 0;
 diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
 --- old/example/fusexmp_fh.c	2007-05-20 04:05:43.000000000 -0700
-+++ new/example/fusexmp_fh.c	2007-07-05 23:45:07.000000000 -0700
++++ new/example/fusexmp_fh.c	2007-07-13 23:54:38.000000000 -0700
 @@ -34,8 +34,9 @@
      int res;
  
@@ -212,7 +212,7 @@ diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
      .access	= xmp_access,
 diff -Naur old/fuse.pc.in new/fuse.pc.in
 --- old/fuse.pc.in	2006-12-02 05:38:07.000000000 -0800
-+++ new/fuse.pc.in	2007-07-05 23:45:07.000000000 -0700
++++ new/fuse.pc.in	2007-07-13 23:54:38.000000000 -0700
 @@ -4,7 +4,7 @@
  includedir=@includedir@
  
@@ -225,7 +225,7 @@ diff -Naur old/fuse.pc.in new/fuse.pc.in
 +Cflags: -I${includedir}/fuse -D__FreeBSD__=10 -D_FILE_OFFSET_BITS=64
 diff -Naur old/include/fuse.h new/include/fuse.h
 --- old/include/fuse.h	2007-07-02 04:32:15.000000000 -0700
-+++ new/include/fuse.h	2007-07-05 23:45:47.000000000 -0700
++++ new/include/fuse.h	2007-07-13 23:54:38.000000000 -0700
 @@ -817,4 +817,22 @@
  }
  #endif
@@ -251,10 +251,14 @@ diff -Naur old/include/fuse.h new/include/fuse.h
  #endif /* _FUSE_H_ */
 diff -Naur old/lib/Makefile.in new/lib/Makefile.in
 --- old/lib/Makefile.in	2007-07-02 04:49:57.000000000 -0700
-+++ new/lib/Makefile.in	2007-07-05 23:45:07.000000000 -0700
-@@ -62,8 +62,12 @@
++++ new/lib/Makefile.in	2007-07-13 23:54:38.000000000 -0700
+@@ -61,13 +61,23 @@
+ 	fuse_mt.c fuse_opt.c fuse_session.c fuse_signals.c helper.c \
  	modules/subdir.c modules/iconv.c mount.c mount_util.c \
  	mount_util.h mount_bsd.c
++ifeq (@host_vendor@, apple)
++am__libfuse_la_SOURCES_DIST += modules/volicon.c
++endif
  @ICONV_TRUE@am__objects_1 = iconv.lo
 +ifeq (@host_vendor@, apple)
 +am__objects_1 = mount_bsd.lo
@@ -265,7 +269,14 @@ diff -Naur old/lib/Makefile.in new/lib/Makefile.in
  am_libfuse_la_OBJECTS = fuse.lo fuse_kern_chan.lo fuse_loop.lo \
  	fuse_loop_mt.lo fuse_lowlevel.lo fuse_mt.lo fuse_opt.lo \
  	fuse_session.lo fuse_signals.lo helper.lo subdir.lo \
-@@ -209,8 +213,12 @@
+ 	$(am__objects_1) $(am__objects_2)
++ifeq (@host_vendor@, apple)
++am_libfuse_la_OBJECTS += volicon.lo
++endif
+ libfuse_la_OBJECTS = $(am_libfuse_la_OBJECTS)
+ libulockmgr_la_LIBADD =
+ am_libulockmgr_la_OBJECTS = ulockmgr.lo
+@@ -209,8 +219,12 @@
   -D_FILE_OFFSET_BITS=64 -D_REENTRANT -DFUSE_USE_VERSION=26
  
  lib_LTLIBRARIES = libfuse.la libulockmgr.la
@@ -278,11 +289,12 @@ diff -Naur old/lib/Makefile.in new/lib/Makefile.in
  @ICONV_FALSE@iconv_source = 
  @ICONV_TRUE@iconv_source = modules/iconv.c
  libfuse_la_SOURCES = \
-@@ -230,8 +238,12 @@
+@@ -230,8 +244,13 @@
  	$(iconv_source)		\
  	$(mount_source)
  
 +ifeq ($(host_vendor), apple)
++libfuse_la_SOURCES += modules/volicon.c
 +libfuse_la_LDFLAGS = @libfuse_libs@
 +else
  libfuse_la_LDFLAGS = @libfuse_libs@ -version-number 2:7:0 \
@@ -291,9 +303,35 @@ diff -Naur old/lib/Makefile.in new/lib/Makefile.in
  
  libulockmgr_la_SOURCES = ulockmgr.c
  libulockmgr_la_LDFLAGS = -version-number 1:0:1
+@@ -323,6 +342,9 @@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mount_util.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/subdir.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ulockmgr.Plo@am__quote@
++ifeq (@host_vendor@, apple)
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/volicon.Plo@am__quote@
++endif
+ 
+ .c.o:
+ @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
+@@ -359,6 +381,15 @@
+ @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+ @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o iconv.lo `test -f 'modules/iconv.c' || echo '$(srcdir)/'`modules/iconv.c
+ 
++ifeq (@host_vendor@, apple)
++volicon.lo: modules/volicon.c
++@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT volicon.lo -MD -MP -MF "$(DEPDIR)/volicon.Tpo" -c -o volicon.lo `test -f 'modules/volicon.c' || echo '$(srcdir)/'`modules/volicon.c; \
++@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/volicon.Tpo" "$(DEPDIR)/volicon.Plo"; else rm -f "$(DEPDIR)/volicon.Tpo"; exit 1; fi
++@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='modules/volicon.c' object='volicon.lo' libtool=yes @AMDEPBACKSLASH@
++@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
++@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o volicon.lo `test -f 'modules/volicon.c' || echo '$(srcdir)/'`modules/volicon.c
++endif
++
+ mostlyclean-libtool:
+ 	-rm -f *.lo
+ 
 diff -Naur old/lib/fuse.c new/lib/fuse.c
 --- old/lib/fuse.c	2007-07-02 04:33:08.000000000 -0700
-+++ new/lib/fuse.c	2007-07-05 23:45:07.000000000 -0700
++++ new/lib/fuse.c	2007-07-13 23:54:38.000000000 -0700
 @@ -1172,6 +1172,16 @@
  
  static void curr_time(struct timespec *now)
@@ -343,7 +381,7 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
 +#endif
 diff -Naur old/lib/fuse_lowlevel.c new/lib/fuse_lowlevel.c
 --- old/lib/fuse_lowlevel.c	2007-07-02 04:32:17.000000000 -0700
-+++ new/lib/fuse_lowlevel.c	2007-07-05 23:45:07.000000000 -0700
++++ new/lib/fuse_lowlevel.c	2007-07-13 23:54:38.000000000 -0700
 @@ -1407,9 +1407,11 @@
      return 0;
  }
@@ -365,7 +403,7 @@ diff -Naur old/lib/fuse_lowlevel.c new/lib/fuse_lowlevel.c
 +#endif
 diff -Naur old/lib/fuse_mt.c new/lib/fuse_mt.c
 --- old/lib/fuse_mt.c	2007-04-25 09:14:26.000000000 -0700
-+++ new/lib/fuse_mt.c	2007-07-05 23:45:07.000000000 -0700
++++ new/lib/fuse_mt.c	2007-07-13 23:54:38.000000000 -0700
 @@ -112,4 +112,6 @@
      return fuse_session_loop_mt(fuse_get_session(f));
  }
@@ -375,7 +413,7 @@ diff -Naur old/lib/fuse_mt.c new/lib/fuse_mt.c
 +#endif
 diff -Naur old/lib/fuse_session.c new/lib/fuse_session.c
 --- old/lib/fuse_session.c	2007-04-25 09:14:26.000000000 -0700
-+++ new/lib/fuse_session.c	2007-07-05 23:45:07.000000000 -0700
++++ new/lib/fuse_session.c	2007-07-13 23:54:38.000000000 -0700
 @@ -15,6 +15,9 @@
  #include <string.h>
  #include <assert.h>
@@ -430,7 +468,7 @@ diff -Naur old/lib/fuse_session.c new/lib/fuse_session.c
      struct fuse_session *se = (struct fuse_session *) malloc(sizeof(*se));
 diff -Naur old/lib/fuse_signals.c new/lib/fuse_signals.c
 --- old/lib/fuse_signals.c	2007-04-25 09:14:26.000000000 -0700
-+++ new/lib/fuse_signals.c	2007-07-05 23:45:07.000000000 -0700
++++ new/lib/fuse_signals.c	2007-07-13 23:54:38.000000000 -0700
 @@ -13,12 +13,34 @@
  #include <signal.h>
  
@@ -468,7 +506,7 @@ diff -Naur old/lib/fuse_signals.c new/lib/fuse_signals.c
  static int set_one_signal_handler(int sig, void (*handler)(int))
 diff -Naur old/lib/helper.c new/lib/helper.c
 --- old/lib/helper.c	2007-07-02 04:32:17.000000000 -0700
-+++ new/lib/helper.c	2007-07-05 23:45:07.000000000 -0700
++++ new/lib/helper.c	2007-07-13 23:54:38.000000000 -0700
 @@ -259,6 +259,10 @@
      if (fd)
          *fd = fuse_chan_fd(ch);
@@ -504,9 +542,798 @@ diff -Naur old/lib/helper.c new/lib/helper.c
  __asm__(".symver fuse_main_real_compat25,fuse_main_real@FUSE_2.5");
  __asm__(".symver fuse_mount_compat25,fuse_mount@FUSE_2.5");
 +#endif
+diff -Naur old/lib/modules/volicon.c new/lib/modules/volicon.c
+--- old/lib/modules/volicon.c	1969-12-31 16:00:00.000000000 -0800
++++ new/lib/modules/volicon.c	2007-07-13 23:54:38.000000000 -0700
+@@ -0,0 +1,785 @@
++/*
++ *  Custom volume icon support for MacFUSE.
++ *
++ *  - libfuse stack module by Andrew de los Reyes <adlr@google>
++ *  - Based on "volicon" code by Amit Singh <singh@>
++ *
++ *  This program can be distributed under the terms of the GNU LGPL.
++ *  See the file COPYING.LIB for details.
++ */
++
++#define FUSE_USE_VERSION 26
++
++#undef _POSIX_C_SOURCE
++#include <sys/types.h>
++#define _POSIX_C_SOURCE 200112L
++#include <sys/attr.h>
++#include <sys/vnode.h>
++#include <fuse.h>
++#include <libgen.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <stddef.h>
++#include <string.h>
++#include <unistd.h>
++#include <errno.h>
++
++#include <crt_externs.h>
++
++#define VOLICON_DOTUDOT_MAGIC_PATH "/._."
++#define VOLICON_ICON_MAGIC_PATH    "/.VolumeIcon.icns"
++#define VOLICON_ICON_MAXSIZE       (1024 * 1024)
++
++#define VOLICON_CREATOR            0x46555345 /* FUSE */
++#define VOLICON_TYPE_ROOT          0x524f4f54 /* ROOT */
++
++static int FinderInfoSet(const char *path, uint32_t *type, uint32_t *creator);
++static int FinderInfoGet(const char *path, uint32_t *type, uint32_t *creator);
++
++static const char dotudot_data[] = {
++     0x00, 0x05, 0x16, 0x07, 0x00, 0x02, 0x00, 0x00,
++     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++     0x00, 0x02, 0x00, 0x00, 0x00, 0x09, 0x00, 0x00,
++     0x00, 0x32, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00,
++     0x00, 0x02, 0x00, 0x00, 0x00, 0x52, 0x00, 0x00,
++     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++     0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00,
++     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
++     0x00, 0x00                                                        
++};
++#define DOTUDOT_DATA_LEN (sizeof(dotudot_data)/sizeof(dotudot_data[0]))
++
++struct volicon {
++    struct fuse_fs *next;
++
++    char *volicon;
++    char *volicon_data;
++    off_t volicon_size;
++    uid_t volicon_uid;
++    char *mntpath;
++};
++
++static struct volicon *
++volicon_get(void)
++{
++    return fuse_get_context()->private_data;
++}
++
++static __inline__ int
++volicon_is_icon_magic_file(const char *path)
++{
++    return (!strcmp(path, VOLICON_ICON_MAGIC_PATH));
++}
++
++static __inline__ int
++volicon_is_dotudot_magic_file(const char *path)
++{
++    return (!strcmp(path, VOLICON_DOTUDOT_MAGIC_PATH));
++}
++
++#define volicon_is_a_magic_file(p) volicon_is_icon_magic_file(p)
++
++#define ERROR_IF_MAGIC_FILE(path, e)     \
++    if (volicon_is_a_magic_file(path)) { \
++        return -e;                       \
++    }
++
++/*
++ * FUSE API Operations
++ * Listed in the same order as in struct fuse_operations in <fuse.h>
++ */
++
++static int
++volicon_getattr(const char *path, struct stat *buf)
++{
++    int res = 0;
++
++    if (volicon_is_icon_magic_file(path)) {
++
++        memset((void *)buf, 0, sizeof(struct stat));
++
++        buf->st_mode  = S_IFREG | 0444;
++        buf->st_nlink = 1;
++        buf->st_uid   = volicon_get()->volicon_uid;
++        buf->st_gid = 0;
++        buf->st_size  = volicon_get()->volicon_size;
++        buf->st_atime = buf->st_ctime = buf->st_mtime = time(NULL);
++
++    } else {
++        res = fuse_fs_getattr(volicon_get()->next, path, buf);
++    }
++
++    return res;
++}
++
++static int
++volicon_readlink(const char *path, char *buf, size_t size)
++{
++    ERROR_IF_MAGIC_FILE(path, EINVAL);
++
++    return fuse_fs_readlink(volicon_get()->next, path, buf, size);
++}
++
++static int
++volicon_getdir(const char *path, struct fuse_dirhandle *dh,
++               fuse_dirfil_t filler_old)
++{
++    ERROR_IF_MAGIC_FILE(path, ENOTDIR);
++
++    return fuse_fs_getdir(path, dh, filler_old);
++}
++
++static int
++volicon_mknod(const char *path, mode_t mode, dev_t rdev)
++{
++    ERROR_IF_MAGIC_FILE(path, EEXIST);
++
++    return fuse_fs_mknod(volicon_get()->next, path, mode, rdev);
++}
++
++static int
++volicon_mkdir(const char *path, mode_t mode)
++{
++    ERROR_IF_MAGIC_FILE(path, EEXIST);
++
++    return fuse_fs_mkdir(volicon_get()->next, path, mode);
++}
++
++static int
++volicon_unlink(const char *path)
++{
++    ERROR_IF_MAGIC_FILE(path, EACCES);
++
++    return fuse_fs_unlink(volicon_get()->next, path);
++}
++
++static int
++volicon_rmdir(const char *path)
++{
++    ERROR_IF_MAGIC_FILE(path, ENOTDIR);
++
++    return fuse_fs_rmdir(volicon_get()->next, path);
++}
++
++static int
++volicon_symlink(const char *from, const char *path)
++{
++    ERROR_IF_MAGIC_FILE(path, EEXIST);
++
++    return fuse_fs_symlink(volicon_get()->next, from, path);
++}
++
++static int volicon_rename(const char *from, const char *to)
++{
++    ERROR_IF_MAGIC_FILE(from, EACCES);
++    ERROR_IF_MAGIC_FILE(to, EACCES);
++
++    return fuse_fs_rename(volicon_get()->next, from, to);
++}
++
++static int
++volicon_link(const char *from, const char *to)
++{
++    ERROR_IF_MAGIC_FILE(from, EACCES);
++    ERROR_IF_MAGIC_FILE(to, EACCES);
++
++    return fuse_fs_link(volicon_get()->next, from, to);
++}
++
++static int
++volicon_chmod(const char *path, mode_t mode)
++{
++    ERROR_IF_MAGIC_FILE(path, EACCES);
++
++    return fuse_fs_chmod(volicon_get()->next, path, mode);
++}
++
++static int
++volicon_chown(const char *path, uid_t uid, gid_t gid)
++{
++    ERROR_IF_MAGIC_FILE(path, EACCES);
++
++    return fuse_fs_chown(volicon_get()->next, path, uid, gid);
++}
++
++static int
++volicon_truncate(const char *path, off_t size)
++{
++    ERROR_IF_MAGIC_FILE(path, EACCES);
++
++    return fuse_fs_truncate(volicon_get()->next, path, size);
++}
++
++static int
++volicon_utime(const char *path, struct utimbuf *buf)
++{
++    ERROR_IF_MAGIC_FILE(path, EACCES);
++
++    return fuse_fs_utime(volicon_get()->next, path, buf);
++}
++
++static int
++volicon_open(const char *path, struct fuse_file_info *fi)
++{
++    if (volicon_is_a_magic_file(path)) {
++        if (fi && ((fi->flags & O_ACCMODE) != O_RDONLY)) {
++            return -EACCES;
++        }
++
++        return 0;
++    }
++
++    return fuse_fs_open(volicon_get()->next, path, fi);
++}
++
++static int
++volicon_read(const char *path, char *buf, size_t size, off_t off,
++             struct fuse_file_info *fi)
++{
++    int res = 0;
++
++    if (volicon_is_icon_magic_file(path)) {
++        size_t a_size = size;
++        if (off < volicon_get()->volicon_size) {
++            if ((off + size) > volicon_get()->volicon_size) {
++                a_size = volicon_get()->volicon_size - off;
++            }
++            memcpy(buf, (char *)(volicon_get()->volicon_data) + off, a_size);
++            res = a_size;
++        }
++    } else {
++        res = fuse_fs_read(volicon_get()->next, path, buf, size, off, fi);
++    }
++
++    return res;
++}
++
++static int
++volicon_write(const char *path, const char *buf, size_t size, off_t off,
++              struct fuse_file_info *fi)
++{
++    ERROR_IF_MAGIC_FILE(path, EACCES);
++
++    return fuse_fs_write(volicon_get()->next, path, buf, size, off, fi);
++}
++
++static int
++volicon_statfs(const char *path, struct statvfs *stbuf)
++{
++    if (volicon_is_a_magic_file(path)) {
++        return fuse_fs_statfs(volicon_get()->next, "/", stbuf);
++    }
++
++    return fuse_fs_statfs(volicon_get()->next, path, stbuf);
++}
++
++static int
++volicon_flush(const char *path, struct fuse_file_info *fi)
++{
++    ERROR_IF_MAGIC_FILE(path, 0);
++
++    return fuse_fs_flush(volicon_get()->next, path, fi);
++}
++
++static int
++volicon_release(const char *path, struct fuse_file_info *fi)
++{
++    ERROR_IF_MAGIC_FILE(path, 0);
++
++    return fuse_fs_release(volicon_get()->next, path, fi);
++}
++
++static int
++volicon_fsync(const char *path, int isdatasync,
++                        struct fuse_file_info *fi)
++{
++    ERROR_IF_MAGIC_FILE(path, 0);
++
++    return fuse_fs_fsync(volicon_get()->next, path, isdatasync, fi);
++}
++
++static int
++volicon_setxattr(const char *path, const char *name, const char *value,
++                 size_t size, int flags)
++{
++    ERROR_IF_MAGIC_FILE(path, EPERM);
++
++    return fuse_fs_setxattr(volicon_get()->next, path, name, value, size,
++                            flags);
++}
++
++static int
++volicon_getxattr(const char *path, const char *name, char *value, size_t size)
++{
++    ERROR_IF_MAGIC_FILE(path, EPERM);
++
++    return fuse_fs_getxattr(volicon_get()->next, path, name, value, size);
++}
++
++static int
++volicon_listxattr(const char *path, char *list, size_t size)
++{
++    ERROR_IF_MAGIC_FILE(path, EPERM);
++
++    return fuse_fs_listxattr(volicon_get()->next, path, list, size);
++}
++
++static int
++volicon_removexattr(const char *path, const char *name)
++{
++    ERROR_IF_MAGIC_FILE(path, EPERM);
++
++    return fuse_fs_removexattr(volicon_get()->next, path, name);
++}
++
++static int
++volicon_opendir(const char *path, struct fuse_file_info *fi)
++{
++    ERROR_IF_MAGIC_FILE(path, ENOTDIR);
++
++    return fuse_fs_opendir(volicon_get()->next, path, fi);
++}
++
++static int
++volicon_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
++                off_t offset, struct fuse_file_info *fi)
++{
++    ERROR_IF_MAGIC_FILE(path, ENOTDIR);
++
++    return fuse_fs_readdir(volicon_get()->next, path, buf, filler, offset, fi);
++}
++
++static int
++volicon_releasedir(const char *path, struct fuse_file_info *fi)
++{
++    ERROR_IF_MAGIC_FILE(path, ENOTDIR);
++
++    return fuse_fs_releasedir(volicon_get()->next, path, fi);
++}
++
++static int
++volicon_fsyncdir(const char *path, int isdatasync, struct fuse_file_info *fi)
++{
++    ERROR_IF_MAGIC_FILE(path, ENOTDIR);
++
++    return fuse_fs_fsyncdir(volicon_get()->next, path, isdatasync, fi);
++}
++
++static void *
++volicon_init(struct fuse_conn_info *conn)
++{
++    struct volicon *d = volicon_get();
++
++    fuse_fs_init(d->next, conn);
++
++    return d;
++}
++
++static void
++volicon_destroy(void *data)
++{
++    struct volicon *d = data;
++
++    fuse_fs_destroy(d->next);
++
++    {
++        int ret;
++        size_t len;
++        char *p1, *p2;
++        char dot_path[MAXPATHLEN + 1];
++        uint32_t type, creator;
++
++        if (!d->volicon) {
++            return;
++        }
++
++        len = strlen(d->mntpath) + 2;
++        p1 = dirname(d->mntpath);
++        p2 = basename(d->mntpath);
++        if (!p1 || !p2 || (len > MAXPATHLEN)) {
++            return;
++        }
++
++        ret = snprintf(dot_path, MAXPATHLEN + 1, "%s/._%s", p1, p2);
++        if (ret != len) {
++            return;
++        }
++
++        ret = FinderInfoGet(dot_path, &type, &creator);
++        if (ret) {
++            return;
++        }
++
++        if ((creator == 'FUSE') && (type == 'ROOT')) {
++            (void)unlink(dot_path);
++        }
++    }
++
++    free(d->volicon);
++    free(d->volicon_data);
++    free(d->mntpath);
++    free(d);
++
++    return;
++}
++
++static int
++volicon_access(const char *path, int mask)
++{
++    if (volicon_is_a_magic_file(path)) {
++        if ((mask & W_OK) || (mask & X_OK)) {
++            return -EACCES;
++        }
++
++        return 1;
++    }
++
++    return fuse_fs_access(volicon_get()->next, path, mask);
++}
++
++static int
++volicon_create(const char *path, mode_t mode, struct fuse_file_info *fi)
++{
++    ERROR_IF_MAGIC_FILE(path, EEXIST);
++
++    return fuse_fs_create(volicon_get()->next, path, mode, fi);
++}
++
++static int
++volicon_ftruncate(const char *path, off_t size, struct fuse_file_info *fi)
++{
++    ERROR_IF_MAGIC_FILE(path, EACCES);
++
++    return fuse_fs_ftruncate(volicon_get()->next, path, size, fi);
++}
++
++static int
++volicon_fgetattr(const char *path, struct stat *buf, struct fuse_file_info *fi)
++{
++    int res = 0;
++
++    if (volicon_is_icon_magic_file(path)) {
++
++        memset((void *)buf, 0, sizeof(struct stat));
++
++        buf->st_mode  = S_IFREG | 0444;
++        buf->st_nlink = 1;
++        buf->st_uid   = volicon_get()->volicon_uid;
++        buf->st_gid = 0;
++        buf->st_size  = volicon_get()->volicon_size;
++        buf->st_atime = buf->st_ctime = buf->st_mtime = time(NULL);
++
++    } else {
++        res = fuse_fs_fgetattr(volicon_get()->next, path, buf, fi);
++    }
++
++    return res;
++}
++
++static int
++volicon_lock(const char *path, struct fuse_file_info *fi, int cmd,
++             struct flock *lock)
++{
++    ERROR_IF_MAGIC_FILE(path, ENOTSUP);
++
++    return fuse_fs_lock(volicon_get()->next, path, fi, cmd, lock);
++}
++
++static int
++volicon_utimens(const char *path, const struct timespec ts[2])
++{
++    ERROR_IF_MAGIC_FILE(path, EACCES);
++
++    return fuse_fs_utimens(volicon_get()->next, path, ts);
++}
++
++static int
++volicon_bmap(const char *path, size_t blocksize, uint64_t *idx)
++{
++    ERROR_IF_MAGIC_FILE(path, ENOTSUP);
++
++    return fuse_fs_bmap(volicon_get()->next, path, blocksize, idx);
++}
++
++/*
++ * Listed in the same order as in struct fuse_operations in <fuse.h>
++ */
++static struct fuse_operations volicon_oper = {
++    .getattr     = volicon_getattr,
++    .readlink    = volicon_readlink,
++    .getdir      = volicon_getdir,
++    .mknod       = volicon_mknod,
++    .mkdir       = volicon_mkdir,
++    .unlink      = volicon_unlink,
++    .rmdir       = volicon_rmdir,
++    .symlink     = volicon_symlink,
++    .rename      = volicon_rename,
++    .link        = volicon_link,
++    .chmod       = volicon_chmod,
++    .chown       = volicon_chown,
++    .truncate    = volicon_truncate,
++    .utime       = volicon_utime,
++    .open        = volicon_open,
++    .read        = volicon_read,
++    .write       = volicon_write,
++    .statfs      = volicon_statfs,
++    .flush       = volicon_flush,
++    .release     = volicon_release,
++    .fsync       = volicon_fsync,
++    .setxattr    = volicon_setxattr,
++    .getxattr    = volicon_getxattr,
++    .listxattr   = volicon_listxattr,
++    .removexattr = volicon_removexattr,
++    .opendir     = volicon_opendir,
++    .readdir     = volicon_readdir,
++    .releasedir  = volicon_releasedir,
++    .fsyncdir    = volicon_fsyncdir,
++    .init        = volicon_init,
++    .destroy     = volicon_destroy,
++    .access      = volicon_access,
++    .create      = volicon_create,
++    .ftruncate   = volicon_ftruncate,
++    .fgetattr    = volicon_fgetattr,
++    .lock        = volicon_lock,
++    .utimens     = volicon_utimens,
++    .bmap        = volicon_bmap,
++};
++
++static struct fuse_opt volicon_opts[] = {
++    FUSE_OPT_KEY("-h", 0),
++    FUSE_OPT_KEY("--help", 0),
++    { "volicon=%s", offsetof(struct volicon, volicon), 0 },
++    FUSE_OPT_END
++};
++
++static void
++volicon_help(void)
++{
++    fprintf(stderr,
++            "    -o volicon=<icon file> display volume with custom icon\n");
++}
++
++static int
++volicon_opt_proc(void *data, const char *arg, int key,
++                 struct fuse_args *outargs)
++{
++    (void)data;
++    (void)arg;
++    (void)outargs;
++
++    if (!key) {
++        volicon_help();
++        return -1;
++    }
++
++    return 1;
++}
++
++typedef struct attrlist attrlist_t;
++
++struct FinderInfoAttrBuf {
++    unsigned long length;
++    fsobj_type_t  objType;
++    char          finderInfo[32];
++};
++typedef struct FinderInfoAttrBuf FinderInfoAttrBuf;
++
++static struct fuse_fs *
++volicon_new(struct fuse_args *args, struct fuse_fs *next[])
++{
++    int ret;
++    int voliconfd = -1;
++    struct stat sb;
++    struct fuse_fs *fs;
++    struct volicon *d;
++
++    d = calloc(1, sizeof(*d));
++    if (d == NULL) {
++        fprintf(stderr, "volicon: memory allocation failed\n");
++        return NULL;
++    }
++
++    if (*_NSGetArgc() > 1) {
++        d->mntpath = strdup((*_NSGetArgv())[1]);
++        if (!d->mntpath)
++            goto out_free;
++    }
++
++    if (fuse_opt_parse(args, d, volicon_opts, volicon_opt_proc) == -1) {
++        goto out_free;
++    }
++
++    if (!next[0] || next[1]) {
++        fprintf(stderr, "volicon: exactly one next filesystem required\n");
++        goto out_free;
++    }
++
++    if (!d->volicon) {
++        fprintf(stderr, "volicon: missing 'volicon' option\n");
++        goto out_free;
++    }
++
++    voliconfd = open(d->volicon, O_RDONLY);
++    if (voliconfd < 0) {
++        fprintf(stderr, "volicon: failed to access volume icon file (%d)\n",
++                errno);
++        goto out_free;
++    }
++
++    ret = fstat(voliconfd, &sb);
++    if (ret) {
++        fprintf(stderr, "volicon: failed to stat volume icon file (%d)\n",
++                errno);
++        goto out_free;
++    }
++
++    if (sb.st_size > (VOLICON_ICON_MAXSIZE)) {
++        fprintf(stderr, "volicon: size limit exceeded for volume icon file\n");
++        goto out_free;
++    }
++
++    d->volicon_data = malloc(sb.st_size);
++    if (!d->volicon_data) {
++        fprintf(stderr,
++                "volicon: failed to allocate memory for volume icon data\n");
++        goto out_free;
++    }
++
++    ret = read(voliconfd, d->volicon_data, sb.st_size);
++    if (ret != sb.st_size) {
++        fprintf(stderr, "volicon: failed to read data from volume icon file\n");
++        goto out_free;
++    }
++
++    close(voliconfd);
++    voliconfd = -1;
++
++    d->volicon_size = sb.st_size;
++    d->volicon_uid = getuid();
++
++    {
++        size_t len = strlen(d->mntpath) + 2;
++        char *p1 = dirname(d->mntpath);
++        char *p2 = basename(d->mntpath);
++        char dot_path[MAXPATHLEN + 1];
++        int dot_fd;
++        if (p1 && p2 && (len <= MAXPATHLEN)) {
++            ret = snprintf(dot_path, MAXPATHLEN + 1, "%s/._%s", p1, p2);
++            if (ret == (int)len) {
++                dot_fd = open(dot_path, O_RDWR | O_CREAT | O_EXCL, 0644);
++                if (dot_fd >= 0) {
++                    uint32_t creator = VOLICON_CREATOR;
++                    uint32_t type = VOLICON_TYPE_ROOT;
++                    /* assume no interruption... just best effort */
++                    (void)write(dot_fd, dotudot_data, DOTUDOT_DATA_LEN);
++                    close(dot_fd);
++                    FinderInfoSet(dot_path, &type, &creator);
++                }
++            }
++        }
++    }
++
++    d->next = next[0];
++
++    fs = fuse_fs_new(&volicon_oper, sizeof(volicon_oper), d);
++    if (!fs) {
++        goto out_free;
++    }
++
++    return fs;
++
++ out_free:
++
++    if (d->volicon_data) {
++        free(d->volicon_data);
++    }
++ 
++    if (voliconfd >= 0) {
++        close(voliconfd);
++    }
++
++    if (d->volicon) {
++        free(d->volicon);
++    }
++
++    if (d->mntpath) {
++        free(d->mntpath);
++    }
++
++    free(d);
++
++    return NULL;
++}
++
++static int
++FinderInfoSet(const char *path, uint32_t *type, uint32_t *creator)
++{
++    int               ret;
++    attrlist_t        attrList;
++    FinderInfoAttrBuf attrBuf;
++
++    attrList.commonattr = ATTR_CMN_FNDRINFO;
++
++    memset(&attrList, 0, sizeof(attrList));
++    attrList.bitmapcount = ATTR_BIT_MAP_COUNT;
++    attrList.commonattr  = ATTR_CMN_OBJTYPE | ATTR_CMN_FNDRINFO;
++    
++    ret = getattrlist(path, &attrList, &attrBuf, sizeof(attrBuf), 0);
++    if (ret != 0) {
++        return errno;
++    }   
++    
++    if ((ret == 0) && (attrBuf.objType != VREG) ) {
++        return EINVAL;
++    } else {
++         uint32_t be_type = htonl(*type);
++         uint32_t be_creator = htonl(*creator);
++         memcpy(&attrBuf.finderInfo[0], &be_type,    sizeof(uint32_t));
++         memcpy(&attrBuf.finderInfo[4], &be_creator, sizeof(uint32_t));
++         attrList.commonattr = ATTR_CMN_FNDRINFO;
++         ret = setattrlist(path, &attrList, attrBuf.finderInfo,
++                           sizeof(attrBuf.finderInfo), 0);
++    }
++
++    return ret;
++}
++
++static int
++FinderInfoGet(const char *path, uint32_t *type, uint32_t *creator)
++{
++    int               ret;
++    attrlist_t        attrList;
++    FinderInfoAttrBuf attrBuf;
++
++    if (!type || !creator) {
++        return EINVAL;
++    }
++
++    *type = 0;
++    *creator = 0;
++
++    memset(&attrList, 0, sizeof(attrList));
++    attrList.bitmapcount = ATTR_BIT_MAP_COUNT;
++    attrList.commonattr  = ATTR_CMN_OBJTYPE | ATTR_CMN_FNDRINFO;
++
++    ret = getattrlist(path, &attrList, &attrBuf, sizeof(attrBuf), 0);
++    if (ret != 0) {
++        return errno;
++    }
++
++    if ((ret == 0) && (attrBuf.objType != VREG) ) {
++        return EINVAL;
++    } else {
++        memcpy(type, &attrBuf.finderInfo[0], sizeof(uint32_t));
++        memcpy(creator, &attrBuf.finderInfo[4], sizeof(uint32_t));
++    }
++
++    *type = ntohl(*type);
++    *creator = ntohl(*creator);
++
++    return 0;
++}
++
++FUSE_REGISTER_MODULE(volicon, volicon_new);
 diff -Naur old/lib/mount.c new/lib/mount.c
 --- old/lib/mount.c	2007-07-02 04:32:17.000000000 -0700
-+++ new/lib/mount.c	2007-07-05 23:45:07.000000000 -0700
++++ new/lib/mount.c	2007-07-13 23:54:38.000000000 -0700
 @@ -579,5 +579,7 @@
      return res;
  }
@@ -517,7 +1344,7 @@ diff -Naur old/lib/mount.c new/lib/mount.c
 +#endif
 diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 --- old/lib/mount_bsd.c	2006-05-03 07:46:04.000000000 -0700
-+++ new/lib/mount_bsd.c	2007-07-06 00:08:27.000000000 -0700
++++ new/lib/mount_bsd.c	2007-07-13 23:54:42.000000000 -0700
 @@ -6,6 +6,12 @@
      See the file COPYING.LIB.
  */
@@ -531,7 +1358,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
  #include "fuse_i.h"
  #include "fuse_opt.h"
  
-@@ -21,8 +27,183 @@
+@@ -21,8 +27,186 @@
  #include <string.h>
  #include <paths.h>
  
@@ -558,10 +1385,13 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 +    char *c = NULL;
 +    struct utsname u;
 +    size_t oldlen;
++    int mib[2];
 +
 +    oldlen = sizeof(u.release);
 +
-+    ret = sysctlbyname("kern.osrelease", u.release, &oldlen, NULL, 0);
++    mib[0] = CTL_KERN;
++    mib[1] = KERN_OSRELEASE;
++    ret = sysctl(mib, 2, u.release, &oldlen, NULL, 0);
 +    if (ret != 0) {
 +        return -1;
 +    }
@@ -715,7 +1545,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
  
  enum {
      KEY_ALLOW_ROOT,
-@@ -30,6 +211,11 @@
+@@ -30,6 +214,11 @@
      KEY_HELP,
      KEY_VERSION,
      KEY_KERN
@@ -727,7 +1557,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
  };
  
  struct mount_opts {
-@@ -108,11 +294,46 @@
+@@ -108,11 +297,46 @@
      FUSE_OPT_KEY("noprivate",           KEY_KERN),
      FUSE_OPT_KEY("noneglect_shares",    KEY_KERN),
      FUSE_OPT_KEY("nopush_symlinks_in",  KEY_KERN),
@@ -774,7 +1604,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
      FUSE_OPT_END
  };
  
-@@ -149,6 +370,18 @@
+@@ -149,6 +373,18 @@
      case KEY_KERN:
          return fuse_opt_add_opt(&mo->kernel_opts, arg);
  
@@ -793,7 +1623,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
      case KEY_HELP:
          mount_help();
          mo->ishelp = 1;
-@@ -199,8 +432,21 @@
+@@ -199,8 +435,21 @@
      if (rv)
          return;
  
@@ -815,7 +1645,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
  }
  
  void fuse_kern_unmount(const char *mountpoint, int fd)
-@@ -222,13 +468,29 @@
+@@ -222,13 +471,29 @@
      if (*ep != '\0')
          return;
  
@@ -845,7 +1675,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
      int ibg, len;
  
      len = sizeof(ibg);
-@@ -237,6 +499,7 @@
+@@ -237,6 +502,7 @@
          return 0;
  
      return ibg;
@@ -853,7 +1683,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
  }
  
  
-@@ -247,6 +510,55 @@
+@@ -247,6 +513,55 @@
      char *fdnam, *dev;
      int pid;
  
@@ -909,7 +1739,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
      fdnam = getenv("FUSE_DEV_FD");
  
      if (fdnam) {
-@@ -267,12 +579,29 @@
+@@ -267,12 +582,29 @@
  
      dev = getenv("FUSE_DEV_NAME");
  
@@ -945,7 +1775,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
      }
  
  mount:
-@@ -322,11 +651,31 @@
+@@ -322,11 +654,31 @@
              perror("fuse: failed to exec mount program");
              exit(1);
          }
@@ -977,7 +1807,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
  
  out:
      return fd;
-@@ -360,4 +709,6 @@
+@@ -360,4 +712,6 @@
      return res;
  }
  
@@ -986,7 +1816,7 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 +#endif
 diff -Naur old/lib/ulockmgr.c new/lib/ulockmgr.c
 --- old/lib/ulockmgr.c	2007-07-02 04:32:17.000000000 -0700
-+++ new/lib/ulockmgr.c	2007-07-05 23:45:07.000000000 -0700
++++ new/lib/ulockmgr.c	2007-07-13 23:54:38.000000000 -0700
 @@ -18,9 +18,19 @@
  #include <assert.h>
  #include <signal.h>
@@ -1023,6 +1853,6 @@ diff -Naur old/lib/ulockmgr.c new/lib/ulockmgr.c
  
 diff -Naur old/run_configure.sh new/run_configure.sh
 --- old/run_configure.sh	1969-12-31 16:00:00.000000000 -0800
-+++ new/run_configure.sh	2007-07-05 23:45:07.000000000 -0700
++++ new/run_configure.sh	2007-07-13 23:54:38.000000000 -0700
 @@ -0,0 +1 @@
 +CFLAGS="-D__FreeBSD__=10 -D_POSIX_C_SOURCE=200112L -O -g -arch i386 -arch ppc -isysroot /Developer/SDKs/MacOSX10.4u.sdk" LDFLAGS="-arch i386 -arch ppc -framework CoreFoundation" ./configure --prefix=/usr/local --disable-dependency-tracking
