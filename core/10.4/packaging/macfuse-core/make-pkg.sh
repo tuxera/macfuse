@@ -149,7 +149,7 @@ then
 fi
 
 # Convert to a read-only compressed dmg.
-hdiutil convert -format UDZO "$SCRATCH_DMG" -o "$FINAL_DMG"
+hdiutil convert -imagekey zlib-level=9 -format UDZO "$SCRATCH_DMG" -o "$FINAL_DMG"
 if [ $? -ne 0 ]
 then
     echo "Failed to convert disk image."
