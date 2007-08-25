@@ -24,14 +24,14 @@ function is_safe_prefix() {
       # We don't try to remove the pkgconfig directory.
       return 0;
       ;; 
-    "$INSTALL_VOLUME"/./usr/local/bin/*                        |  \
-    "$INSTALL_VOLUME"/./usr/local/lib/*                        |  \
-    "$INSTALL_VOLUME"/./usr/local/include/*                    |  \
-    "$INSTALL_VOLUME"/./Library/Extensions/fusefs.kext         |  \
-    "$INSTALL_VOLUME"/./Library/Extensions/fusefs.kext/*       |  \
-    "$INSTALL_VOLUME"/./System/Library/Filesystems/fusefs.fs   |  \
-    "$INSTALL_VOLUME"/./System/Library/Filesystems/fusefs.fs/* |  \
-    "$INSTALL_VOLUME"/Library/Receipts/MacFUSE\ Core.pkg     |  \
+    "$INSTALL_VOLUME"/./usr/local/bin/*                     |  \
+    "$INSTALL_VOLUME"/./usr/local/lib/*                     |  \
+    "$INSTALL_VOLUME"/./usr/local/include/*                 |  \
+    "$INSTALL_VOLUME"/./Library/Extensions/fusefs.kext      |  \
+    "$INSTALL_VOLUME"/./Library/Extensions/fusefs.kext/*    |  \
+    "$INSTALL_VOLUME"/./Library/Filesystems/fusefs.fs       |  \
+    "$INSTALL_VOLUME"/./Library/Filesystems/fusefs.fs/*     |  \
+    "$INSTALL_VOLUME"/Library/Receipts/MacFUSE\ Core.pkg    |  \
     "$INSTALL_VOLUME"/Library/Receipts/MacFUSE\ Core.pkg/*)
       # These are all ok to process.
       return 1;

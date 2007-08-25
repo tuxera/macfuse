@@ -81,8 +81,11 @@ then
   exit 1
 fi
 
+# Fix symlinks
+sudo chmod -h 755 `find $DISTRIBUTION_FOLDER/usr/local/lib -type l`
+
 # Copy the uninstall script
-UNINSTALL_DST="$DISTRIBUTION_FOLDER/System/Library/Filesystems/fusefs.fs/Support/uninstall-macfuse-core.sh"
+UNINSTALL_DST="$DISTRIBUTION_FOLDER/Library/Filesystems/fusefs.fs/Support/uninstall-macfuse-core.sh"
 sudo cp "$UNINSTALL_SCRIPT" "$UNINSTALL_DST"
 sudo chmod 755 "$UNINSTALL_DST"
 sudo chown root:wheel "$UNINSTALL_DST"
@@ -123,7 +126,7 @@ fi
 VOLUME_PATH="/Volumes/$VOLUME_NAME"
 
 # Copy over the package.
-sudo cp -pR "$OUTPUT_PACKAGE" "$VOLUME_PATH"
+sudo cp -pRX "$OUTPUT_PACKAGE" "$VOLUME_PATH"
 if [ $? -ne 0 ]
 then
     hdiutil detach "$VOLUME_PATH"
@@ -131,7 +134,7 @@ then
 fi
 
 # Set the custom icon.
-sudo cp -pR "$INSTALL_RESOURCES/.VolumeIcon.icns" "$VOLUME_PATH"/.VolumeIcon.icns
+sudo cp -pRX "$INSTALL_RESOURCES/.VolumeIcon.icns" "$VOLUME_PATH"/.VolumeIcon.icns
 sudo /Developer/Tools/SetFile -a C "$VOLUME_PATH"
 
 # Copy over the license file.

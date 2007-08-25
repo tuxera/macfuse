@@ -4,7 +4,7 @@
 		activeArchitecture = i386;
 		activeBuildConfigurationName = Release;
 		activeExecutable = 540966F60C33BEC900F5E227 /* load_fusefs */;
-		activeTarget = 32A4FEB80562C75700D090E7 /* fusefs */;
+		activeTarget = 540966160C33B4CB00F5E227 /* mount_fusefs */;
 		addToTargets = (
 			54D47B7F0B4F610000A8FE1C /* load_fusefs */,
 		);
@@ -64,7 +64,7 @@
 				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
-					602,
+					626,
 					20,
 					48,
 					43,
@@ -115,9 +115,9 @@
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
 					20,
-					578,
+					602,
 					20,
-					48.1626,
+					48,
 					43,
 					43,
 					20,
@@ -138,7 +138,7 @@
 				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
-					562,
+					586,
 					60,
 					20,
 					48,
@@ -155,8 +155,8 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 207179593;
-			PBXWorkspaceStateSaveDate = 207179593;
+			PBXPerProjectTemplateStateSaveDate = 209546450;
+			PBXWorkspaceStateSaveDate = 209546450;
 		};
 		sourceControlManager = 5494A9280ACA12160020068B /* Source Control */;
 		userBuildSettings = {
@@ -178,6 +178,13 @@
 		executables = (
 			540966F30C33BEC900F5E227 /* mount_fusefs */,
 		);
+	};
+	540966620C33B60B00F5E227 /* mount_fusefs.c */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {688, 6424}}";
+			sepNavSelRange = "{23964, 0}";
+			sepNavVisRange = "{4941, 282}";
+		};
 	};
 	540966F30C33BEC900F5E227 /* mount_fusefs */ = {
 		isa = PBXExecutable;
