@@ -102,7 +102,7 @@ diff -Naur old/example/fusexmp.c new/example/fusexmp.c
      return 0;
 diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
 --- old/example/fusexmp_fh.c	2007-05-20 04:05:43.000000000 -0700
-+++ new/example/fusexmp_fh.c	2007-08-28 01:45:10.000000000 -0700
++++ new/example/fusexmp_fh.c	2007-08-28 01:48:47.000000000 -0700
 @@ -29,13 +29,27 @@
  #include <sys/xattr.h>
  #endif
@@ -182,7 +182,7 @@ diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
      if (res == -1)
          return -errno;
      return 0;
-@@ -384,7 +430,20 @@
+@@ -384,7 +430,19 @@
  static int xmp_getxattr(const char *path, const char *name, char *value,
                      size_t size)
  {
@@ -193,7 +193,6 @@ diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
 +        memcpy(new_name, A_KAUTH_FILESEC_XATTR, sizeof(A_KAUTH_FILESEC_XATTR));
 +        memcpy(new_name, G_PREFIX, sizeof(G_PREFIX) - 1);
 +        res = getxattr(path, new_name, value, size, 0, 0);
-+fprintf(stderr, "%d = %s, %s\n", res, name, new_name);
 +    } else {
 +        res = getxattr(path, name, value, size, 0, 0);
 +    }
@@ -203,7 +202,7 @@ diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
      if (res == -1)
          return -errno;
      return res;
-@@ -392,7 +451,32 @@
+@@ -392,7 +450,32 @@
  
  static int xmp_listxattr(const char *path, char *list, size_t size)
  {
@@ -236,7 +235,7 @@ diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
      if (res == -1)
          return -errno;
      return res;
-@@ -400,7 +484,19 @@
+@@ -400,7 +483,19 @@
  
  static int xmp_removexattr(const char *path, const char *name)
  {
@@ -256,7 +255,7 @@ diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
      if (res == -1)
          return -errno;
      return 0;
-@@ -416,7 +512,20 @@
+@@ -416,7 +511,20 @@
                         sizeof(fi->lock_owner));
  }
  
