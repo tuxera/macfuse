@@ -1052,7 +1052,7 @@ diff -Naur old/lib/modules/volicon.c new/lib/modules/volicon.c
 +            return -EACCES;
 +        }
 +
-+        return 1;
++        return 0;
 +    }
 +
 +    return fuse_fs_access(volicon_get()->next, path, mask);
