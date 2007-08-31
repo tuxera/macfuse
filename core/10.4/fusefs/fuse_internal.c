@@ -382,8 +382,13 @@ fuse_internal_readdir_processdata(vnode_t          vp,
          * }
          */
 
-        if (!fudge->namelen || fudge->namelen > MAXNAMLEN) {
+        if (!fudge->namelen) {
             err = EINVAL;
+            break;
+        }
+
+        if (fudge->namelen > MAXNAMLEN) {
+            err = EIO;
             break;
         }
 
