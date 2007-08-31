@@ -1237,6 +1237,7 @@ calldaemon:
         nid = ((struct fuse_entry_out *)fdi.answ)->nodeid;
         size = ((struct fuse_entry_out *)fdi.answ)->attr.size;
         if (!nid) {
+            fdi.answ_stat = ENOENT; /* XXX negative_timeout */
             lookup_err = ENOENT;
         } else if (nid == FUSE_ROOT_ID) {
             lookup_err = EINVAL;
@@ -2021,7 +2022,7 @@ fuse_vnop_pathconf(struct vnop_pathconf_args *ap)
             *retvalPtr = FUSE_LINK_MAX;
             break;
         case _PC_NAME_MAX:
-            *retvalPtr = __DARWIN_MAXNAMLEN;
+            *retvalPtr = MAXNAMLEN;
             break;
         case _PC_PATH_MAX:
             *retvalPtr = MAXPATHLEN;
