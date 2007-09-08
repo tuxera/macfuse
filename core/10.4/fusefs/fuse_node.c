@@ -13,9 +13,9 @@
 void
 FSNodeScrub(struct fuse_vnode_data *fvdat)
 {
-    lck_mtx_destroy(fvdat->createlock, fuse_lock_group);
-    lck_rw_destroy(fvdat->nodelock, fuse_lock_group);
-    lck_rw_destroy(fvdat->truncatelock, fuse_lock_group);
+    lck_mtx_free(fvdat->createlock, fuse_lock_group);
+    lck_rw_free(fvdat->nodelock, fuse_lock_group);
+    lck_rw_free(fvdat->truncatelock, fuse_lock_group);
     fvdat->fMagic = kFSNodeBadMagic;
 }       
 
