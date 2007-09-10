@@ -1,6 +1,6 @@
 diff -Naur old/README.MacFUSE new/README.MacFUSE
 --- old/README.MacFUSE	1969-12-31 16:00:00.000000000 -0800
-+++ new/README.MacFUSE	2007-08-28 01:44:31.000000000 -0700
++++ new/README.MacFUSE	2007-09-09 22:35:37.000000000 -0700
 @@ -0,0 +1,7 @@
 +MacFUSE Project Page:
 +
@@ -11,7 +11,7 @@ diff -Naur old/README.MacFUSE new/README.MacFUSE
 +CFLAGS="-D__FreeBSD__=10 -D_POSIX_C_SOURCE=200112L -O -g -arch i386 -arch ppc -isysroot /Developer/SDKs/MacOSX10.5.sdk" LDFLAGS="-arch i386 -arch ppc -framework CoreFoundation" ./configure --prefix=/usr/local --disable-dependency-tracking
 diff -Naur old/configure new/configure
 --- old/configure	2007-07-02 04:49:44.000000000 -0700
-+++ new/configure	2007-08-28 01:44:31.000000000 -0700
++++ new/configure	2007-09-09 22:35:37.000000000 -0700
 @@ -11293,7 +11293,8 @@
  fi
  
@@ -22,9 +22,28 @@ diff -Naur old/configure new/configure
  LIBS=
  { echo "$as_me:$LINENO: checking for library containing dlopen" >&5
  echo $ECHO_N "checking for library containing dlopen... $ECHO_C" >&6; }
+diff -Naur old/configure.in new/configure.in
+--- old/configure.in	2007-07-02 04:32:15.000000000 -0700
++++ new/configure.in	2007-09-09 22:35:37.000000000 -0700
+@@ -16,6 +16,7 @@
+ case $target_os in
+      *linux*)	arch=linux;;
+      *bsd*)	arch=bsd;;
++     *darwin*)	arch=darwin;;
+      *)		arch=unknown;;
+ esac
+ 
+@@ -97,6 +98,7 @@
+ 
+ AM_CONDITIONAL(LINUX, test "$arch" = linux)
+ AM_CONDITIONAL(BSD, test "$arch" = bsd)
++AM_CONDITIONAL(DARWIN, test "$arch" = darwin)
+ 
+ AC_CONFIG_FILES([fuse.pc Makefile lib/Makefile util/Makefile example/Makefile include/Makefile])
+ AC_OUTPUT
 diff -Naur old/example/fusexmp.c new/example/fusexmp.c
 --- old/example/fusexmp.c	2007-05-20 04:05:42.000000000 -0700
-+++ new/example/fusexmp.c	2007-08-28 01:44:31.000000000 -0700
++++ new/example/fusexmp.c	2007-09-09 22:35:37.000000000 -0700
 @@ -47,8 +47,25 @@
      int res;
  
@@ -102,7 +121,7 @@ diff -Naur old/example/fusexmp.c new/example/fusexmp.c
      return 0;
 diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
 --- old/example/fusexmp_fh.c	2007-05-20 04:05:43.000000000 -0700
-+++ new/example/fusexmp_fh.c	2007-08-28 01:48:47.000000000 -0700
++++ new/example/fusexmp_fh.c	2007-09-09 22:35:37.000000000 -0700
 @@ -29,13 +29,27 @@
  #include <sys/xattr.h>
  #endif
@@ -278,7 +297,7 @@ diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
      .access	= xmp_access,
 diff -Naur old/fuse.pc.in new/fuse.pc.in
 --- old/fuse.pc.in	2006-12-02 05:38:07.000000000 -0800
-+++ new/fuse.pc.in	2007-08-28 01:44:31.000000000 -0700
++++ new/fuse.pc.in	2007-09-09 22:35:37.000000000 -0700
 @@ -4,7 +4,7 @@
  includedir=@includedir@
  
@@ -291,7 +310,7 @@ diff -Naur old/fuse.pc.in new/fuse.pc.in
 +Cflags: -I${includedir}/fuse -D__FreeBSD__=10 -D_FILE_OFFSET_BITS=64
 diff -Naur old/include/fuse.h new/include/fuse.h
 --- old/include/fuse.h	2007-07-02 04:32:15.000000000 -0700
-+++ new/include/fuse.h	2007-08-28 01:44:31.000000000 -0700
++++ new/include/fuse.h	2007-09-09 22:35:37.000000000 -0700
 @@ -817,4 +817,22 @@
  }
  #endif
@@ -315,19 +334,31 @@ diff -Naur old/include/fuse.h new/include/fuse.h
 +#endif
 +
  #endif /* _FUSE_H_ */
+diff -Naur old/lib/Makefile.am new/lib/Makefile.am
+--- old/lib/Makefile.am	2007-04-25 09:06:46.000000000 -0700
++++ new/lib/Makefile.am	2007-09-09 22:35:37.000000000 -0700
+@@ -7,6 +7,8 @@
+ 
+ if BSD
+ mount_source = mount_bsd.c
++else if DARWIN
++mount_source = mount_darwin.c
+ else
+ mount_source = mount.c mount_util.c mount_util.h
+ endif
 diff -Naur old/lib/Makefile.in new/lib/Makefile.in
 --- old/lib/Makefile.in	2007-07-02 04:49:57.000000000 -0700
-+++ new/lib/Makefile.in	2007-08-28 01:44:31.000000000 -0700
++++ new/lib/Makefile.in	2007-09-09 22:35:37.000000000 -0700
 @@ -61,13 +61,23 @@
  	fuse_mt.c fuse_opt.c fuse_session.c fuse_signals.c helper.c \
  	modules/subdir.c modules/iconv.c mount.c mount_util.c \
  	mount_util.h mount_bsd.c
 +ifeq (@host_vendor@, apple)
-+am__libfuse_la_SOURCES_DIST += modules/volicon.c
++am__libfuse_la_SOURCES_DIST += modules/volicon.c mount_darwin.c
 +endif
  @ICONV_TRUE@am__objects_1 = iconv.lo
 +ifeq (@host_vendor@, apple)
-+am__objects_1 = mount_bsd.lo
++am__objects_1 = mount_darwin.lo
 +else
  @BSD_FALSE@am__objects_2 = mount.lo mount_util.lo
  @BSD_TRUE@am__objects_2 = mount_bsd.lo
@@ -347,7 +378,7 @@ diff -Naur old/lib/Makefile.in new/lib/Makefile.in
  
  lib_LTLIBRARIES = libfuse.la libulockmgr.la
 +ifeq (@host_vendor@, apple)
-+mount_source = mount_bsd.c
++mount_source = mount_darwin.c
 +else
  @BSD_FALSE@mount_source = mount.c mount_util.c mount_util.h
  @BSD_TRUE@mount_source = mount_bsd.c
@@ -369,17 +400,18 @@ diff -Naur old/lib/Makefile.in new/lib/Makefile.in
  
  libulockmgr_la_SOURCES = ulockmgr.c
  libulockmgr_la_LDFLAGS = -version-number 1:0:1
-@@ -323,6 +342,9 @@
+@@ -323,6 +342,10 @@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mount_util.Plo@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/subdir.Plo@am__quote@
  @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ulockmgr.Plo@am__quote@
 +ifeq (@host_vendor@, apple)
 +@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/volicon.Plo@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mount_darwin.Plo@am__quote@
 +endif
  
  .c.o:
  @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
-@@ -359,6 +381,15 @@
+@@ -359,6 +382,15 @@
  @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
  @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o iconv.lo `test -f 'modules/iconv.c' || echo '$(srcdir)/'`modules/iconv.c
  
@@ -397,7 +429,7 @@ diff -Naur old/lib/Makefile.in new/lib/Makefile.in
  
 diff -Naur old/lib/fuse.c new/lib/fuse.c
 --- old/lib/fuse.c	2007-07-02 04:33:08.000000000 -0700
-+++ new/lib/fuse.c	2007-08-28 01:44:31.000000000 -0700
++++ new/lib/fuse.c	2007-09-09 22:35:37.000000000 -0700
 @@ -1172,6 +1172,16 @@
  
  static void curr_time(struct timespec *now)
@@ -447,24 +479,20 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
 +#endif
 diff -Naur old/lib/fuse_kern_chan.c new/lib/fuse_kern_chan.c
 --- old/lib/fuse_kern_chan.c	2007-05-20 04:05:46.000000000 -0700
-+++ new/lib/fuse_kern_chan.c	2007-08-28 01:44:31.000000000 -0700
-@@ -75,9 +75,23 @@
++++ new/lib/fuse_kern_chan.c	2007-09-09 22:53:42.000000000 -0700
+@@ -75,9 +75,19 @@
      return 0;
  }
  
 +#if (__FreeBSD__ >= 10)
-+
-+#include <sys/ioctl.h>
-+
-+/* should include <common/fuse_ioctl.h> for this */
-+#define FUSEDEVIOCDAEMONISDYING       _IOW('F', 3,  u_int32_t)
++#include "macfuse.h"
 +#endif
 +
  static void fuse_kern_chan_destroy(struct fuse_chan *ch)
  {
 +#if (__FreeBSD__ >= 10)
 +    int fd = fuse_chan_fd(ch);
-+    (void)ioctl(fd, FUSEDEVIOCDAEMONISDYING, &fd);
++    (void)ioctl(fd, FUSEDEVIOCSETDAEMONDEAD, &fd);
 +    close(fd);
 +#else
      close(fuse_chan_fd(ch));
@@ -474,8 +502,8 @@ diff -Naur old/lib/fuse_kern_chan.c new/lib/fuse_kern_chan.c
  #define MIN_BUFSIZE 0x21000
 diff -Naur old/lib/fuse_loop_mt.c new/lib/fuse_loop_mt.c
 --- old/lib/fuse_loop_mt.c	2007-07-02 04:32:17.000000000 -0700
-+++ new/lib/fuse_loop_mt.c	2007-08-28 01:44:31.000000000 -0700
-@@ -15,10 +15,33 @@
++++ new/lib/fuse_loop_mt.c	2007-09-09 22:41:27.000000000 -0700
+@@ -15,10 +15,139 @@
  #include <string.h>
  #include <unistd.h>
  #include <signal.h>
@@ -487,32 +515,147 @@ diff -Naur old/lib/fuse_loop_mt.c new/lib/fuse_loop_mt.c
  
 +#if (__FreeBSD__ >= 10)
 +
-+#undef sem_t
++/*
++ * Half-baked makeshift implementation (cancelable).
++ */
 +
-+#undef sem_init
-+#undef sem_destroy
-+#undef sem_post
-+#undef sem_wait
++typedef struct {
++    int32_t         value;
++    int32_t         wakeups;
++    pthread_mutex_t mutex;
++    pthread_cond_t  cond;
++} fuse_sem_t;
 +
-+#include <mach/mach.h>
++typedef fuse_sem_t sem_t;
 +
-+typedef semaphore_t sem_t;
++static int32_t SEM_VALUE_DEAD = 0xdeadbeef;
++static int32_t SEM_VALUE_MAX  = 32767;
 +
-+#define sem_init(s, a, b) \
-+    semaphore_create(mach_task_self(), (s), SYNC_POLICY_FIFO, 0)
-+#define sem_destroy(s) semaphore_destroy(mach_task_self(), (semaphore_t)*(s))
-+#define sem_post(s)    semaphore_signal((semaphore_t)*(s))
-+#define sem_wait(s)    semaphore_wait((semaphore_t)*(s))
++/* http://www.opengroup.org/onlinepubs/007908799/xsh/sem_init.html */
++int
++fuse_sem_init(fuse_sem_t *sem, int pshared, int value)
++{
 +
-+#endif
++    if (value > SEM_VALUE_MAX) {
++        errno = EINVAL;
++        return -1;
++    }
++
++    if (pshared) {
++        errno = ENOSYS;
++        return -1;
++    }
++
++    if (!sem) {
++        errno = EINVAL;
++        return -1;
++    }
++
++    sem->value = value;
++    sem->wakeups = 0;
++    pthread_cond_init(&sem->cond, NULL);
++    pthread_mutex_init(&sem->mutex, NULL);
++
++    return 0;
++}
++
++/* http://www.opengroup.org/onlinepubs/007908799/xsh/sem_destroy.html */
++int
++fuse_sem_destroy(fuse_sem_t *sem)
++{
++    int ret;
++
++    if (!sem) {
++        errno = EINVAL;
++        return -1;
++    }
++
++    ret = pthread_mutex_lock(&sem->mutex);
++    if (ret) {
++        errno = ret;
++        return -1;
++    }
++
++    if (sem->value < 0) {
++        pthread_mutex_unlock(&sem->mutex);
++        errno = EBUSY;
++        return -1;
++    }
++
++    pthread_cond_destroy(&sem->cond);
++
++    sem->value = SEM_VALUE_DEAD;
++
++    pthread_mutex_unlock(&sem->mutex);
++    pthread_mutex_destroy(&sem->mutex);
++
++    return 0;
++}
++
++/* http://www.opengroup.org/onlinepubs/007908799/xsh/sem_wait.html */
++int
++fuse_sem_wait(fuse_sem_t *sem)
++{
++    if (!sem || (sem->value == SEM_VALUE_DEAD)) {
++        errno = EINVAL;
++        return -1;
++    }
++
++    pthread_mutex_lock(&sem->mutex);
++    sem->value--;
++    if (sem->value < 0) {
++        do {
++            /*
++             * XXX: This is not really supposed to fail except for some EINVALs
++             *      that shouldn't apply here.
++             */
++            (void)pthread_cond_wait(&sem->cond, &sem->mutex);
++        } while (sem->wakeups < 1);
++        sem->wakeups--;
++    }
++    pthread_mutex_unlock(&sem->mutex);
++
++    return 0;
++}
++
++/* http://www.opengroup.org/onlinepubs/007908799/xsh/sem_post.html */
++int
++fuse_sem_post(fuse_sem_t *sem)
++{
++    if (!sem || (sem->value == SEM_VALUE_DEAD)) {
++        errno = EINVAL;
++        return -1;
++    }
++
++    pthread_mutex_lock(&sem->mutex);
++    sem->value++;
++    if (sem->value <= 0) {
++        sem->wakeups++;
++        (void)pthread_cond_signal(&sem->cond);
++    }
++    pthread_mutex_unlock(&sem->mutex);
++
++    return 0;
++}
++
++#endif /* semaphore */
 +
  struct fuse_worker {
      struct fuse_worker *prev;
      struct fuse_worker *next;
 diff -Naur old/lib/fuse_lowlevel.c new/lib/fuse_lowlevel.c
 --- old/lib/fuse_lowlevel.c	2007-07-02 04:32:17.000000000 -0700
-+++ new/lib/fuse_lowlevel.c	2007-08-28 01:44:31.000000000 -0700
-@@ -1407,9 +1407,11 @@
++++ new/lib/fuse_lowlevel.c	2007-09-09 22:35:37.000000000 -0700
+@@ -450,6 +450,8 @@
+ 
+     if (req->f->op.forget)
+         req->f->op.forget(req, nodeid, arg->nlookup);
++    else
++        fuse_reply_none(req);
+ }
+ 
+ static void do_getattr(fuse_req_t req, fuse_ino_t nodeid, const void *inarg)
+@@ -1407,9 +1409,11 @@
      return 0;
  }
  
@@ -524,7 +667,7 @@ diff -Naur old/lib/fuse_lowlevel.c new/lib/fuse_lowlevel.c
  
  #else /* __FreeBSD__ */
  
-@@ -1433,4 +1435,6 @@
+@@ -1433,4 +1437,6 @@
                                      op_size, userdata);
  }
  
@@ -533,7 +676,7 @@ diff -Naur old/lib/fuse_lowlevel.c new/lib/fuse_lowlevel.c
 +#endif
 diff -Naur old/lib/fuse_mt.c new/lib/fuse_mt.c
 --- old/lib/fuse_mt.c	2007-04-25 09:14:26.000000000 -0700
-+++ new/lib/fuse_mt.c	2007-08-28 01:44:31.000000000 -0700
++++ new/lib/fuse_mt.c	2007-09-09 22:35:37.000000000 -0700
 @@ -112,4 +112,6 @@
      return fuse_session_loop_mt(fuse_get_session(f));
  }
@@ -543,7 +686,7 @@ diff -Naur old/lib/fuse_mt.c new/lib/fuse_mt.c
 +#endif
 diff -Naur old/lib/fuse_session.c new/lib/fuse_session.c
 --- old/lib/fuse_session.c	2007-04-25 09:14:26.000000000 -0700
-+++ new/lib/fuse_session.c	2007-08-28 01:44:31.000000000 -0700
++++ new/lib/fuse_session.c	2007-09-09 22:35:37.000000000 -0700
 @@ -15,6 +15,9 @@
  #include <string.h>
  #include <assert.h>
@@ -598,7 +741,7 @@ diff -Naur old/lib/fuse_session.c new/lib/fuse_session.c
      struct fuse_session *se = (struct fuse_session *) malloc(sizeof(*se));
 diff -Naur old/lib/fuse_signals.c new/lib/fuse_signals.c
 --- old/lib/fuse_signals.c	2007-04-25 09:14:26.000000000 -0700
-+++ new/lib/fuse_signals.c	2007-08-28 01:44:31.000000000 -0700
++++ new/lib/fuse_signals.c	2007-09-09 22:35:37.000000000 -0700
 @@ -13,12 +13,34 @@
  #include <signal.h>
  
@@ -636,7 +779,7 @@ diff -Naur old/lib/fuse_signals.c new/lib/fuse_signals.c
  static int set_one_signal_handler(int sig, void (*handler)(int))
 diff -Naur old/lib/helper.c new/lib/helper.c
 --- old/lib/helper.c	2007-07-02 04:32:17.000000000 -0700
-+++ new/lib/helper.c	2007-08-28 01:44:31.000000000 -0700
++++ new/lib/helper.c	2007-09-09 22:35:37.000000000 -0700
 @@ -108,6 +108,19 @@
                  fprintf(stderr, "fuse: bad mount point `%s': %s\n", arg, strerror(errno));
                  return -1;
@@ -692,9 +835,46 @@ diff -Naur old/lib/helper.c new/lib/helper.c
  __asm__(".symver fuse_main_real_compat25,fuse_main_real@FUSE_2.5");
  __asm__(".symver fuse_mount_compat25,fuse_mount@FUSE_2.5");
 +#endif
+diff -Naur old/lib/macfuse.h new/lib/macfuse.h
+--- old/lib/macfuse.h	1969-12-31 16:00:00.000000000 -0800
++++ new/lib/macfuse.h	2007-09-09 22:54:48.000000000 -0700
+@@ -0,0 +1,33 @@
++/*
++ * Copyright (C) 2006 Google. All Rights Reserved.
++ * Amit Singh <singh@>
++ */
++
++#ifndef _MACFUSE_H_
++#define _MACFUSE_H_
++
++/* XXX: should be including <common/*.h> from MacFUSE kernel source. */
++
++#include <sys/ioctl.h>
++
++/* FUSEDEVIOCxxx */
++
++/* Get mounter's pid. */
++#define FUSEDEVGETMOUNTERPID           _IOR('F', 1,  u_int32_t)
++
++/* Check if FUSE_INIT kernel-user handshake is complete. */
++#define FUSEDEVIOCGETHANDSHAKECOMPLETE _IOR('F', 2,  u_int32_t)
++
++/* Mark the daemon as dead. */
++#define FUSEDEVIOCSETDAEMONDEAD        _IOW('F', 3,  u_int32_t)
++
++/* Tell the kernel which operations the daemon implements. */
++#define FUSEDEVIOCSETIMPLEMENTEDBITS   _IOW('F', 4,  u_int64_t)
++
++#define FUSE_DEV_TRUNK "/dev/fuse"
++#define LOAD_PROG      "/Library/Filesystems/fusefs.fs/Support/load_fusefs"
++#define MOUNT_PROG     "/Library/Filesystems/fusefs.fs/Support/mount_fusefs"
++
++#define NFUSEDEVICE    16
++
++#endif /* _MACFUSE_H_ */
 diff -Naur old/lib/modules/volicon.c new/lib/modules/volicon.c
 --- old/lib/modules/volicon.c	1969-12-31 16:00:00.000000000 -0800
-+++ new/lib/modules/volicon.c	2007-08-28 01:44:31.000000000 -0700
++++ new/lib/modules/volicon.c	2007-09-09 22:35:37.000000000 -0700
 @@ -0,0 +1,727 @@
 +/*
 + *  Custom volume icon support for MacFUSE.
@@ -1425,7 +1605,7 @@ diff -Naur old/lib/modules/volicon.c new/lib/modules/volicon.c
 +FUSE_REGISTER_MODULE(volicon, volicon_new);
 diff -Naur old/lib/mount.c new/lib/mount.c
 --- old/lib/mount.c	2007-07-02 04:32:17.000000000 -0700
-+++ new/lib/mount.c	2007-08-28 01:44:31.000000000 -0700
++++ new/lib/mount.c	2007-09-09 22:35:37.000000000 -0700
 @@ -579,5 +579,7 @@
      return res;
  }
@@ -1434,39 +1614,49 @@ diff -Naur old/lib/mount.c new/lib/mount.c
  __asm__(".symver fuse_mount_compat22,fuse_mount@FUSE_2.2");
  __asm__(".symver fuse_unmount_compat22,fuse_unmount@FUSE_2.2");
 +#endif
-diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
---- old/lib/mount_bsd.c	2006-05-03 07:46:04.000000000 -0700
-+++ new/lib/mount_bsd.c	2007-08-28 01:44:31.000000000 -0700
-@@ -6,6 +6,12 @@
-     See the file COPYING.LIB.
- */
- 
-+#if (__FreeBSD__ >= 10)
+diff -Naur old/lib/mount_darwin.c new/lib/mount_darwin.c
+--- old/lib/mount_darwin.c	1969-12-31 16:00:00.000000000 -0800
++++ new/lib/mount_darwin.c	2007-09-09 22:58:53.000000000 -0700
+@@ -0,0 +1,621 @@
++/*
++ * Amit Singh <singh@>
++ * 
++ * Derived from mount_bsd.c from the fuse distribution.
++ * 
++ *  FUSE: Filesystem in Userspace
++ *  Copyright (C) 2005-2006 Csaba Henk <csaba.henk@creo.hu>
++ *
++ *  This program can be distributed under the terms of the GNU LGPL.
++ *  See the file COPYING.LIB.
++*/
++
 +#undef _POSIX_C_SOURCE
 +#include <sys/types.h>
 +#include <CoreFoundation/CoreFoundation.h>
-+#endif
 +
- #include "fuse_i.h"
- #include "fuse_opt.h"
- 
-@@ -21,8 +27,185 @@
- #include <string.h>
- #include <paths.h>
- 
--#define FUSERMOUNT_PROG         "mount_fusefs"
-+#if (__FreeBSD__ >= 10)
++#include "fuse_i.h"
++#include "fuse_opt.h"
++
++#include <sys/stat.h>
++#include <sys/wait.h>
++#include <sys/sysctl.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <unistd.h>
++#include <stddef.h>
++#include <fcntl.h>
++#include <errno.h>
++#include <string.h>
++#include <paths.h>
 +
 +#include <libproc.h>
 +#include <sys/utsname.h>
 +
-+#define FUSE_DEV_TRUNK "/dev/fuse"
-+#define LOAD_PROG      "/Library/Filesystems/fusefs.fs/Support/load_fusefs"
-+#define MOUNT_PROG     "/Library/Filesystems/fusefs.fs/Support/mount_fusefs"
-+
 +#include <sys/param.h>
 +#include <sys/mount.h>
 +#include <AssertMacros.h>
++
++#include "macfuse.h"
 +
 +static const char *MacFUSE = "MacFUSE version 0.5.0, " __DATE__ ", " __TIME__;
 +static int quiet_mode = 0;
@@ -1503,25 +1693,8 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 +    return major;
 +}
 +
-+__unused static int
-+checkloadable_unused(void)
-+{
-+    int ret;
-+    struct vfsconf vfc;
-+    
-+    ret = getvfsbyname("fusefs", &vfc);
-+    
-+    return ret;
-+}   
-+
 +static int
-+checkloadable(void)
-+{
-+    return 1; /* load_fusefs will take care of checking */
-+}
-+
-+int
-+loadkmod()
++loadkmod(void)
 +{
 +    int result = -1;
 +    int pid, terminated_pid;
@@ -1630,38 +1803,101 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 +    return 0;
 +}
 +
-+#else
-+#define MOUNT_PROG         "mount_fusefs"
- #define FUSE_DEV_TRUNK          "/dev/fuse"
-+#endif
- 
- enum {
-     KEY_ALLOW_ROOT,
-@@ -30,6 +213,13 @@
-     KEY_HELP,
-     KEY_VERSION,
-     KEY_KERN
-+#if (__FreeBSD__ >= 10)
-+    ,
++enum {
++    KEY_ALLOW_ROOT,
 +    KEY_DIO,
++    KEY_HELP,
 +    KEY_IGNORED,
++    KEY_KERN,
 +    KEY_QUIET,
++    KEY_RO,
++    KEY_VERSION,
 +    KEY_VOLICON,
-+#endif
- };
- 
- struct mount_opts {
-@@ -108,11 +298,49 @@
-     FUSE_OPT_KEY("noprivate",           KEY_KERN),
-     FUSE_OPT_KEY("noneglect_shares",    KEY_KERN),
-     FUSE_OPT_KEY("nopush_symlinks_in",  KEY_KERN),
-+#if (__FreeBSD__ >= 10)
++};
++
++struct mount_opts {
++    int allow_other;
++    int allow_root;
++    int ishelp;
++    char *kernel_opts;
++};
++
++static const struct fuse_opt fuse_mount_opts[] = {
++    { "allow_other", offsetof(struct mount_opts, allow_other), 1 },
++    { "allow_root", offsetof(struct mount_opts, allow_root), 1 },
++    FUSE_OPT_KEY("allow_root",          KEY_ALLOW_ROOT),
++    FUSE_OPT_KEY("-r",                  KEY_RO),
++    FUSE_OPT_KEY("-h",                  KEY_HELP),
++    FUSE_OPT_KEY("--help",              KEY_HELP),
++    FUSE_OPT_KEY("-V",                  KEY_VERSION),
++    FUSE_OPT_KEY("--version",           KEY_VERSION),
++    /* standard FreeBSD mount options */
++    FUSE_OPT_KEY("dev",                 KEY_KERN),
++    FUSE_OPT_KEY("async",               KEY_KERN),
++    FUSE_OPT_KEY("atime",               KEY_KERN),
++    FUSE_OPT_KEY("dev",                 KEY_KERN),
++    FUSE_OPT_KEY("exec",                KEY_KERN),
++    FUSE_OPT_KEY("suid",                KEY_KERN),
++    FUSE_OPT_KEY("symfollow",           KEY_KERN),
++    FUSE_OPT_KEY("rdonly",              KEY_KERN),
++    FUSE_OPT_KEY("sync",                KEY_KERN),
++    FUSE_OPT_KEY("union",               KEY_KERN),
++    FUSE_OPT_KEY("userquota",           KEY_KERN),
++    FUSE_OPT_KEY("groupquota",          KEY_KERN),
++    FUSE_OPT_KEY("clusterr",            KEY_KERN),
++    FUSE_OPT_KEY("clusterw",            KEY_KERN),
++    FUSE_OPT_KEY("suiddir",             KEY_KERN),
++    FUSE_OPT_KEY("snapshot",            KEY_KERN),
++    FUSE_OPT_KEY("multilabel",          KEY_KERN),
++    FUSE_OPT_KEY("acls",                KEY_KERN),
++    FUSE_OPT_KEY("force",               KEY_KERN),
++    FUSE_OPT_KEY("update",              KEY_KERN),
++    FUSE_OPT_KEY("ro",                  KEY_KERN),
++    FUSE_OPT_KEY("rw",                  KEY_KERN),
++    FUSE_OPT_KEY("auto",                KEY_KERN),
++    /* options supported under both Linux and FBSD */
++    FUSE_OPT_KEY("allow_other",         KEY_KERN),
++    FUSE_OPT_KEY("default_permissions", KEY_KERN),
++    /* FBSD FUSE specific mount options */
++    FUSE_OPT_KEY("private",             KEY_KERN),
++    FUSE_OPT_KEY("neglect_shares",      KEY_KERN),
++    FUSE_OPT_KEY("push_symlinks_in",    KEY_KERN),
++    /* stock FBSD mountopt parsing routine lets anything be negated... */
++    FUSE_OPT_KEY("nodev",               KEY_KERN),
++    FUSE_OPT_KEY("noasync",             KEY_KERN),
++    FUSE_OPT_KEY("noatime",             KEY_KERN),
++    FUSE_OPT_KEY("nodev",               KEY_KERN),
++    FUSE_OPT_KEY("noexec",              KEY_KERN),
++    FUSE_OPT_KEY("nosuid",              KEY_KERN),
++    FUSE_OPT_KEY("nosymfollow",         KEY_KERN),
++    FUSE_OPT_KEY("nordonly",            KEY_KERN),
++    FUSE_OPT_KEY("nosync",              KEY_KERN),
++    FUSE_OPT_KEY("nounion",             KEY_KERN),
++    FUSE_OPT_KEY("nouserquota",         KEY_KERN),
++    FUSE_OPT_KEY("nogroupquota",        KEY_KERN),
++    FUSE_OPT_KEY("noclusterr",          KEY_KERN),
++    FUSE_OPT_KEY("noclusterw",          KEY_KERN),
++    FUSE_OPT_KEY("nosuiddir",           KEY_KERN),
++    FUSE_OPT_KEY("nosnapshot",          KEY_KERN),
++    FUSE_OPT_KEY("nomultilabel",        KEY_KERN),
++    FUSE_OPT_KEY("noacls",              KEY_KERN),
++    FUSE_OPT_KEY("noforce",             KEY_KERN),
++    FUSE_OPT_KEY("noupdate",            KEY_KERN),
++    FUSE_OPT_KEY("noro",                KEY_KERN),
++    FUSE_OPT_KEY("norw",                KEY_KERN),
++    FUSE_OPT_KEY("noauto",              KEY_KERN),
++    FUSE_OPT_KEY("noallow_other",       KEY_KERN),
++    FUSE_OPT_KEY("nodefault_permissions", KEY_KERN),
++    FUSE_OPT_KEY("noprivate",           KEY_KERN),
++    FUSE_OPT_KEY("noneglect_shares",    KEY_KERN),
++    FUSE_OPT_KEY("nopush_symlinks_in",  KEY_KERN),
 +    /* Mac OS X options */
 +    FUSE_OPT_KEY("allow_recursion",     KEY_KERN),
 +    FUSE_OPT_KEY("allow_root",          KEY_KERN), /* need to pass this on */
 +    FUSE_OPT_KEY("autoxattr",           KEY_KERN),
 +    FUSE_OPT_KEY("blocksize=",          KEY_KERN),
 +    FUSE_OPT_KEY("daemon_timeout=",     KEY_KERN),
++    FUSE_OPT_KEY("default_permissions", KEY_KERN),
 +    FUSE_OPT_KEY("defer_auth",          KEY_KERN),
 +    FUSE_OPT_KEY("direct_io",           KEY_DIO),
 +    FUSE_OPT_KEY("extended_security",   KEY_KERN),
@@ -1691,37 +1927,43 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 +    FUSE_OPT_KEY("subtype=",            KEY_IGNORED),
 +    FUSE_OPT_KEY("volicon=",            KEY_VOLICON),
 +    FUSE_OPT_KEY("volname=",            KEY_KERN),
-+#else
-     /* Linux specific mount options, but let just the mount util handle them */
-     FUSE_OPT_KEY("fsname=",             KEY_KERN),
-     FUSE_OPT_KEY("nonempty",            KEY_KERN),
-     FUSE_OPT_KEY("large_read",          KEY_KERN),
-     FUSE_OPT_KEY("max_read=",           KEY_KERN),
-+#endif
-     FUSE_OPT_END
- };
- 
-@@ -121,13 +349,13 @@
-     fprintf(stderr,
-             "    -o allow_root          allow access to root\n"
-             );
--    system(FUSERMOUNT_PROG " --help");
++    FUSE_OPT_END
++};
++
++static void
++mount_help(void)
++{
 +    system(MOUNT_PROG " --help");
-     fputc('\n', stderr);
- }
- 
- static void mount_version(void)
- {
--    system(FUSERMOUNT_PROG " --version");
++    fputc('\n', stderr);
++}
++
++static void
++mount_version(void)
++{
 +    system(MOUNT_PROG " --version");
- }
- 
- static int fuse_mount_opt_proc(void *data, const char *arg, int key,
-@@ -149,6 +377,39 @@
-     case KEY_KERN:
-         return fuse_opt_add_opt(&mo->kernel_opts, arg);
- 
-+#if (__FreeBSD__ >= 10)
++}
++
++static int
++fuse_mount_opt_proc(void *data, const char *arg, int key,
++                    struct fuse_args *outargs)
++{
++    struct mount_opts *mo = data;
++
++    switch (key) {
++
++    case KEY_ALLOW_ROOT:
++        if (fuse_opt_add_opt(&mo->kernel_opts, "allow_other") == -1 ||
++            fuse_opt_add_arg(outargs, "-oallow_root") == -1)
++            return -1;
++        return 0;
++
++    case KEY_RO:
++        arg = "ro";
++        /* fall through */
++
++    case KEY_KERN:
++        return fuse_opt_add_opt(&mo->kernel_opts, arg);
++
 +    case KEY_DIO:
 +          if (fuse_opt_add_opt(&mo->kernel_opts, "direct_io") == -1 ||
 +              (fuse_opt_add_arg(outargs, "-odirect_io") == -1))
@@ -1736,164 +1978,154 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 +        return 0;
 +
 +    case KEY_VOLICON:
-+        {
-+            char volicon_arg[MAXPATHLEN + 32];
-+            char *volicon_path = strchr(arg, '=');
-+            if (!volicon_path) {
-+                return -1;
-+            }
-+            if (snprintf(volicon_arg, sizeof(volicon_arg), 
-+                         "-omodules=volicon,iconpath%s", volicon_path) <= 0) {
-+                return -1;
-+            }
-+            if (fuse_opt_add_arg(outargs, volicon_arg) == -1) {
-+                return -1;
-+            }
-+
-+            return 0;
-+        }
-+#endif
-+
-     case KEY_HELP:
-         mount_help();
-         mo->ishelp = 1;
-@@ -199,8 +460,21 @@
-     if (rv)
-         return;
- 
-+#if (__FreeBSD__ >= 10)
 +    {
-+        int ret;
-+        char *rp = NULL;
-+        char resolved_path[PATH_MAX];
-+
-+        rp = realpath(mountpoint, resolved_path);
-+        if (rp) {
-+            ret = unmount(resolved_path, 0);
++        char volicon_arg[MAXPATHLEN + 32];
++        char *volicon_path = strchr(arg, '=');
++        if (!volicon_path) {
++            return -1;
 +        }
-+    }
-+#else
-     asprintf(&umount_cmd, "/sbin/umount %s", dev);
-     system(umount_cmd);
-+#endif
- }
- 
- void fuse_kern_unmount(const char *mountpoint, int fd)
-@@ -222,8 +496,21 @@
-     if (*ep != '\0')
-         return;
- 
-+#if (__FreeBSD__ >= 10)
-+    {
-+        int ret;
-+        char *rp = NULL;
-+        char resolved_path[PATH_MAX];
-+
-+        rp = realpath(mountpoint, resolved_path);
-+        if (rp) {
-+            ret = unmount(resolved_path, 0);
++        if (snprintf(volicon_arg, sizeof(volicon_arg), 
++                     "-omodules=volicon,iconpath%s", volicon_path) <= 0) {
++            return -1;
 +        }
-+    }
-+#else
-     asprintf(&umount_cmd, "/sbin/umount " _PATH_DEV "%s", dev);
-     system(umount_cmd);
-+#endif
- }
- 
- /* Check if kernel is doing init in background */
-@@ -233,8 +520,13 @@
- 
-     len = sizeof(ibg);
- 
-+#if (__FreeBSD__ >= 10)
-+    /* Previously: macfuse.tunables.init_backgrounded */
++        if (fuse_opt_add_arg(outargs, volicon_arg) == -1) {
++            return -1;
++        }
++
 +        return 0;
-+#else
-     if (sysctlbyname("vfs.fuse.init_backgrounded", &ibg, &len, NULL, 0))
-         return 0;
-+#endif
- 
-     return ibg;
- }
-@@ -242,10 +534,60 @@
- 
- static int fuse_mount_core(const char *mountpoint, const char *opts)
- {
--    const char *mountprog = FUSERMOUNT_PROG;
++    }
++
++    case KEY_HELP:
++        mount_help();
++        mo->ishelp = 1;
++        break;
++
++    case KEY_VERSION:
++        mount_version();
++        mo->ishelp = 1;
++        break;
++    }
++    return 1;
++}
++
++void
++fuse_kern_unmount(const char *mountpoint, int fd)
++{
++    int ret;
++    struct stat sbuf;
++    char dev[128];
++    char resolved_path[PATH_MAX];
++    char *ep, *rp = NULL, *umount_cmd;
++
++    unsigned int hs_complete = 0;
++
++    ret = ioctl(fd, FUSEDEVIOCGETHANDSHAKECOMPLETE, &hs_complete);
++    if (ret || !hs_complete) {
++        return;
++    }
++
++    if (fstat(fd, &sbuf) == -1) {
++        return;
++    }
++
++    devname_r(sbuf.st_rdev, S_IFCHR, dev, 128);
++
++    if (strncmp(dev, "fuse", 4)) {
++        return;
++    }
++
++    strtol(dev + 4, &ep, 10);
++    if (*ep != '\0') {
++        return;
++    }
++
++    rp = realpath(mountpoint, resolved_path);
++    if (rp) {
++        ret = unmount(resolved_path, 0);
++    }
++
++    return;
++}
++
++static int
++fuse_mount_core(const char *mountpoint, const char *opts)
++{
++    int fd, pid;
++    int result;
++    char *fdnam, *dev;
 +    const char *mountprog = MOUNT_PROG;
-     int fd;
-     char *fdnam, *dev;
-     int pid;
-+#if (__FreeBSD__ >= 10)
-+    int ibg = 0;
 +
 +    if (!mountpoint) {
 +        fprintf(stderr, "missing or invalid mount point\n");
 +        return -1;
 +    }
 +
-+    if (checkloadable()) {
-+        int result = loadkmod();
-+        if (result) {
-+            CFOptionFlags responseFlags;
-+            if (result == EINVAL) {
-+                if (!quiet_mode) {
-+                    CFUserNotificationDisplayNotice(
-+                        (CFTimeInterval)0,
-+                        kCFUserNotificationCautionAlertLevel,
-+                        (CFURLRef)0,
-+                        (CFURLRef)0,
-+                        (CFURLRef)0,
-+                        CFSTR("Operating System Too Old"),
-+                        CFSTR("The installed MacFUSE version is too new for the operating system. Please downgrade your MacFUSE installation to one that is compatible with the currently running operating system."),
-+                        CFSTR("OK")
-+                    );
-+                }
-+                post_notification(
-+                    LIBFUSE_UNOTIFICATIONS_NOTIFY_OSISTOOOLD,
-+                    NULL, NULL, 0);
-+            } else if (result == EBUSY) {
-+                if (!quiet_mode) {
-+                    CFUserNotificationDisplayNotice(
-+                        (CFTimeInterval)0,
-+                        kCFUserNotificationCautionAlertLevel,
-+                        (CFURLRef)0,
-+                        (CFURLRef)0,
-+                        (CFURLRef)0,
-+                        CFSTR("MacFUSE Version Mismatch"),
-+                        CFSTR("MacFUSE has been updated but an incompatible or old version of the MacFUSE kernel extension is already loaded. It failed to unload, possibly because a MacFUSE volume is currently mounted.\n\nPlease eject all MacFUSE volumes and try again, or simply restart the system for changes to take effect."),
-+                        CFSTR("OK")
-+                    );
-+                }
-+                post_notification(LIBFUSE_UNOTIFICATIONS_NOTIFY_VERSIONMISMATCH,
-+                                  NULL, NULL, 0);
++    result = loadkmod();
++    if (result) {
++        CFOptionFlags responseFlags;
++        if (result == EINVAL) {
++            if (!quiet_mode) {
++                CFUserNotificationDisplayNotice(
++                    (CFTimeInterval)0,
++                    kCFUserNotificationCautionAlertLevel,
++                    (CFURLRef)0,
++                    (CFURLRef)0,
++                    (CFURLRef)0,
++                    CFSTR("Operating System Too Old"),
++                    CFSTR("The installed MacFUSE version is too new for the operating system. Please downgrade your MacFUSE installation to one that is compatible with the currently running operating system."),
++                    CFSTR("OK")
++                );
 +            }
-+            fprintf(stderr, "fusefs file system is not available (%d)\n",
-+                    result);
++            post_notification(
++                LIBFUSE_UNOTIFICATIONS_NOTIFY_OSISTOOOLD, NULL, NULL, 0);
++        } else if (result == EBUSY) {
++            if (!quiet_mode) {
++                CFUserNotificationDisplayNotice(
++                    (CFTimeInterval)0,
++                    kCFUserNotificationCautionAlertLevel,
++                    (CFURLRef)0,
++                    (CFURLRef)0,
++                    (CFURLRef)0,
++                    CFSTR("MacFUSE Version Mismatch"),
++                    CFSTR("MacFUSE has been updated but an incompatible or old version of the MacFUSE kernel extension is already loaded. It failed to unload, possibly because a MacFUSE volume is currently mounted.\n\nPlease eject all MacFUSE volumes and try again, or simply restart the system for changes to take effect."),
++                    CFSTR("OK")
++                );
++            }
++            post_notification(LIBFUSE_UNOTIFICATIONS_NOTIFY_VERSIONMISMATCH,
++                              NULL, NULL, 0);
++        }
++        fprintf(stderr, "fusefs file system is not available (%d)\n",
++                result);
++        return -1;
++    }
++
++    fdnam = getenv("FUSE_DEV_FD");
++
++    if (fdnam) {
++
++        char *ep;
++
++        fd = strtol(fdnam, &ep, 10);
++
++        if (*ep != '\0') {
++            fprintf(stderr, "invalid value given in FUSE_DEV_FD\n");
 +            return -1;
 +        }
++
++        if (fd < 0)
++            return -1;
++
++        goto mount;
 +    }
-+#endif
- 
-     fdnam = getenv("FUSE_DEV_FD");
- 
-@@ -267,19 +609,40 @@
- 
-     dev = getenv("FUSE_DEV_NAME");
- 
--    if (! dev)
--	dev = FUSE_DEV_TRUNK;
--
--    if ((fd = open(dev, O_RDWR)) < 0) {
--        perror("fuse: failed to open fuse device");
--        return -1;
++
++    dev = getenv("FUSE_DEV_NAME");
++
 +    if (dev) {
 +        if ((fd = open(dev, O_RDWR)) < 0) {
 +            perror("fuse: failed to open fuse device");
 +            return -1;
 +        }
 +    } else {
-+#define NFUSEDEVICE 16
 +        int r, devidx = -1;
 +        char devpath[MAXPATHLEN];
 +
@@ -1910,43 +2142,47 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 +            perror("fuse: failed to open fuse device");
 +            return -1;
 +        }
-     }
- 
- mount:
-     if (getenv("FUSE_NO_MOUNT") || ! mountpoint)
-         goto out;
- 
-+#if (__FreeBSD__ >= 10)
-+    pid = vfork();
-+#else
-     pid = fork();
-+#endif
- 
-     if (pid == -1) {
-         perror("fuse: fork() failed");
-@@ -287,8 +650,16 @@
-         return -1;
-     }
- 
-+#if (__FreeBSD__ >= 10)
-+    ibg = init_backgrounded();
-+#endif
++    }
 +
-     if (pid == 0) {
-+#if (__FreeBSD__ >= 10)
-+        if (!ibg) {
-+#else
-         if (! init_backgrounded()) {
-+#endif
-             /*
-              * If init is not backgrounded, we have to call the mount util
-              * backgrounded, to avoid deadlock.
-@@ -318,15 +689,49 @@
-             argv[a++] = fdnam;
-             argv[a++] = mountpoint;
-             argv[a++] = NULL;
++mount:
++    if (getenv("FUSE_NO_MOUNT") || ! mountpoint)
++        goto out;
 +
-+#if (__FreeBSD__ >= 10)
++    signal(SIGCHLD, SIG_IGN);
++
++    pid = fork();
++
++    if (pid == -1) {
++        perror("fuse: fork() failed");
++        close(fd);
++        return -1;
++    }
++
++    if (pid == 0) {
++
++        pid = fork();
++        if (pid == -1) {
++            perror("fuse: fork() failed");
++            close(fd);
++            exit(1);
++        }
++
++        if (pid == 0) {
++            const char *argv[32];
++            int a = 0;
++
++            if (! fdnam)
++                asprintf(&fdnam, "%d", fd);
++
++            argv[a++] = mountprog;
++            if (opts) {
++                argv[a++] = "-o";
++                argv[a++] = opts;
++            }
++            argv[a++] = fdnam;
++            argv[a++] = mountpoint;
++            argv[a++] = NULL;
++
 +            {
 +                char title[MAXPATHLEN + 1] = { 0 };
 +                u_int32_t len = MAXPATHLEN;
@@ -1955,52 +2191,57 @@ diff -Naur old/lib/mount_bsd.c new/lib/mount_bsd.c
 +                    setenv("MOUNT_FUSEFS_DAEMON_PATH", title, 1);
 +                }
 +            }
-+#endif
-+
-             execvp(mountprog, (char **) argv);
-             perror("fuse: failed to exec mount program");
-             exit(1);
-         }
-+#if (__FreeBSD__ >= 10)
-+        else {
-+            if (ibg) {
-+                int status;
-+                waitpid(pid, &status, 0);
-+                if (WIFEXITED(status) && (WEXITSTATUS(status) != 0)) {
-+                    exit(WEXITSTATUS(status));
-+                }
-+            }
++            execvp(mountprog, (char **) argv);
++            perror("fuse: failed to exec mount program");
++            exit(1);
 +        }
-+#endif
- 
-         exit(0);
-     }
- 
-+#if (__FreeBSD__ >= 10)
-+    {
-+        int status;
 +
-+        waitpid(pid, &status, 0);
-+        if (WIFEXITED(status) && (WEXITSTATUS(status) != 0)) {
-+            exit(WEXITSTATUS(status));
-+        }
++        exit(0);
 +    }
-+#else
-     waitpid(pid, NULL, 0);
-+#endif
- 
- out:
-     return fd;
-@@ -360,4 +765,6 @@
-     return res;
- }
- 
-+#if !(__FreeBSD__ >= 10)
- __asm__(".symver fuse_unmount_compat22,fuse_unmount@FUSE_2.2");
-+#endif
++
++out:
++    return fd;
++}
++
++int
++fuse_kern_mount(const char *mountpoint, struct fuse_args *args)
++{
++    struct mount_opts mo;
++    int res = -1;
++
++    memset(&mo, 0, sizeof(mo));
++
++    /* mount_fusefs should not try to spawn the daemon */
++    setenv("MOUNT_FUSEFS_SAFE", "1", 1);
++
++    /* to notify mount_fusefs it's called from lib */
++    setenv("MOUNT_FUSEFS_CALL_BY_LIB", "1", 1);
++
++    if (args &&
++        fuse_opt_parse(args, &mo, fuse_mount_opts, fuse_mount_opt_proc) == -1) {
++        return -1;
++    }
++
++    if (mo.allow_other && mo.allow_root) {
++        fprintf(stderr,
++                "MacFUSE: allow_other and allow_root are mutually exclusive\n");
++        goto out;
++    }
++
++    if (mo.ishelp) {
++        return 0;
++    }
++
++    res = fuse_mount_core(mountpoint, mo.kernel_opts);
++
++out:
++    free(mo.kernel_opts);
++
++    return res;
++}
 diff -Naur old/lib/ulockmgr.c new/lib/ulockmgr.c
 --- old/lib/ulockmgr.c	2007-07-02 04:32:17.000000000 -0700
-+++ new/lib/ulockmgr.c	2007-08-28 01:44:31.000000000 -0700
++++ new/lib/ulockmgr.c	2007-09-09 22:35:37.000000000 -0700
 @@ -18,9 +18,19 @@
  #include <assert.h>
  #include <signal.h>
@@ -2037,6 +2278,6 @@ diff -Naur old/lib/ulockmgr.c new/lib/ulockmgr.c
  
 diff -Naur old/run_configure.sh new/run_configure.sh
 --- old/run_configure.sh	1969-12-31 16:00:00.000000000 -0800
-+++ new/run_configure.sh	2007-08-28 01:44:31.000000000 -0700
++++ new/run_configure.sh	2007-09-09 22:35:37.000000000 -0700
 @@ -0,0 +1 @@
 +CFLAGS="-D__FreeBSD__=10 -D_POSIX_C_SOURCE=200112L -O -g -arch i386 -arch ppc -isysroot /Developer/SDKs/MacOSX10.5.sdk" LDFLAGS="-arch i386 -arch ppc -framework CoreFoundation" ./configure --prefix=/usr/local --disable-dependency-tracking
