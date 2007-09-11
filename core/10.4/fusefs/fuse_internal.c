@@ -1037,15 +1037,7 @@ fuse_internal_newentry_makerequest(mount_t                 mp,
 {
     debug_printf("fdip=%p, context=%p\n", fdip, context);
 
-    fdip->iosize = bufsize + cnp->cn_namelen + 1;
-
-    fdisp_make(fdip, op, mp, dnid, context);
-    memcpy(fdip->indata, buf, bufsize);
-    memcpy((char *)fdip->indata + bufsize, cnp->cn_nameptr, cnp->cn_namelen);
-    ((char *)fdip->indata)[bufsize + cnp->cn_namelen] = '\0';
-
-    fdip->iosize = bufsize + cnp->cn_namelen + 1;
-
+    fdisp_init(fdip, bufsize + cnp->cn_namelen + 1);
     fdisp_make(fdip, op, mp, dnid, context);
     memcpy(fdip->indata, buf, bufsize);
     memcpy((char *)fdip->indata + bufsize, cnp->cn_nameptr, cnp->cn_namelen);

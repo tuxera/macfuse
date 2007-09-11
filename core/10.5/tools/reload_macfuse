@@ -22,7 +22,7 @@ function exit_on_error
 sudo kextstat -l -b "$MACFUSE_BUNDLE" | grep "$MACFUSE_BUNDLE" >/dev/null
 if [ "$?" -eq "0" ]
 then
-    sudo kextunload -v "$MACFUSE_TMPDIR"/"$MACFUSE_KEXT"
+    sudo kextunload -v -b "$MACFUSE_BUNDLE"
     exit_on_error "Failed to unload MacFUSE kernel extension"
 fi
 
