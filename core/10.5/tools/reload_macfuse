@@ -29,7 +29,7 @@ fi
 cd "$MACFUSE_SRCDIR"
 exit_on_error "Failed to cd to $MACFUSE_SRCDIR"
 
-xcodebuild -configuration $MACFUSE_CONFIG
+xcodebuild -configuration $MACFUSE_CONFIG -target fusefs
 exit_on_error "Failed to build configuration $MACFUSE_CONFIG"
 
 sudo rm -rf "$MACFUSE_TMPDIR"/"$MACFUSE_KEXT"
