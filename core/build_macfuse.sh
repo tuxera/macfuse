@@ -1,4 +1,6 @@
 #! /bin/sh
+# Copyright (C) 2006-2007 Amit Singh. All Rights Reserved.
+#
 
 UNAME=/usr/bin/uname
 
