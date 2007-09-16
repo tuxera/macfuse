@@ -6,7 +6,11 @@
 		activeExecutable = 540966F60C33BEC900F5E227 /* load_fusefs */;
 		activeTarget = 32A4FEB80562C75700D090E7 /* fusefs */;
 		addToTargets = (
+			54C6DD290B5EE606002D9FD9 /* All */,
+			32A4FEB80562C75700D090E7 /* fusefs */,
 			54D47B7F0B4F610000A8FE1C /* load_fusefs */,
+			540966160C33B4CB00F5E227 /* mount_fusefs */,
+			54C6DE650B5EED9E002D9FD9 /* fusefs.fs */,
 		);
 		breakpoints = (
 			54F9A8BB0ACFAE410090FCAF /* fuse_main.c:86 */,
@@ -64,7 +68,7 @@
 				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
-					243,
+					440,
 					20,
 					48,
 					43,
@@ -155,8 +159,8 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 211666747;
-			PBXWorkspaceStateSaveDate = 211666747;
+			PBXPerProjectTemplateStateSaveDate = 211676808;
+			PBXWorkspaceStateSaveDate = 211676808;
 		};
 		sourceControlManager = 5494A9280ACA12160020068B /* Source Control */;
 		userBuildSettings = {
