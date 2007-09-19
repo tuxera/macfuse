@@ -31,7 +31,7 @@ fi
 
 if [ \( $MAJOR -lt 10 \) -o \( $MINOR -ne 4 \) ]
 then
-  # Requires Mac OS X 10.4
+  # Requires Mac OS X 10.4.
   exit 115
 fi
 

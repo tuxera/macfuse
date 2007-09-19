@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 Google. All Rights Reserved.
+ * Copyright (C) 2006-2007 Google. All Rights Reserved.
  * Amit Singh <singh@>
  */
 
@@ -26,9 +26,35 @@ static struct vnodeopv_desc fuse_vnode_operation_vector_desc = {
     fuse_vnode_operation_entries // opv_desc_ops
 };
 
-static struct vnodeopv_desc *fuse_vnode_operation_vector_desc_list[1] =
+#if M_MACFUSE_ENABLE_FIFOFS
+errno_t (**fuse_fifo_operations)(void *);
+
+static struct vnodeopv_desc fuse_fifo_operation_vector_desc = {
+    &fuse_fifo_operations,      // opv_desc_vector_p
+    fuse_fifo_operation_entries // opv_desc_ops
+};
+#endif /* M_MACFUSE_ENABLE_FIFOFS */
+
+#if M_MACFUSE_ENABLE_SPECFS
+errno_t (**fuse_spec_operations)(void *);
+
+static struct vnodeopv_desc fuse_spec_operation_vector_desc = {
+    &fuse_spec_operations,      // opv_desc_vector_p
+    fuse_spec_operation_entries // opv_desc_ops
+};
+#endif /* M_MACFUSE_ENABLE_SPECFS */
+
+static struct vnodeopv_desc *fuse_vnode_operation_vector_desc_list[] =
 {
-    &fuse_vnode_operation_vector_desc
+    &fuse_vnode_operation_vector_desc,
+
+#if M_MACFUSE_ENABLE_FIFOFS
+    &fuse_fifo_operation_vector_desc,
+#endif
+
+#if M_MACFUSE_ENABLE_SPECFS
+    &fuse_spec_operation_vector_desc,
+#endif
 };
 
 static struct vfsops fuse_vfs_ops = {
@@ -67,8 +93,7 @@ struct vfs_fsentry fuse_vfs_entry = {
     MACFUSE_FS_TYPE,
 
     // Flags specifying file system capabilities
-    // VFS_TBLTHREADSAFE | VFS_TBLFSNODELOCK | VFS_TBLNOTYPENUM,
-    VFS_TBLNOTYPENUM,
+    VFS_TBL64BITREADY | VFS_TBLNOTYPENUM,
 
     // Reserved for future use
     { NULL, NULL }
@@ -78,15 +103,17 @@ static errno_t
 fuse_vfs_mount(mount_t mp, __unused vnode_t devvp, user_addr_t udata,
                __unused vfs_context_t context)
 {
+    int err     = 0;
+    int mntopts = 0;
+    int mounted = 0;
+
+    uint32_t drandom  = 0;
+    uint32_t max_read = ~0;
+
     size_t len;
 
-    int err               = 0;
-    int mntopts           = 0;
-    int max_read_set      = 0;
-    unsigned int max_read = ~0;
-
-    struct fuse_softc *fdev;
-    struct fuse_data  *data;
+    fuse_device_t      fdev = FUSE_DEVICE_NULL;
+    struct fuse_data  *data = NULL;
     fuse_mount_args    fusefs_args;
 
     fuse_trace_printf_vfsop();
@@ -97,34 +124,36 @@ fuse_vfs_mount(mount_t mp, __unused vnode_t devvp, user_addr_t udata,
 
     err = copyin(udata, &fusefs_args, sizeof(fusefs_args));
     if (err) {
-        debug_printf("copyin failed\n");
         return EINVAL;
     }
 
     /*
-    * Interesting flags that we can receive from mount or may want to
-    * otherwise forcibly set include:
-    *
-    *     MNT_ASYNC
-    *     MNT_AUTOMOUNTED              
-    *     MNT_DEFWRITE
-    *     MNT_DONTBROWSE
-    *     MNT_IGNORE_OWNERSHIP
-    *     MNT_JOURNALED
-    *     MNT_NODEV
-    *     MNT_NOEXEC
-    *     MNT_NOSUID
-    *     MNT_NOUSERXATTR
-    *     MNT_RDONLY
-    *     MNT_SYNCHRONOUS
-    *     MNT_UNION
-    */
+     * Interesting flags that we can receive from mount or may want to
+     * otherwise forcibly set include:
+     *
+     *     MNT_ASYNC
+     *     MNT_AUTOMOUNTED              
+     *     MNT_DEFWRITE
+     *     MNT_DONTBROWSE
+     *     MNT_IGNORE_OWNERSHIP
+     *     MNT_JOURNALED
+     *     MNT_NODEV
+     *     MNT_NOEXEC
+     *     MNT_NOSUID
+     *     MNT_NOUSERXATTR
+     *     MNT_RDONLY
+     *     MNT_SYNCHRONOUS
+     *     MNT_UNION
+     */
 
     err = ENOTSUP;
 
-    FUSE_KL_vfs_setlocklocal(mp);
+#if M_MACFUSE_ENABLE_LOCKLOCAL
+    vfs_setlocklocal(mp);
+#endif
 
-    /* Option Processing. */
+    /** Option Processing. **/
+
 
     if ((fusefs_args.daemon_timeout > FUSE_MAX_DAEMON_TIMEOUT) ||
         (fusefs_args.daemon_timeout < FUSE_MIN_DAEMON_TIMEOUT)) {
@@ -140,59 +169,12 @@ fuse_vfs_mount(mount_t mp, __unused vnode_t devvp, user_addr_t udata,
         mntopts |= FSESS_NO_ALERTS;
     }
 
+    if (fusefs_args.altflags & FUSE_MOPT_AUTO_XATTR) {
+        mntopts |= FSESS_AUTO_XATTR;
+    }
+
     if (fusefs_args.altflags & FUSE_MOPT_NO_BROWSE) {
         vfs_setflags(mp, MNT_DONTBROWSE);
-    }
-
-    if (fusefs_args.altflags & FUSE_MOPT_NO_LOCALCACHES) {
-        fusefs_args.altflags |= FUSE_MOPT_NO_READAHEAD;
-        fusefs_args.altflags |= FUSE_MOPT_NO_UBC;
-        fusefs_args.altflags |= FUSE_MOPT_NO_VNCACHE;
-    }
-
-    if (fusefs_args.altflags & FUSE_MOPT_NO_SYNCWRITES) {
-
-        /* Cannot mix 'nosyncwrites' with 'noubc' or 'noreadahead'. */
-        if (fusefs_args.altflags &
-            (FUSE_MOPT_NO_UBC | FUSE_MOPT_NO_READAHEAD)) {
-            return EINVAL;
-        }
-
-        mntopts |= FSESS_NO_SYNCWRITES;
-        vfs_clearflags(mp, MNT_SYNCHRONOUS);
-        vfs_setflags(mp, MNT_ASYNC);
-
-        /* We check for this only if we have nosyncwrites in the first place. */
-        if (fusefs_args.altflags & FUSE_MOPT_NO_SYNCONCLOSE) {
-            mntopts |= FSESS_NO_SYNCONCLOSE;
-        }
-
-    } else {
-        vfs_clearflags(mp, MNT_ASYNC);
-        vfs_setflags(mp, MNT_SYNCHRONOUS);
-    }
-
-    if (!(fusefs_args.altflags & FUSE_MOPT_NO_AUTH_OPAQUE)) {
-        // This sets MNTK_AUTH_OPAQUE in the mount point's mnt_kern_flag.
-        vfs_setauthopaque(mp);
-        err = 0;
-    }
-
-    if (!(fusefs_args.altflags & FUSE_MOPT_NO_AUTH_OPAQUE_ACCESS)) {
-        // This sets MNTK_AUTH_OPAQUE_ACCESS in the mount point's mnt_kern_flag.
-        vfs_setauthopaqueaccess(mp);
-        err = 0;
-    }
-
-    if (fusefs_args.altflags & FUSE_MOPT_DEFER_AUTH) {
-        if (fusefs_args.altflags &
-            (FUSE_MOPT_NO_AUTH_OPAQUE | FUSE_MOPT_NO_AUTH_OPAQUE_ACCESS)) {
-            return EINVAL;
-        }
-        mntopts |= FSESS_DEFER_AUTH;
-        vfs_setauthopaque(mp);
-        vfs_setauthopaqueaccess(mp);
-        err = 0;
     }
 
     if (fusefs_args.altflags & FUSE_MOPT_JAIL_SYMLINKS) {
@@ -210,112 +192,23 @@ fuse_vfs_mount(mount_t mp, __unused vnode_t devvp, user_addr_t udata,
                                     &is_member) == 0) && is_member) {
             mntopts |= FSESS_ALLOW_ROOT;
         } else {
-            debug_printf("only a member of group %d can use \"allow_root\"\n",
-                         fuse_admin_group);
+            IOLog("MacFUSE: caller not a member of MacFUSE admin group (%d)\n",
+                  fuse_admin_group);
             return EPERM;
         }
     } else if (fusefs_args.altflags & FUSE_MOPT_ALLOW_OTHER) {
         if (!fuse_allow_other && !fuse_vfs_context_issuser(context)) {
-            debug_printf("only root can use \"allow_other\"\n");
             return EPERM;
         }
         mntopts |= FSESS_ALLOW_OTHER;
     }
 
-    if (fusefs_args.altflags & FUSE_MOPT_DEFAULT_PERMISSIONS) {
-        mntopts |= FSESS_DEFAULT_PERMISSIONS;
+    if (fusefs_args.altflags & FUSE_MOPT_NO_APPLEDOUBLE) {
+        mntopts |= FSESS_NO_APPLEDOUBLE;
     }
 
-    if (fusefs_args.altflags & FUSE_MOPT_NO_APPLESPECIAL) {
-        mntopts |= FSESS_NO_APPLESPECIAL;
-    }
-
-    if (fusefs_args.altflags & FUSE_MOPT_NO_ATTRCACHE) {
-        mntopts |= FSESS_NO_ATTRCACHE;
-    }
-
-    if (fusefs_args.altflags & FUSE_MOPT_NO_READAHEAD) {
-        mntopts |= FSESS_NO_READAHEAD;
-    }
-
-    if (fusefs_args.altflags & FUSE_MOPT_NO_UBC) {
-        mntopts |= FSESS_NO_UBC;
-    }
-
-    if (fusefs_args.altflags & FUSE_MOPT_NO_VNCACHE) {
-        if (fusefs_args.altflags & FUSE_MOPT_EXTENDED_SECURITY) {
-            /* 'novncache' and 'extended_security' don't mix well. */
-            return EINVAL;
-        }
-        mntopts |= FSESS_NO_VNCACHE;
-        mntopts |= (FSESS_NO_ATTRCACHE | FSESS_NO_READAHEAD | FSESS_NO_UBC);
-    }
-
-    if (fusefs_args.altflags & FUSE_MOPT_EXTENDED_SECURITY) {
-        mntopts |= FSESS_EXTENDED_SECURITY;
-        vfs_setextendedsecurity(mp);
-    }
-
-    if (fusefs_args.altflags & FUSE_MOPT_KILL_ON_UNMOUNT) {
-        mntopts |= FSESS_KILL_ON_UNMOUNT;
-    }
-
-    if (fusefs_args.altflags & FUSE_MOPT_DIRECT_IO) {
-        mntopts |= FSESS_NO_UBC;
-    }
-
-    if (mntopts & FSESS_NO_UBC) {
-        /* If no buffer cache, disallow exec from file system. */
-        vfs_setflags(mp, MNT_NOEXEC);
-    }
-
-    err = 0;
-
-    vfs_setfsprivate(mp, NULL);
-
-    if ((fusefs_args.index < 0) || (fusefs_args.index >= FUSE_NDEVICES)) {
-        return EINVAL;
-    }
-    fdev = fuse_softc_get(fusefs_args.rdev);
-
-    FUSE_LOCK();
-    {
-        data = fuse_softc_get_data(fdev);
-        if (data && (data->dataflags & FSESS_OPENED)) {
-            data->mntco++;
-            debug_printf("a.inc:mntco = %d\n", data->mntco);
-        } else {
-            FUSE_UNLOCK();
-            return (ENXIO);
-        }    
-    }
-    FUSE_UNLOCK();
-
-    max_read_set = 0;
-
-    if (fdata_kick_get(data)) {
-        err = ENOTCONN;
-    }
-
-    if (err) {
-        goto out;
-    }
-
-    if (!data->daemoncred) {
-        panic("MacFUSE: daemon found but identity unknown");
-    }
-
-    if (data->mpri != FM_NOMOUNTED) {
-        debug_printf("already mounted\n");
-        err = EALREADY;
-        goto out;
-    }
-
-    if (fuse_vfs_context_issuser(context) &&
-        vfs_context_ucred(context)->cr_uid != data->daemoncred->cr_uid) {
-        debug_printf("not allowed to do the first mount\n");
-        err = EPERM;
-        goto out;
+    if (fusefs_args.altflags & FUSE_MOPT_NO_APPLEXATTR) {
+        mntopts |= FSESS_NO_APPLEXATTR;
     }
 
     if ((fusefs_args.altflags & FUSE_MOPT_FSID) && (fusefs_args.fsid != 0)) {
@@ -342,6 +235,143 @@ fuse_vfs_mount(mount_t mp, __unused vnode_t devvp, user_addr_t udata,
         vfs_getnewfsid(mp);    
     }
 
+    if (fusefs_args.altflags & FUSE_MOPT_KILL_ON_UNMOUNT) {
+        mntopts |= FSESS_KILL_ON_UNMOUNT;
+    }
+
+    if (fusefs_args.altflags & FUSE_MOPT_NO_ATTRCACHE) {
+        mntopts |= FSESS_NO_ATTRCACHE;
+    }
+
+    if (fusefs_args.altflags & FUSE_MOPT_NO_READAHEAD) {
+        mntopts |= FSESS_NO_READAHEAD;
+    }
+
+    if (fusefs_args.altflags & (FUSE_MOPT_NO_UBC | FUSE_MOPT_DIRECT_IO)) {
+        mntopts |= FSESS_NO_UBC;
+    }
+
+    if (fusefs_args.altflags & FUSE_MOPT_NO_VNCACHE) {
+        if (fusefs_args.altflags & FUSE_MOPT_EXTENDED_SECURITY) {
+            /* 'novncache' and 'extended_security' don't mix well. */
+            return EINVAL;
+        }
+        mntopts |= FSESS_NO_VNCACHE;
+        mntopts |= (FSESS_NO_ATTRCACHE | FSESS_NO_READAHEAD | FSESS_NO_UBC);
+    }
+
+    if (fusefs_args.altflags & FUSE_MOPT_NO_LOCALCACHES) {
+        fusefs_args.altflags |= FUSE_MOPT_NO_READAHEAD;
+        fusefs_args.altflags |= FUSE_MOPT_NO_UBC;
+        fusefs_args.altflags |= FUSE_MOPT_NO_VNCACHE;
+    }
+
+    if (mntopts & FSESS_NO_UBC) {
+        /* If no buffer cache, disallow exec from file system. */
+        vfs_setflags(mp, MNT_NOEXEC);
+    }
+
+    if (fusefs_args.altflags & FUSE_MOPT_NO_SYNCWRITES) {
+
+        /* Cannot mix 'nosyncwrites' with 'noubc' or 'noreadahead'. */
+        if (fusefs_args.altflags &
+            (FUSE_MOPT_NO_UBC | FUSE_MOPT_NO_READAHEAD)) {
+            return EINVAL;
+        }
+
+        mntopts |= FSESS_NO_SYNCWRITES;
+        vfs_clearflags(mp, MNT_SYNCHRONOUS);
+        vfs_setflags(mp, MNT_ASYNC);
+
+        /* We check for this only if we have nosyncwrites in the first place. */
+        if (fusefs_args.altflags & FUSE_MOPT_NO_SYNCONCLOSE) {
+            mntopts |= FSESS_NO_SYNCONCLOSE;
+        }
+
+    } else {
+        vfs_clearflags(mp, MNT_ASYNC);
+        vfs_setflags(mp, MNT_SYNCHRONOUS);
+    }
+
+    err = 0;
+
+    vfs_setauthopaque(mp);
+    vfs_setauthopaqueaccess(mp);
+
+    if ((fusefs_args.altflags & FUSE_MOPT_DEFAULT_PERMISSIONS) &&
+        (fusefs_args.altflags & FUSE_MOPT_DEFER_PERMISSIONS)) {
+        return EINVAL;
+    }
+
+    if (fusefs_args.altflags & FUSE_MOPT_DEFAULT_PERMISSIONS) {
+        mntopts |= FSESS_DEFAULT_PERMISSIONS;
+        vfs_clearauthopaque(mp);
+    }
+
+    if (fusefs_args.altflags & FUSE_MOPT_DEFER_PERMISSIONS) {
+        mntopts |= FSESS_DEFER_PERMISSIONS;
+    }
+
+    if (fusefs_args.altflags & FUSE_MOPT_EXTENDED_SECURITY) {
+        mntopts |= FSESS_EXTENDED_SECURITY;
+        vfs_setextendedsecurity(mp);
+    }
+
+    vfs_setfsprivate(mp, NULL);
+
+    fdev = fuse_device_get(fusefs_args.rdev);
+    if (!fdev) {
+        return EINVAL;
+    }
+
+    fuse_device_lock(fdev);
+
+    drandom = fuse_device_get_random(fdev);
+    if (fusefs_args.random != drandom) {
+        fuse_device_unlock(fdev);
+        IOLog("MacFUSE: failing mount because of mismatched random\n");
+        return EINVAL; 
+    }
+
+    data = fuse_device_get_mpdata(fdev);
+
+    if (!data) {
+        fuse_device_unlock(fdev);
+        return ENXIO;
+    }
+
+    if (data->mount_state != FM_NOTMOUNTED) {
+        fuse_device_unlock(fdev);
+        return EALREADY;
+    }
+
+    if (!(data->dataflags & FSESS_OPENED)) {
+        fuse_device_unlock(fdev);
+        err = ENXIO;
+        goto out;
+    }
+
+    data->mount_state = FM_MOUNTED;
+    OSAddAtomic(1, (SInt32 *)&fuse_mount_count);
+    mounted = 1;
+
+    if (fdata_dead_get(data)) {
+        fuse_device_unlock(fdev);
+        err = ENOTCONN;
+        goto out;
+    }
+
+    if (!data->daemoncred) {
+        panic("MacFUSE: daemon found but identity unknown");
+    }
+
+    if (fuse_vfs_context_issuser(context) &&
+        vfs_context_ucred(context)->cr_uid != data->daemoncred->cr_uid) {
+        fuse_device_unlock(fdev);
+        err = EPERM;
+        goto out;
+    }
+
     data->mp = mp;
     data->fdev = fdev;
     data->dataflags |= mntopts;
@@ -358,7 +388,6 @@ fuse_vfs_mount(mount_t mp, __unused vnode_t devvp, user_addr_t udata,
     data->init_timeout.tv_nsec = 0;
 
     data->max_read = max_read;
-    data->mpri = FM_PRIMARY;
     data->fssubtype = fusefs_args.fssubtype;
     data->mountaltflags = fusefs_args.altflags;
     data->noimplflags = (uint64_t)0;
@@ -382,20 +411,39 @@ fuse_vfs_mount(mount_t mp, __unused vnode_t devvp, user_addr_t udata,
 
     vfs_setfsprivate(mp, data);
 
-    /* Handshake with the daemon. */
-    fuse_internal_send_init(data, context);
+    fuse_device_unlock(fdev);
+
+    /* Handshake with the daemon. Blocking. */
+    err = fuse_internal_send_init(data, context);
 
 out:
     if (err) {
-        data->mntco--;
-        debug_printf("b.dec: mntco=%d\n", data->mntco);
+        vfs_setfsprivate(mp, NULL);
 
-        FUSE_LOCK();
-        if ((data->mntco == 0) && !(data->dataflags & FSESS_OPENED)) {
-            fuse_softc_set_data(fdev, NULL);
-            fdata_destroy(data);
+        fuse_device_lock(fdev);
+        data = fuse_device_get_mpdata(fdev); /* again */
+        if (mounted) {
+            OSAddAtomic(-1, (SInt32 *)&fuse_mount_count);
         }
-        FUSE_UNLOCK();
+        if (data) {
+            data->mount_state = FM_NOTMOUNTED;
+            if (!(data->dataflags & FSESS_OPENED)) {
+                fuse_device_close_final(fdev);
+                /* data is gone now */
+            }
+        }
+        fuse_device_unlock(fdev);
+    } else {
+        vnode_t rootvp = NULLVP;
+        err = fuse_vfs_root(mp, &rootvp, context);
+        if (err) {
+            goto out; /* go back and follow error path */
+        }
+        err = vnode_ref(rootvp);
+        (void)vnode_put(rootvp);
+        if (err) {
+            goto out; /* go back and follow error path */
+        }
     }
 
     return (err);
@@ -409,9 +457,11 @@ fuse_vfs_unmount(mount_t mp, int mntflags, vfs_context_t context)
     int   needsignal = 0;
     pid_t daemonpid  = 0;
 
+    fuse_device_t          fdev;
     struct fuse_data      *data;
-    struct fuse_softc     *fdev;
     struct fuse_dispatcher fdi;
+
+    vnode_t rootvp = NULLVP;
 
     fuse_trace_printf_vfsop();
 
@@ -421,37 +471,50 @@ fuse_vfs_unmount(mount_t mp, int mntflags, vfs_context_t context)
 
     data = fuse_get_mpdata(mp);
     if (!data) {
-        panic("MacFUSE: no private data for mount point?");
+        panic("MacFUSE: no mount private data in vfs_unmount");
     }
 
-    if (fdata_kick_get(data)) {
+    fdev = data->fdev;
+
+    if (fdata_dead_get(data)) {
+
         /*
          * If the file system daemon is dead, it's pointless to try to do
          * any unmount-time operations that go out to user space. Therefore,
-         * we pretend that this is a force unmount. However, this isn't much
+         * we pretend that this is a force unmount. However, this isn't of much
          * use. That's because if any non-root vnode is in use, the vflush()
          * that the kernel does before calling our VFS_UNMOUNT will fail
          * if the original unmount wasn't forcible already. That earlier
          * vflush is called with SKIPROOT though, so it wouldn't bail out
-         * on the root vnode being in use. That's the only case where this
-         * the following FORCECLOSE will come in. Maybe I should just not do
-         * it as this might cause confusion. Let us see. I'll revisit this.
+         * on the root vnode being in use.
+         *
+         * If we want, we could set FORCECLOSE here so that a non-forced
+         * unmount will be "upgraded" to a forced unmount if the root vnode
+         * is busy (you are cd'd to the mount point, for example). It's not
+         * quite pure to do that though.
+         *
+         *    flags |= FORCECLOSE;
+         *    IOLog("MacFUSE: forcing unmount on a dead file system\n");
          */
-        flags |= FORCECLOSE;
-        IOLog("MacFUSE: forcing unmount on dead file system\n");
+
     } else if (!(data->dataflags & FSESS_INITED)) {
         flags |= FORCECLOSE;
         IOLog("MacFUSE: forcing unmount on not-yet-alive file system\n");
-        fdata_kick_set(data);
+        fdata_set_dead(data);
     }
 
-    err = vflush(mp, NULLVP, flags);
+    rootvp = data->rootvp;
+
+    err = vflush(mp, rootvp, flags);
     if (err) {
-        debug_printf("vflush failed");
         return (err);
     }
 
-    if (fdata_kick_get(data)) {
+    if (vnode_isinuse(rootvp, 1) && !(flags & FORCECLOSE)) {
+        return EBUSY;
+    }
+
+    if (fdata_dead_get(data)) {
         goto alreadydead;
     }
 
@@ -467,27 +530,38 @@ fuse_vfs_unmount(mount_t mp, int mntflags, vfs_context_t context)
      * Note that dounmount() signals a VQ_UNMOUNT VFS event.
      */
 
-    fdata_kick_set(data);
+    fdata_set_dead(data);
 
 alreadydead:
 
     needsignal = data->dataflags & FSESS_KILL_ON_UNMOUNT;
-
-    data->mpri = FM_NOMOUNTED;
-    data->mntco--;
     daemonpid = data->daemonpid;
-    FUSE_LOCK();
-    fdev = data->fdev;
-    if (data->mntco == 0 && !(data->dataflags & FSESS_OPENED)) {
-        fuse_softc_set_data(fdev, NULL);
-        fdata_destroy(data);
-    }
-    FUSE_UNLOCK();
+
+    vnode_rele(rootvp); /* We got this reference in fuse_vfs_mount(). */
+
+    data->rootvp = NULLVP;
+
+    (void)vflush(mp, NULLVP, FORCECLOSE);
+
+    fuse_device_lock(fdev);
 
     vfs_setfsprivate(mp, NULL);
+    data->mount_state = FM_NOTMOUNTED;
+    OSAddAtomic(-1, (SInt32 *)&fuse_mount_count);
+
+    if (!(data->dataflags & FSESS_OPENED)) {
+
+        /* fdev->data was left for us to clean up */
+
+        fuse_device_close_final(fdev);
+
+        /* fdev->data is gone now */
+    }
+
+    fuse_device_unlock(fdev);
 
     if (daemonpid && needsignal) {
-        proc_signal(daemonpid, FUSE_POSTUNMOUNT_SIGNAL);
+        proc_signal(daemonpid, MACFUSE_POSTUNMOUNT_SIGNAL);
     }
 
     return (0);
@@ -497,21 +571,32 @@ static errno_t
 fuse_vfs_root(mount_t mp, struct vnode **vpp, vfs_context_t context)
 {
     int err = 0;
-    vnode_t vp = NULL;
+    vnode_t vp = NULLVP;
+    struct fuse_entry_out feo_root;
+    struct fuse_data *data = fuse_get_mpdata(mp);
 
     fuse_trace_printf_vfsop();
 
-    err = FSNodeGetOrCreateFileVNodeByID(mp,             // mount
-                                         context,        // VFS context
-                                         FUSE_ROOT_ID,   // node id
-                                         NULLVP,         // parent
-                                         VDIR,           // type
-                                         FUSE_ROOT_SIZE, // size
-                                         &vp,            // ptr
-                                         0,              // flags
-                                         NULL);          // oflags
+    if (data->rootvp != NULLVP) {
+        *vpp = data->rootvp;
+        return (vnode_get(*vpp));
+    }
 
+    bzero(&feo_root, sizeof(feo_root));
+    feo_root.nodeid      = FUSE_ROOT_ID;
+    feo_root.generation  = 0;
+    feo_root.attr.ino    = FUSE_ROOT_ID;
+    feo_root.attr.size   = FUSE_ROOT_SIZE;
+    feo_root.attr.mode   = VTTOIF(VDIR);
+
+    err = FSNodeGetOrCreateFileVNodeByID(&vp, FN_IS_ROOT, &feo_root, mp,
+                                         NULLVP /* dvp */, context,
+                                         NULL /* oflags */);
     *vpp = vp;
+
+    if (!err) {
+        data->rootvp = *vpp;
+    }
 
     return (err);
 }
@@ -543,9 +628,12 @@ handle_capabilities_and_attributes(mount_t mp, struct vfs_attr *attr)
 //      | VOL_CAP_FMT_SPARSE_FILES
 //      | VOL_CAP_FMT_ZERO_RUNS
         | VOL_CAP_FMT_CASE_SENSITIVE
-//      | VOL_CAP_FMT_CASE_PRESERVING
+        | VOL_CAP_FMT_CASE_PRESERVING
 //      | VOL_CAP_FMT_FAST_STATFS
-//      | VOL_CAP_FMT_2TB_FILESIZE
+        | VOL_CAP_FMT_2TB_FILESIZE
+//      | VOL_CAP_FMT_OPENDENYMODES
+//      | VOL_CAP_FMT_HIDDEN_FILES
+//      | VOL_CAP_FMT_PATH_FROM_ID
         ;
     attr->f_capabilities.valid[VOL_CAPABILITIES_FORMAT] = 0
         | VOL_CAP_FMT_PERSISTENTOBJECTIDS
@@ -560,6 +648,9 @@ handle_capabilities_and_attributes(mount_t mp, struct vfs_attr *attr)
         | VOL_CAP_FMT_CASE_PRESERVING
         | VOL_CAP_FMT_FAST_STATFS
         | VOL_CAP_FMT_2TB_FILESIZE
+//      | VOL_CAP_FMT_OPENDENYMODES
+//      | VOL_CAP_FMT_HIDDEN_FILES
+//      | VOL_CAP_FMT_PATH_FROM_ID
         ;
     attr->f_capabilities.capabilities[VOL_CAPABILITIES_INTERFACES] = 0
 //      | VOL_CAP_INT_SEARCHFS
@@ -574,6 +665,9 @@ handle_capabilities_and_attributes(mount_t mp, struct vfs_attr *attr)
         | VOL_CAP_INT_FLOCK
         | VOL_CAP_INT_EXTENDED_SECURITY
 //      | VOL_CAP_INT_USERACCESS
+//      | VOL_CAP_INT_MANLOCK
+//      | VOL_CAP_INT_EXTENDED_ATTR
+//      | VOL_CAP_INT_NAMEDSTREAMS
         ;
 
     if (data->dataflags & FSESS_VOL_RENAME) {
@@ -594,6 +688,9 @@ handle_capabilities_and_attributes(mount_t mp, struct vfs_attr *attr)
         | VOL_CAP_INT_FLOCK
         | VOL_CAP_INT_EXTENDED_SECURITY
         | VOL_CAP_INT_USERACCESS
+//      | VOL_CAP_INT_MANLOCK
+//      | VOL_CAP_INT_EXTENDED_ATTR
+//      | VOL_CAP_INT_NAMEDSTREAMS
         ;
 
     attr->f_capabilities.capabilities[VOL_CAPABILITIES_RESERVED1] = 0;
@@ -626,6 +723,8 @@ handle_capabilities_and_attributes(mount_t mp, struct vfs_attr *attr)
         | ATTR_CMN_EXTENDED_SECURITY
 //      | ATTR_CMN_UUID
 //      | ATTR_CMN_GRPUUID
+//      | ATTR_CMN_FILEID
+//      | ATTR_CMN_PARENTID
         ;
     attr->f_attributes.validattr.volattr = 0
         | ATTR_VOL_FSTYPE
@@ -647,6 +746,7 @@ handle_capabilities_and_attributes(mount_t mp, struct vfs_attr *attr)
 //      | ATTR_VOL_ENCODINGSUSED
         | ATTR_VOL_CAPABILITIES
         | ATTR_VOL_ATTRIBUTES
+//      | ATTR_VOL_INFO
         ;
     attr->f_attributes.validattr.dirattr = 0
         | ATTR_DIR_LINKCOUNT
@@ -666,7 +766,11 @@ handle_capabilities_and_attributes(mount_t mp, struct vfs_attr *attr)
 //      | ATTR_FILE_RSRCLENGTH
 //      | ATTR_FILE_RSRCALLOCSIZE
         ;
+
     attr->f_attributes.validattr.forkattr = 0;
+//      | ATTR_FORK_TOTALSIZE
+//      | ATTR_FORK_ALLOCSIZE
+        ;
     
     // All attributes that we do support, we support natively.
     
@@ -851,23 +955,22 @@ fuse_sync_callback(vnode_t vp, void *cargs)
     struct fuse_dispatcher  fdi;
     struct fuse_filehandle *fufh;
     struct fuse_data       *data;
+    mount_t mp;
 
     if (!vnode_hasdirtyblks(vp)) {
         return VNODE_RETURNED;
     }
 
-    if (fuse_isdeadfs_nop(vp)) {
+    mp = vnode_mount(vp);
+
+    if (fuse_isdeadfs_mp(mp)) {
         return VNODE_RETURNED_DONE;
     }
 
-    data = fuse_get_mpdata(vnode_mount(vp));
+    data = fuse_get_mpdata(mp);
 
-    if (fdata_kick_get(data)) {
-        return VNODE_RETURNED_DONE;
-    }
-
-    if (data->noimplflags & ((vnode_vtype(vp) == VDIR) ?
-                         FSESS_NOIMPL(FSYNCDIR) : FSESS_NOIMPL(FSYNC))) {
+    if (!fuse_implemented(data, (vnode_isdir(vp)) ?
+        FSESS_NOIMPLBIT(FSYNCDIR) : FSESS_NOIMPLBIT(FSYNC))) {
         return VNODE_RETURNED;
     }
 
@@ -984,4 +1087,43 @@ fuse_vfs_setattr(mount_t mp, struct vfs_attr *fsap, vfs_context_t context)
 
 out:
     return error;
+}
+
+__private_extern__
+int
+fuse_setextendedsecurity(mount_t mp, int state)
+{
+    int err = EINVAL;
+    struct fuse_data *data;
+
+    data = fuse_get_mpdata(mp);
+
+    if (!data) {
+        return ENXIO;
+    }
+
+    if (state == 1) {
+        /* Turning on extended security. */
+        if ((data->dataflags & FSESS_NO_VNCACHE) ||
+            (data->dataflags & FSESS_DEFER_PERMISSIONS)) {
+            return EINVAL;
+        }
+        data->dataflags |= (FSESS_EXTENDED_SECURITY |
+                            FSESS_DEFAULT_PERMISSIONS);;
+        if (vfs_authopaque(mp)) {
+            vfs_clearauthopaque(mp);
+        }
+        if (vfs_authopaqueaccess(mp)) {
+            vfs_clearauthopaqueaccess(mp);
+        }
+        vfs_setextendedsecurity(mp);
+        err = 0;
+    } else if (state == 0) {
+        /* Turning off extended security. */
+        data->dataflags &= ~FSESS_EXTENDED_SECURITY;
+        vfs_clearextendedsecurity(mp);
+        err = 0;
+    }
+
+    return err;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 Google. All Rights Reserved.
+ * Copyright (C) 2006-2007 Google. All Rights Reserved.
  * Amit Singh <singh@>
  */
 
@@ -33,11 +33,17 @@
 #include <fuse_param.h>
 #include <fuse_version.h>
 
+#include <fsproperties.h>
+#ifndef kFSSubTypeKey
+#define kFSSubTypeKey "FSSubType"
+#endif
 #include <CoreFoundation/CoreFoundation.h>
 
 #define PROGNAME "mount_" MACFUSE_FS_TYPE
 
-char *getproctitle(pid_t pid, char **title, int *len);
+static int signal_idx = -1;
+static int signal_fd  = -1;
+
 void  showhelp(void);
 void  showversion(int doexit);
 
@@ -47,43 +53,34 @@ struct mntopt mopts[] = {
     { "allow_other",         0, FUSE_MOPT_ALLOW_OTHER,            1 }, // kused
     { "allow_recursion",     0, FUSE_MOPT_ALLOW_RECURSION,        1 }, // uused
     { "allow_root",          0, FUSE_MOPT_ALLOW_ROOT,             1 }, // kused
+    { "auto_xattr",          0, FUSE_MOPT_AUTO_XATTR,             1 }, // kused
     { "blocksize=",          0, FUSE_MOPT_BLOCKSIZE,              1 }, // kused
     { "daemon_timeout=",     0, FUSE_MOPT_DAEMON_TIMEOUT,         1 }, // kused
     { "debug",               0, FUSE_MOPT_DEBUG,                  1 }, // kused
-    { "default_permissions", 0, FUSE_MOPT_DEFAULT_PERMISSIONS,    1 },
-    { "defer_auth",          0, FUSE_MOPT_DEFER_AUTH,             1 }, // kused
+    { "default_permissions", 0, FUSE_MOPT_DEFAULT_PERMISSIONS,    1 }, // kused
+    { "defer_permissions",   0, FUSE_MOPT_DEFER_PERMISSIONS,      1 }, // kused
     { "direct_io",           0, FUSE_MOPT_DIRECT_IO,              1 }, // kused
     { "extended_security",   0, FUSE_MOPT_EXTENDED_SECURITY,      1 }, // kused
-    { "fd=",                 0, FUSE_MOPT_FD,                     1 },
     { "fsid=" ,              0, FUSE_MOPT_FSID,                   1 }, // kused
     { "fsname=",             0, FUSE_MOPT_FSNAME,                 1 }, // kused
     { "fssubtype=",          0, FUSE_MOPT_FSSUBTYPE,              1 }, // kused
-    { "gid=",                0, FUSE_MOPT_GID,                    1 }, // kused
-    { "hard_remove",         0, FUSE_MOPT_HARD_REMOVE,            1 },
     { "init_timeout=",       0, FUSE_MOPT_INIT_TIMEOUT,           1 }, // kused
     { "iosize=",             0, FUSE_MOPT_IOSIZE,                 1 }, // kused
     { "jail_symlinks",       0, FUSE_MOPT_JAIL_SYMLINKS,          1 }, // kused
-    { "kernel_cache",        0, FUSE_MOPT_KERNEL_CACHE,           1 },
     { "kill_on_unmount",     0, FUSE_MOPT_KILL_ON_UNMOUNT,        1 }, // kused 
     { "ping_diskarb",        0, FUSE_MOPT_PING_DISKARB,           1 }, // kused
-    { "readdir_ino",         0, FUSE_MOPT_READDIR_INO,            1 },
-    { "rootmode=",           0, FUSE_MOPT_ROOTMODE,               1 },
-    { "uid=",                0, FUSE_MOPT_UID,                    1 }, // kused
-    { "umask=",              0, FUSE_MOPT_UMASK,                  1 },
     { "use_ino",             0, FUSE_MOPT_USE_INO,                1 },
-    { "volicon",             0, FUSE_MOPT_VOLICON,                1 }, // kused
     { "volname=",            0, FUSE_MOPT_VOLNAME,                1 }, // kused
 
     /* negative ones */
 
     { "alerts",              1, FUSE_MOPT_NO_ALERTS,              1 }, // kused
-    { "applespecial",        1, FUSE_MOPT_NO_APPLESPECIAL,        1 }, // kused
+    { "appledouble",         1, FUSE_MOPT_NO_APPLEDOUBLE,         1 }, // kused
+    { "applexattr",          1, FUSE_MOPT_NO_APPLEXATTR,          1 }, // kused
     { "attrcache",           1, FUSE_MOPT_NO_ATTRCACHE,           1 }, // kused
-    { "authopaque",          1, FUSE_MOPT_NO_AUTH_OPAQUE,         1 }, // kused
-    { "authopaqueaccess",    1, FUSE_MOPT_NO_AUTH_OPAQUE_ACCESS,  1 }, // kused
     { "browse",              1, FUSE_MOPT_NO_BROWSE,              1 }, // kused
     { "localcaches",         1, FUSE_MOPT_NO_LOCALCACHES,         1 }, // kused
-    { "noping_diskarb",      1, FUSE_MOPT_PING_DISKARB,           0 }, // kused
+    { "ping_diskarb",        1, FUSE_MOPT_PING_DISKARB,           1 }, // kused
     { "readahead",           1, FUSE_MOPT_NO_READAHEAD,           1 }, // kused
     { "synconclose",         1, FUSE_MOPT_NO_SYNCONCLOSE,         1 }, // kused
     { "syncwrites",          1, FUSE_MOPT_NO_SYNCWRITES,          1 }, // kused
@@ -98,7 +95,7 @@ typedef int (* converter_t)(void **target, void *value, void *fallback);
 struct mntval {
     uint64_t    mv_mntflag;
     void       *mv_value;
-    int         mv_len;
+    size_t      mv_len;
     converter_t mv_converter;
     void       *mv_fallback;
     void      **mv_target;
@@ -167,67 +164,169 @@ fuse_to_fsid(void **target, void *value, void *fallback)
     return 0;
 }
 
+static uint32_t
+fsbundle_find_fssubtype(const char *bundle_path_C,
+                        const char *claimed_name_C,
+                        uint32_t    claimed_fssubtype)
+{
+    uint32_t result = MACFUSE_FSSUBTYPE_UNKNOWN;
+
+    CFStringRef bundle_path_string  = NULL;
+    CFStringRef claimed_name_string = NULL;
+
+    CFURLRef    bundleURL = NULL;
+    CFBundleRef bundleRef = NULL;
+
+    CFDictionaryRef fspersonalities = NULL;
+
+    CFIndex idx   = 0;
+    CFIndex count = 0;
+    Boolean found = false;
+
+    CFStringRef     *keys     = NULL;
+    CFDictionaryRef *subdicts = NULL;
+
+    bundle_path_string = CFStringCreateWithCString(kCFAllocatorDefault,
+                                                   bundle_path_C,
+                                                   kCFStringEncodingUTF8);
+    if (!bundle_path_string) {
+        goto out;
+    }
+
+    bundleURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault,
+                                              bundle_path_string,
+                                              kCFURLPOSIXPathStyle,
+                                              true);
+    if (!bundleURL) {
+        goto out;
+    }
+
+    bundleRef = CFBundleCreate(kCFAllocatorDefault, bundleURL);
+    if (!bundleRef) {
+        goto out;
+    }
+
+    fspersonalities = CFBundleGetValueForInfoDictionaryKey(
+                          bundleRef, CFSTR(kFSPersonalitiesKey));
+    if (!fspersonalities) {
+        goto out;
+    }
+
+    count = CFDictionaryGetCount(fspersonalities);
+    if (count <= 0) {
+        goto out;
+    }
+
+    keys = (CFStringRef *)malloc(count * sizeof(CFStringRef));
+    subdicts = (CFDictionaryRef *)malloc(count * sizeof(CFDictionaryRef));
+
+    if (!keys || !subdicts) {
+        goto out;
+    }
+
+    CFDictionaryGetKeysAndValues(fspersonalities,
+                                 (const void **)keys,
+                                 (const void **)subdicts);
+
+    if (claimed_fssubtype == MACFUSE_FSSUBTYPE_INVALID) {
+        goto lookupbyfsname;
+    }
+
+    for (idx = 0; idx < count; idx++) {
+        CFNumberRef n = NULL;
+        uint32_t candidate_fssubtype = MACFUSE_FSSUBTYPE_INVALID;
+        if (CFDictionaryGetValueIfPresent(subdicts[idx],
+                                          (const void *)CFSTR(kFSSubTypeKey),
+                                          (const void **)&n)) {
+            if (CFNumberGetValue(n, kCFNumberIntType, &candidate_fssubtype)) {
+                if (candidate_fssubtype == claimed_fssubtype) {
+                    found = true;
+                    result = candidate_fssubtype;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (found) {
+        goto out;
+    }
+
+lookupbyfsname:
+
+    claimed_name_string = CFStringCreateWithCString(kCFAllocatorDefault,
+                                                    claimed_name_C,
+                                                    kCFStringEncodingUTF8);
+    if (!claimed_name_string) {
+        goto out;
+    }
+
+    for (idx = 0; idx < count; idx++) {
+        CFRange where = CFStringFind(claimed_name_string, keys[idx],
+                                     kCFCompareCaseInsensitive);
+        if (where.location != kCFNotFound) {
+            found = true;
+        }
+        if (found) {
+            CFNumberRef n = NULL;
+            uint32_t candidate_fssubtype = MACFUSE_FSSUBTYPE_INVALID;
+            if (CFDictionaryGetValueIfPresent(
+                    subdicts[idx], (const void *)CFSTR(kFSSubTypeKey),
+                    (const void **)&n)) {
+                if (CFNumberGetValue(n, kCFNumberIntType,
+                                     &candidate_fssubtype)) {
+                    result = candidate_fssubtype;
+                }
+            }
+            break;
+        }
+    }
+
+out:
+    if (keys) {
+        free(keys);
+    }
+
+    if (subdicts) {
+        free(subdicts);
+    }
+
+    if (bundle_path_string) {
+        CFRelease(bundle_path_string);
+    }
+
+    if (bundleURL) {
+        CFRelease(bundleURL);
+    }
+
+    if (claimed_name_string) {
+        CFRelease(claimed_name_string);
+    }
+
+    if (bundleRef) {
+        CFRelease(bundleRef);
+    }
+
+    return result;
+}
+
 static __inline__ int
 fuse_to_fssubtype(void **target, void *value, void *fallback)
 {
-    int ret = 0;
-    uint32_t u;
-    
-    *(uint32_t *)target = FUSE_FSSUBTYPE_UNKNOWN;
+    char *name = getenv("MOUNT_FUSEFS_DAEMON_PATH");
+   
+    *(uint32_t *)target = MACFUSE_FSSUBTYPE_INVALID;
 
     if (value) {
-        ret = fuse_to_uint32(target, value, fallback);
+        int ret = fuse_to_uint32(target, value, fallback);
         if (ret) {
-            return ret;
-        }   
-        u = *(uint32_t *)target;
-        if (u >= FUSE_FSSUBTYPE_MAX) {
-            return EINVAL;
-        }
-        if (u > FUSE_FSSUBTYPE_UNKNOWN) {
-            return 0;
+            *(uint32_t *)target = MACFUSE_FSSUBTYPE_INVALID;
         }
     }
 
-    /* try to guess */
+    *(uint32_t *)target = fsbundle_find_fssubtype(MACFUSE_BUNDLE_PATH,
+                                                  name, *(uint32_t *)target);
 
-    *(uint32_t *)target = FUSE_FSSUBTYPE_UNKNOWN;
-
-    {
-        int   len;
-        char *title;
-
-        title = getproctitle(getppid(), &title, &len);
-        if (!title) {
-            return 0;
-        }
-
-        if (strcasestr(title, "xmp")) {
-            *(uint32_t *)target = FUSE_FSSUBTYPE_XMPFS;
-        } else if (strcasestr(title, "ssh")) {
-            *(uint32_t *)target = FUSE_FSSUBTYPE_SSHFS;
-        } else if (strcasestr(title, "ftp")) {
-            *(uint32_t *)target = FUSE_FSSUBTYPE_FTPFS;
-        } else if ((strcasestr(title, "webdav")) ||
-                   (strcasestr(title, "wdfs"))) {
-            *(uint32_t *)target = FUSE_FSSUBTYPE_WEBDAVFS;
-        } else if (strcasestr(title, "spotlight")) {
-            *(uint32_t *)target = FUSE_FSSUBTYPE_SPOTLIGHTFS;
-        } else if (strcasestr(title, "picasa")) {
-            *(uint32_t *)target = FUSE_FSSUBTYPE_PICASAFS;
-        } else if (strcasestr(title, "proc")) {
-            *(uint32_t *)target = FUSE_FSSUBTYPE_PROCFS;
-        } else if (strcasestr(title, "ntfs")) {
-            *(uint32_t *)target = FUSE_FSSUBTYPE_NTFS;
-        } else if (strcasestr(title, "beagle")) {
-            *(uint32_t *)target = FUSE_FSSUBTYPE_BEAGLEFS;
-        } else if (strcasestr(title, "crypto")) {
-            *(uint32_t *)target = FUSE_FSSUBTYPE_CRYPTOFS;
-        }
-
-        free(title);
-    }
-    
     return 0;
 }
 
@@ -235,9 +334,10 @@ static uint32_t  blocksize      = FUSE_DEFAULT_BLOCKSIZE;
 static uint32_t  daemon_timeout = FUSE_DEFAULT_DAEMON_TIMEOUT;
 static uint32_t  fsid           = 0;
 static char     *fsname         = NULL;
+static uint32_t  fssubtype      = 0;
 static uint32_t  init_timeout   = FUSE_DEFAULT_INIT_TIMEOUT;
 static uint32_t  iosize         = FUSE_DEFAULT_IOSIZE;
-static uint32_t  fssubtype      = 0;
+static uint32_t  drandom        = 0;
 static char     *volname        = NULL;
 
 struct mntval mvals[] = {
@@ -333,76 +433,6 @@ fuse_process_mvals(void)
     }
 }
 
-char *
-getproctitle(pid_t pid, char **title, int *len)
-{
-    size_t size;
-    int    mib[3];
-    int    argmax, target_argc;
-    char  *target_argv;
-    char  *cp;
-
-    mib[0] = CTL_KERN;
-    mib[1] = KERN_ARGMAX;
-
-    size = sizeof(argmax);
-    if (sysctl(mib, 2, &argmax, &size, NULL, 0) == -1) {
-        goto failed;
-    }
-
-    target_argv = (char *)malloc(argmax);
-    if (target_argv == NULL) {
-        goto failed;
-    }
-
-    mib[0] = CTL_KERN;
-    mib[1] = KERN_PROCARGS2;
-    mib[2] = pid;
-
-    size = (size_t)argmax;
-    if (sysctl(mib, 3, target_argv, &size, NULL, 0) == -1) {
-        free(target_argv);
-        goto failed;
-    }
-
-    memcpy(&target_argc, target_argv, sizeof(target_argc));
-    cp = target_argv + sizeof(target_argc);
-
-    for (; cp < &target_argv[size]; cp++) {
-        if (*cp == '\0') {
-            break;
-        }
-    }
-
-    if (cp == &target_argv[size]) {
-        free(target_argv);
-        goto failed;
-    }
-
-    for (; cp < &target_argv[size]; cp++) {
-        if (*cp != '\0') {
-            break;
-        }
-    }
-
-    if (cp == &target_argv[size]) {
-        free(target_argv);
-        goto failed;
-    }
-
-    *len = asprintf(title, "%s", basename(cp));
-
-    free(target_argv);
-    goto out;
-
-failed:
-    *title = NULL;
-    *len = 0;
-
-out:
-    return *title;
-}
-
 #include <DiskArbitration/DiskArbitration.h>
 
 extern kern_return_t DiskArbInit(void) __attribute__((weak_import));
@@ -413,7 +443,7 @@ extern kern_return_t DiskArbDiskAppearedWithMountpointPing_auto(
 ) __attribute__((weak_import));
 
 static int
-ping_diskarb(char *mntpath, uint64_t altflags)
+ping_diskarb(char *mntpath, __unused uint64_t altflags)
 {
     int ret;
     struct statfs sb;
@@ -543,9 +573,30 @@ check_kext_status(void)
         return EINVAL;
     }
 
-    /* what's currently loaded is good */
+    /* What's currently loaded is good */
 
     return 0;
+}
+
+static void
+signal_idx_atexit_handler(void)
+{
+    if (signal_idx != -1) {
+
+        (void)ioctl(signal_fd, FUSEDEVIOCSETDAEMONDEAD, &signal_fd);
+
+        /*
+         * Originally, I did kill_fs from here.
+         *
+         * int32_t kill_fs_old = 0;
+         * int32_t kill_fs_new = signal_idx;
+         * size_t oldlen = sizeof(kill_fs_old);
+         * size_t newlen = sizeof(kill_fs_new);
+         *
+         * (void)sysctlbyname("macfuse.control.kill_fs", (void *)&kill_fs_old,
+         *                    &oldlen, (void *)&kill_fs_new, newlen);
+         */
+    }
 }
 
 // We will be called as follows by the FUSE library:
@@ -560,7 +611,7 @@ main(int argc, char **argv)
     int       fd        = -1;
     int32_t   dindex    = -1;
     char     *fdnam     = NULL;
-    uint64_t  altflags  = 0 | FUSE_MOPT_PING_DISKARB;
+    uint64_t  altflags  = 0ULL | FUSE_MOPT_PING_DISKARB;
     char     *mntpath   = NULL;
 
     int i, ch = '\0', done = 0;
@@ -586,27 +637,6 @@ main(int argc, char **argv)
         ((!strncmp(argv[1], "--help", strlen("--help"))) ||
          (!strncmp(argv[1], "-h", strlen("-h"))))) {
         showhelp();
-    }
-
-    result = check_kext_status();
-
-    switch (result) {
-
-    case 0:
-        break;
-
-    case ESRCH:
-        errx(1, "the MacFUSE kernel extension is not loaded");
-        break;
-
-    case EINVAL:
-        errx(1, "the loaded MacFUSE kernel extension has a mismatched version");
-        break;
-
-    default:
-        errx(1, "failed to query the loaded MacFUSE kernel extension (%d)",
-             result);
-        break;
     }
 
     do {
@@ -681,13 +711,77 @@ main(int argc, char **argv)
         argc--;
     }
 
+    if (!fdnam) {
+        errx(1, "missing MacFUSE device file descriptor");
+    }
+
+    errno = 0;
+    fd = strtol(fdnam, NULL, 10);
+    if ((errno == EINVAL) || (errno == ERANGE)) {
+        errx(1, "invalid name (%s) for MacFUSE device file descriptor", fdnam);
+    }
+
+    signal_fd = fd;
+
+    {
+        char  ndev[MAXPATHLEN];
+        char *ndevbas;
+        struct stat sb;
+
+        if (fstat(fd, &sb) == -1) {
+            err(1, "fstat failed for MacFUSE device file descriptor");
+        }
+        args.rdev = sb.st_rdev;
+        strcpy(ndev, _PATH_DEV);
+        ndevbas = ndev + strlen(_PATH_DEV);
+        devname_r(sb.st_rdev, S_IFCHR, ndevbas,
+                  sizeof(ndev) - strlen(_PATH_DEV));
+
+        if (strncmp(ndevbas, MACFUSE_DEVICE_BASENAME,
+                    strlen(MACFUSE_DEVICE_BASENAME))) {
+            errx(1, "mounting inappropriate device");
+        }
+
+        errno = 0;
+        dindex = strtol(ndevbas + strlen(MACFUSE_DEVICE_BASENAME), NULL, 10);
+        if ((errno == EINVAL) || (errno == ERANGE) ||
+            (dindex < 0) || (dindex > MACFUSE_NDEVICES)) {
+            errx(1, "invalid MacFUSE device unit (#%d)\n", dindex);
+        }
+    }
+
+    signal_idx = dindex;
+
+    atexit(signal_idx_atexit_handler);
+
+    result = check_kext_status();
+
+    switch (result) {
+
+    case 0:
+        break;
+
+    case ESRCH:
+        errx(1, "the MacFUSE kernel extension is not loaded");
+        break;
+
+    case EINVAL:
+        errx(1, "the loaded MacFUSE kernel extension has a mismatched version");
+        break;
+
+    default:
+        errx(1, "failed to query the loaded MacFUSE kernel extension (%d)",
+             result);
+        break;
+    }
+
     if ((!mntpath) && argc > 0) {
         mntpath = *argv++;
         argc--;
     }
 
-    if (!(fdnam && mntpath)) {
-        errx(1, "missing FUSE fd name and/or mount point");
+    if (!mntpath) {
+        errx(1, "missing mount point");
     }
 
     (void)checkpath(mntpath, args.mntpath);
@@ -718,7 +812,7 @@ main(int argc, char **argv)
      */
     if ((altflags & FUSE_MOPT_NO_SYNCWRITES) &&
         (altflags & (FUSE_MOPT_NO_UBC | FUSE_MOPT_NO_READAHEAD))) {
-        errx(1, "disabling local caching is not allowed with 'nosyncwrites'");
+        errx(1, "disabling local caching can't be used with 'nosyncwrites'");
     }
 
     /*
@@ -734,49 +828,18 @@ main(int argc, char **argv)
      */
     if ((altflags & FUSE_MOPT_NO_VNCACHE) &&
         (altflags & FUSE_MOPT_EXTENDED_SECURITY)) {
-        errx(1, "'novncache' is not allowed with 'extended_security'");
+        errx(1, "'novncache' can't be used with 'extended_security'");
     }
 
-    if ((altflags & FUSE_MOPT_DEFER_AUTH) &&
-        (altflags &
-         (FUSE_MOPT_NO_AUTH_OPAQUE | FUSE_MOPT_NO_AUTH_OPAQUE_ACCESS))) {
-        errx(1, "'defer_auth' is not allowed with 'noauthopaque*'");
+    if ((altflags & FUSE_MOPT_DEFAULT_PERMISSIONS) &&
+        (altflags & FUSE_MOPT_DEFER_PERMISSIONS)) {
+        errx(1, "'default_permissions' can't be used with 'defer_permissions'");
     }
 
     if (getenv("MOUNT_FUSEFS_NO_ALERTS")) {
         altflags |= FUSE_MOPT_NO_ALERTS;
     }
 
-    errno = 0;
-    fd = strtol(fdnam, NULL, 10);
-    if ((errno == EINVAL) || (errno == ERANGE)) {
-        errx(1, "invalid name (%s) for FUSE device file descriptor", fdnam);
-    } else {
-        char  ndev[MAXPATHLEN];
-        char *ndevbas;
-        struct stat sb;
-
-        if (fstat(fd, &sb) == -1) {
-            err(1, "fstat failed for FUSE device file descriptor");
-        }
-        args.rdev = sb.st_rdev;
-        strcpy(ndev, _PATH_DEV);
-        ndevbas = ndev + strlen(_PATH_DEV);
-        devname_r(sb.st_rdev, S_IFCHR, ndevbas,
-                  sizeof(ndev) - strlen(_PATH_DEV));
-
-        if (strncmp(ndevbas, FUSE_DEVICE_BASENAME,
-                    strlen(FUSE_DEVICE_BASENAME))) {
-            errx(1, "mounting inappropriate device");
-        }
-
-        errno = 0;
-        dindex = strtol(ndevbas + strlen(FUSE_DEVICE_BASENAME), NULL, 10);
-        if ((errno == EINVAL) || (errno == ERANGE) ||
-            (dindex < 0) || (dindex > FUSE_NDEVICES)) {
-            errx(1, "invalid FUSE device unit (#%d)\n", dindex);
-        }
-    }
 
     if (daemon_timeout < FUSE_MIN_DAEMON_TIMEOUT) {
         daemon_timeout = FUSE_MIN_DAEMON_TIMEOUT;
@@ -794,103 +857,70 @@ main(int argc, char **argv)
         init_timeout = FUSE_MAX_INIT_TIMEOUT;
     }
 
+    result = ioctl(fd, FUSEDEVIOCGETRANDOM, &drandom);
+    if (result) {
+        errx(1, "failed to negotiate with /dev/fuse%d", dindex);
+    }
+
     args.altflags       = altflags;
     args.blocksize      = blocksize;
     args.daemon_timeout = daemon_timeout;
     args.fsid           = fsid;
-    args.index          = dindex;
+    args.fssubtype      = fssubtype;
     args.init_timeout   = init_timeout;
     args.iosize         = iosize;
-    args.fssubtype      = fssubtype;
+    args.random         = drandom;
+
+    char *daemon_name = NULL;
+    char *daemon_path = getenv("MOUNT_FUSEFS_DAEMON_PATH");
+    if (daemon_path) {
+        daemon_name = basename(daemon_path);
+    }
 
     if (!fsname) {
-        snprintf(args.fsname, MAXPATHLEN, "instance@fuse%d", dindex);
+        if (daemon_name) {
+            snprintf(args.fsname, MAXPATHLEN, "%s@fuse%d", daemon_name, dindex);
+        } else {
+            snprintf(args.fsname, MAXPATHLEN, "instance@fuse%d", dindex);
+        }
     } else {
         snprintf(args.fsname, MAXPATHLEN, "%s", fsname);
     }
 
     if (!volname) {
-        snprintf(args.volname, MAXPATHLEN, "MacFUSE Volume %d", dindex);
+        if (daemon_name) {
+            snprintf(args.volname, MAXPATHLEN, "MacFUSE Volume %d (%s)",
+                     dindex, daemon_name);
+        } else {
+            snprintf(args.volname, MAXPATHLEN, "MacFUSE Volume %d", dindex);
+        }
     } else {
         snprintf(args.volname, MAXPATHLEN, "%s", volname);
     }
 
-    if (mount(MACFUSE_FS_TYPE, mntpath, mntflags, (void *)&args) < 0) {
-        err(EX_OSERR, "%s@%d on %s", MACFUSE_FS_TYPE, dindex, mntpath);
-    }
+    /* Finally! */
+    result = mount(MACFUSE_FS_TYPE, mntpath, mntflags, (void *)&args);
 
-    /*
-     * XXX: There's a race condition here with the Finder. The kernel's
-     * vfs_getattr() won't do the real thing until the daemon has responded
-     * to the FUSE_INIT method. If the Finder does a stat on the file system
-     * too soon, it will get "fake" information (leading to things like
-     * "Zero KB on disk"). A decent solution is to do this pinging not here,
-     * but somewhere else asynchronously, after we've made sure that the
-     * kernel-user handshake is complete.
-     */
-    {
-        pid_t pid;
-
-        signal(SIGCHLD, SIG_IGN);
-
-        if ((pid = fork()) < 0) {
-            err(EX_OSERR, "%s@%d on %s (fork failed)",
-                MACFUSE_FS_TYPE, dindex, mntpath);
-        }
-
-        setbuf(stderr, NULL);
-
-        if (pid == 0) { /* child */
-
-            int ret = 0, wait_iterations;
-            char *udata_keys[]   = { kFUSEMountPathKey };
-            char *udata_values[] = { mntpath };
+    if (result < 0) {
+        err(EX_OSERR, "failed to mount %s@/dev/fuse%d", mntpath, dindex);
+    } else {
+        char *udata_keys[]   = { kFUSEMountPathKey };
+        char *udata_values[] = { mntpath };
            
-            post_notification(FUSE_UNOTIFICATIONS_NOTIFY_MOUNTED,
-                              udata_keys, udata_values, 1);
+        post_notification(FUSE_UNOTIFICATIONS_NOTIFY_MOUNTED,
+                          udata_keys, udata_values, 1);
 
-            wait_iterations = \
-                (init_timeout * 1000000) / FUSE_INIT_WAIT_INTERVAL;
-
-            for (; wait_iterations > 0; wait_iterations--) { 
-                u_int32_t hs_complete = 0;
-
-                ret = ioctl(fd, FUSEDEVIOCISHANDSHAKECOMPLETE, &hs_complete);
-                if (ret) {
-                    break;
-                }
-
-                if (hs_complete) {
-                    if (args.altflags & FUSE_MOPT_PING_DISKARB) {
-                        /* Let Disk Arbitration know. */
-                        if (ping_diskarb(mntpath, altflags)) {
-                            /* Somebody might want to exit here instead. */
-                            fprintf(stderr, "%s@%d on %s (ping DiskArb)",
-                                    MACFUSE_FS_TYPE, dindex, mntpath);
-                        }
-                    }
-
-                    post_notification(FUSE_UNOTIFICATIONS_NOTIFY_INITED,
-                                      udata_keys, udata_values, 1);
-
-                    exit(0);
-                }
-
-                usleep(FUSE_INIT_WAIT_INTERVAL);
-
-            } /* for */
-
-            post_notification(FUSE_UNOTIFICATIONS_NOTIFY_INITTIMEDOUT,
-                              udata_keys, udata_values, 1);
-
-            if (ret == 0) {
-                /* Somebody might want to exit here instead. */
-                fprintf(stderr, "%s@%d on %s (gave up on init handshake)",
-                        MACFUSE_FS_TYPE, dindex, mntpath);
-            }
-
-        } /* parent: just fall through and exit */
+        if (args.altflags & FUSE_MOPT_PING_DISKARB) {
+             /* Let Disk Arbitration know. */
+             if (ping_diskarb(mntpath, altflags)) {
+                 /* Somebody might want to exit here instead. */
+                 fprintf(stderr, "%s@%d on %s (ping DiskArb)",
+                         MACFUSE_FS_TYPE, dindex, mntpath);
+             }
+        }
     }
+
+    signal_idx = -1;
 
     exit(0);
 }
@@ -900,32 +930,35 @@ showhelp()
 {
     if (!getenv("MOUNT_FUSEFS_CALL_BY_LIB")) {
         showversion(0);
-        fprintf(stderr, "\nThis program is not meant to be called directly.\n");
+        fprintf(stderr, "\nThis program is not meant to be called directly. The MacFUSE library calls it.\n");
     }
     fprintf(stderr, "\nAvailable mount options:\n");
     fprintf(stderr,
       "    -o allow_other         allow access to others besides the user who mounted"
-      "                             mounted the file system\n"
-      "    -o allow_recursion     allow a mount point that itself is on a MacFUSE\n"
+      "                             the file system\n"
+      "    -o allow_recursion     allow a mount point that itself resides on a MacFUSE\n"
       "                           volume (by default, such mounting is disallowed)\n"
-      "    -o allow_root          allow access to root (mutually exclusive with the\n"
-      "                           allow_other option)\n"
+      "    -o allow_root          allow access to root (can't be used with allow_other)\n"
+      "    -o auto_xattr          handle extended attributes entirely through ._ files\n"
       "    -o blocksize=<size>    specify block size in bytes of \"storage\"\n"
       "    -o daemon_timeout=<s>  timeout in seconds for kernel calls to daemon\n"
       "    -o debug               turn on debug information printing\n"
-      "    -o defer_auth          defer permission checks to file operations themselves"
+      "    -o default_permissions let the kernel handle permission checks locally\n"
+      "    -o defer_permissions   defer permission checks to file operations themselves\n"
+      "    -o direct_io           use alternative (direct) path for kernel-user I/O\n"
       "    -o extended_security   turn on Mac OS X extended security (ACLs)\n"
-      "    -o fsid                set the second 32-bit component of the fsid\n"
-      "    -o fssubtype=<num>     set the file system's fssubtype identifier\n"
+      "    -o fsid=<fsid>         set the second 32-bit component of the fsid\n"
       "    -o fsname=<name>       set the file system's name\n"
-      "    -o init_timeout=<s>    timeout in seconds for the init method to complete\n"
+      "    -o fssubtype=<num>     set the file system's fssubtype identifier\n"
       "    -o iosize=<size>       specify maximum I/O size in bytes\n" 
       "    -o jail_symlinks       contain symbolic links within the mount\n"
       "    -o kill_on_unmount     kernel will send a signal (SIGKILL by default) to the\n                           daemon after unmount finishes\n" 
-      "    -o noapplespecial      ignore Apple Double (._) and .DS_Store files entirely\n"
-      "    -o noauthopaque        set MNTK_AUTH_OPAQUE in the kernel\n"
-      "    -o noauthopaqueaccess  set MNTK_AUTH_OPAQUE_ACCESS in the kernel\n"
-      "    -o nobrowse            set MNT_DONTBROWSE in the kernel\n"
+      "    -o volname=<name>      set the file system's volume name\n"      
+      "\nAvailable negative mount options:\n"
+      "    -o noalerts            disable all graphical alerts (if any) in MacFUSE Core\n"
+      "    -o noappledouble       ignore Apple Double (._) and .DS_Store files entirely\n"
+      "    -o noapplexattr        ignore all \"com.apple.*\" extended attributes\n"
+      "    -o nobrowse            mark the volume as non-browsable by the Finder\n"
       "    -o nolocalcaches       meta option equivalent to noreadahead,noubc,novncache\n"
       "    -o noping_diskarb      do not ping Disk Arbitration (pings by default)\n"
       "    -o noreadahead         disable I/O read-ahead behavior for this file system\n"
@@ -933,7 +966,6 @@ showhelp()
       "    -o nosyncwrites        disable synchronous-writes behavior (dangerous)\n"
       "    -o noubc               disable the unified buffer cache for this file system\n"
       "    -o novncache           disable the vnode name cache for this file system\n"
-      "    -o volname=<name>      set the file system's volume name\n"      
     );
     exit(EX_USAGE);
 }
@@ -941,7 +973,7 @@ showhelp()
 void
 showversion(int doexit)
 {
-    fprintf(stderr, "MacFUSE version %s\n", MACFUSE_VERSION);
+    fprintf(stderr, "MacFUSE mount version %s\n", MACFUSE_VERSION);
     if (doexit) {
         exit(EX_USAGE);
     }

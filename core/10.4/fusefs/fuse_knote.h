@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 Google. All Rights Reserved.
+ * Copyright (C) 2007 Google. All Rights Reserved.
  * Amit Singh <singh@>
  */
 
@@ -8,11 +8,12 @@
 
 #include <fuse_param.h>
 
-#if M_MACFUSE_ENABLE_UNSUPPORTED
+#if M_MACFUSE_ENABLE_KQUEUE
 
 #include <sys/event.h>
 
-//#ifndef KERNEL_PRIVATE
+/* What a kludge! */
+#ifndef KNOTE
 
 SLIST_HEAD(klist, knote);
 
@@ -66,12 +67,16 @@ extern struct filterops fusevnode_filtops;
 #define KNOTE_ATTACH(list, kn)  knote_attach(list, kn)
 #define KNOTE_DETACH(list, kn)  knote_detach(list, kn)
 
-//#endif /* !KERNEL_PRIVATE */
+extern void knote(struct klist *klist, long hint);
+extern int  knote_attach(struct klist *list, struct knote *kn);
+extern int  knote_detach(struct klist *list, struct knote *kn);
+
+#endif /* !KNOTE */
 
 #define FUSE_KNOTE(vp, hint)    KNOTE(&VTOFUD(vp)->c_knotes, (hint))
 
 #else
 #define FUSE_KNOTE(vp, hint)    {}
-#endif /* M_MACFUSE_ENABLE_UNSUPPORTED */
+#endif /* M_MACFUSE_ENABLE_KQUEUE */
 
 #endif /* _FUSE_NODE_H_ */

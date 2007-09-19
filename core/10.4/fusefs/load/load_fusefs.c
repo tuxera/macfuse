@@ -1,24 +1,24 @@
 /*
- * Copyright (c) 2000-2004 Apple Computer, Inc. All rights reserved.
+ * Copyright (C) 2006-2007 Google. All Rights Reserved.
+ * Amit Singh <singh@>
+ */
+
+/*
+ * Portions Copyright (c) 1999-2003 Apple Computer, Inc. All Rights Reserved.
  *
- * @APPLE_LICENSE_HEADER_START@
- * 
- * This file contains Original Code and/or Modifications of Original Code
- * as defined in and that are subject to the Apple Public Source License
- * Version 2.0 (the 'License'). You may not use this file except in
- * compliance with the License. Please obtain a copy of the License at
- * http://www.opensource.apple.com/apsl/ and read it before using this
- * file.
- * 
+ * This file contains Original Code and/or Modifications of Original Code as
+ * defined in and that are subject to the Apple Public Source License Version
+ * 2.0 (the 'License'). You may not use this file except in compliance with
+ * the License. Please obtain a copy of the License at
+ * http://www.opensource.apple.com/apsl/ and read it before using this file.
+ *
  * The Original Code and all software distributed under the License are
  * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
  * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
- * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
- * Please see the License for the specific language governing rights and
- * limitations under the License.
- * 
- * @APPLE_LICENSE_HEADER_END@
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT. Please see
+ * the License for the specific language governing rights and limitations
+ * under the License.
  */
 
 #include <stdio.h>
@@ -28,17 +28,13 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <sys/sysctl.h>
 
 #include <grp.h>
 #include <string.h>
 
 #include <fuse_param.h>
 #include <fuse_version.h>
-
-/* Local Definitions */
-#define LOAD_COMMAND        "/sbin/kextload"
-#define UNLOAD_COMMAND      "/sbin/kextunload"
-#define MACFUSE_MODULE_PATH MACFUSE_BUNDLE_PATH "/Support/fusefs.kext"
 
 int
 main(__unused int argc, __unused const char *argv[])
@@ -60,7 +56,7 @@ main(__unused int argc, __unused const char *argv[])
     /* some version of MacFUSE is already loaded; let us check it out */
 
     result = sysctlbyname(SYSCTL_MACFUSE_VERSION_NUMBER, version,
-                          &version_len, NULL, NULL);
+                          &version_len, NULL, (size_t)0);
     if (result) {
         if (errno == ENOENT) {
             /* too old; doesn't even have the sysctl variable */
@@ -85,7 +81,7 @@ main(__unused int argc, __unused const char *argv[])
 need_unloading:
     pid = fork();
     if (pid == 0) {
-        result = execl(UNLOAD_COMMAND, UNLOAD_COMMAND, "-b",
+        result = execl(SYSTEM_KEXTUNLOAD, SYSTEM_KEXTUNLOAD, "-b",
                        MACFUSE_BUNDLE_IDENTIFIER, NULL);
         /* We can only get here if the exec failed */
         goto out;
@@ -114,7 +110,7 @@ need_unloading:
 need_loading:
     pid = fork();
     if (pid == 0) {
-        result = execl(LOAD_COMMAND, LOAD_COMMAND, MACFUSE_MODULE_PATH, NULL);
+        result = execl(SYSTEM_KEXTLOAD, SYSTEM_KEXTLOAD, MACFUSE_KEXT, NULL);
         /* We can only get here if the exec failed */
         goto out;
     }

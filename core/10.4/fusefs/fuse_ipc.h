@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 Google. All Rights Reserved.
+ * Copyright (C) 2006-2007 Google. All Rights Reserved.
  * Amit Singh <singh@>
  */
 
@@ -16,6 +16,7 @@
 #include <sys/dirent.h>
 #include <sys/uio.h>
 #include <sys/proc.h>
+#include <sys/vm.h>
 #include <sys/fcntl.h>
 #include <kern/assert.h>
 #include <libkern/libkern.h>
@@ -23,13 +24,21 @@
 #include <libkern/locks.h>
 
 #include "fuse.h"
+#include "fuse_device.h"
+#include "fuse_locking.h"
 
+/* 16 bytes */
 struct fuse_iov {
     void   *base;
     size_t  len;
     size_t  allocated_size;
     int     credit;
 };
+
+#define FUSE_DATA_LOCK_SHARED(d)      fuse_lck_rw_lock_shared((d)->rwlock)
+#define FUSE_DATA_LOCK_EXCLUSIVE(d)   fuse_lck_rw_lock_exclusive((d)->rwlock)
+#define FUSE_DATA_UNLOCK_SHARED(d)    fuse_lck_rw_unlock_shared((d)->rwlock)
+#define FUSE_DATA_UNLOCK_EXCLUSIVE(d) fuse_lck_rw_unlock_exclusive((d)->rwlock)
 
 void fiov_init(struct fuse_iov *fiov, size_t size);
 void fiov_teardown(struct fuse_iov *fiov);
@@ -50,6 +59,7 @@ struct fuse_data;
 
 typedef int fuse_handler_t(struct fuse_ticket *ftick, uio_t uio);
 
+/* 128 bytes */
 struct fuse_ticket {
     uint64_t                     tk_unique;
     struct fuse_data            *tk_data;
@@ -85,7 +95,6 @@ static __inline__
 struct fuse_iov *
 fticket_resp(struct fuse_ticket *ftick)
 {
-    kdebug_printf("-> ftick=%p\n", ftick);
     return (&ftick->tk_aw_fiov);
 }
 
@@ -93,7 +102,6 @@ static __inline__
 int
 fticket_answered(struct fuse_ticket *ftick)
 {
-    kdebug_printf("-> ftick=%p\n", ftick);
     return (ftick->tk_flag & FT_ANSW);
 }
 
@@ -101,7 +109,6 @@ static __inline__
 void
 fticket_set_answered(struct fuse_ticket *ftick)
 {
-    kdebug_printf("-> ftick=%p\n", ftick);
     ftick->tk_flag |= FT_ANSW;
 }
 
@@ -109,7 +116,6 @@ static __inline__
 enum fuse_opcode
 fticket_opcode(struct fuse_ticket *ftick)
 {
-    kdebug_printf("-> ftick=%p\n", ftick);
     return (((struct fuse_in_header *)(ftick->tk_ms_fiov.base))->opcode);
 }
 
@@ -117,27 +123,26 @@ static __inline__
 void
 fticket_invalidate(struct fuse_ticket *ftick)
 {
-    kdebug_printf("-> ftick=%p\n", ftick);
     ftick->tk_flag |= FT_INVAL;
 }
 
 int fticket_pull(struct fuse_ticket *ftick, uio_t uio);
 
-enum mountpri { FM_NOMOUNTED, FM_PRIMARY, FM_SECONDARY };
+enum mount_state { FM_NOTMOUNTED, FM_MOUNTED };
 
-/*
- * The data representing a FUSE session.
- */
+/* 1184 bytes */
 struct fuse_data {
-    enum mountpri              mpri;
-    int                        mntco;
-    struct fuse_softc         *fdev;
+    fuse_device_t              fdev;
     mount_t                    mp;
+    vnode_t                    rootvp;
+    enum mount_state           mount_state;
     kauth_cred_t               daemoncred;
     pid_t                      daemonpid;
     uint32_t                   dataflags;     /* effective fuse_data flags */
     uint64_t                   mountaltflags; /* as-is copy of altflags    */
     uint64_t                   noimplflags;   /* not-implemented flags     */
+
+    lck_rw_t                  *rwlock;
 
     lck_mtx_t                 *ms_mtx;
     STAILQ_HEAD(, fuse_ticket) ms_head;
@@ -165,12 +170,6 @@ struct fuse_data {
     uint32_t                   fssubtype;
     char                       volname[MAXPATHLEN];
 
-#if M_MACFUSE_ENABLE_INIT_TIMEOUT
-    uint32_t                   callout_status;
-    lck_mtx_t                 *callout_mtx;
-    thread_call_t              thread_call;
-#endif
-
     uint32_t                   timeout_status;
     lck_mtx_t                 *timeout_mtx;
     struct timespec            daemon_timeout;
@@ -184,51 +183,56 @@ enum {
     FUSE_DAEMON_TIMEOUT_DEAD       = 2,
 };
 
-enum {
-    INIT_CALLOUT_INACTIVE = 0,
-    INIT_CALLOUT_ACTIVE   = 1,
-};
-
 /* Not-Implemented Bits */
+#define FSESS_NOIMPLBIT(MSG)      (1LL << FUSE_##MSG)
 
-#define FSESS_NOIMPL(MSG)         (1LL << FUSE_##MSG)
-
-#define FSESS_KICK                0x00000001 // session is to be closed
+#define FSESS_DEAD                0x00000001 // session is to be closed
 #define FSESS_OPENED              0x00000002 // session device has been opened
 #define FSESS_INITED              0x00000004 // session has been inited
-#define FSESS_ALLOW_OTHER         0x00000008
-#define FSESS_ALLOW_ROOT          0x00000010
-#define FSESS_DEFAULT_PERMISSIONS 0x00000020
-#define FSESS_DEFER_AUTH          0x00000040
-#define FSESS_DIRECT_IO           0x00000080
-#define FSESS_EXTENDED_SECURITY   0x00000100
-#define FSESS_JAIL_SYMLINKS       0x00000200
-#define FSESS_KILL_ON_UNMOUNT     0x00000400
-#define FSESS_NO_ALERTS           0x00000800
-#define FSESS_NO_APPLESPECIAL     0x00001000
-#define FSESS_NO_ATTRCACHE        0x00002000
-#define FSESS_NO_READAHEAD        0x00004000
-#define FSESS_NO_SYNCWRITES       0x00008000
-#define FSESS_NO_SYNCONCLOSE      0x00010000
-#define FSESS_NO_VNCACHE          0x00020000
-#define FSESS_NO_UBC              0x00040000
-#define FSESS_VOL_RENAME          0x00080000
+#define FSESS_UNCONSCIOUS         0x00000008 // session is temporarily gone
+
+#define FSESS_ALLOW_OTHER         0x00000010
+#define FSESS_ALLOW_ROOT          0x00000020
+#define FSESS_AUTO_XATTR          0x00000040
+#define FSESS_DEFAULT_PERMISSIONS 0x00000080
+#define FSESS_DEFER_PERMISSIONS   0x00000100
+#define FSESS_DIRECT_IO           0x00000200
+#define FSESS_EXTENDED_SECURITY   0x00000400
+#define FSESS_JAIL_SYMLINKS       0x00000800
+#define FSESS_KILL_ON_UNMOUNT     0x00001000
+#define FSESS_NO_ALERTS           0x00002000
+#define FSESS_NO_APPLEDOUBLE      0x00004000
+#define FSESS_NO_APPLEXATTR       0x00008000
+#define FSESS_NO_ATTRCACHE        0x00010000
+#define FSESS_NO_READAHEAD        0x00020000
+#define FSESS_NO_SYNCONCLOSE      0x00040000
+#define FSESS_NO_SYNCWRITES       0x00080000
+#define FSESS_NO_UBC              0x00100000
+#define FSESS_NO_VNCACHE          0x00200000
+#define FSESS_VOL_RENAME          0x00400000
 
 static __inline__
 struct fuse_data *
 fuse_get_mpdata(mount_t mp)
 {
-    struct fuse_data *data = vfs_fsprivate(mp);
-    kdebug_printf("-> mp=%p\n", mp);
-    return (data->mpri == FM_PRIMARY ? data : NULL);
+    /*
+     * data->mount_state should be FM_MOUNTED for it to be valid
+     */
+    return (struct fuse_data *)vfs_fsprivate(mp);
 }
 
 static __inline__
 void
 fuse_ms_push(struct fuse_ticket *ftick)
 {
-    kdebug_printf("-> ftick=%p\n", ftick);
     STAILQ_INSERT_TAIL(&ftick->tk_data->ms_head, ftick, tk_ms_link);
+}
+
+static __inline__
+void
+fuse_ms_push_head(struct fuse_ticket *ftick)
+{
+    STAILQ_INSERT_HEAD(&ftick->tk_data->ms_head, ftick, tk_ms_link);
 }
 
 static __inline__
@@ -236,8 +240,6 @@ struct fuse_ticket *
 fuse_ms_pop(struct fuse_data *data)
 {
     struct fuse_ticket *ftick = NULL;
-
-    kdebug_printf("-> data=%p\n", data);
 
     if ((ftick = STAILQ_FIRST(&data->ms_head))) {
         STAILQ_REMOVE_HEAD(&data->ms_head, tk_ms_link);
@@ -250,7 +252,6 @@ static __inline__
 void
 fuse_aw_push(struct fuse_ticket *ftick)
 {
-    kdebug_printf("-> ftick=%p\n", ftick);
     TAILQ_INSERT_TAIL(&ftick->tk_data->aw_head, ftick, tk_aw_link);
 }
 
@@ -258,7 +259,6 @@ static __inline__
 void
 fuse_aw_remove(struct fuse_ticket *ftick)
 {
-    kdebug_printf("-> ftick=%p\n", ftick);
     TAILQ_REMOVE(&ftick->tk_data->aw_head, ftick, tk_aw_link);
 }
 
@@ -267,8 +267,6 @@ struct fuse_ticket *
 fuse_aw_pop(struct fuse_data *data)
 {
     struct fuse_ticket *ftick = NULL;
-
-    kdebug_printf("-> data=%p\n", data);
 
     if ((ftick = TAILQ_FIRST(&data->aw_head))) {
         fuse_aw_remove(ftick);
@@ -282,6 +280,7 @@ void fuse_ticket_drop(struct fuse_ticket *ftick);
 void fuse_ticket_drop_invalid(struct fuse_ticket *ftick);
 void fuse_insert_callback(struct fuse_ticket *ftick, fuse_handler_t *handler);
 void fuse_insert_message(struct fuse_ticket *ftick);
+void fuse_insert_message_head(struct fuse_ticket *ftick);
 
 static __inline__
 int
@@ -292,26 +291,10 @@ fuse_libabi_geq(struct fuse_data *data, uint32_t abi_maj, uint32_t abi_min)
              data->fuse_libabi_minor >= abi_min));
 }
 
-struct fuse_secondary_data {
-    enum mountpri     mpri;
-    mount_t           mp;
-    struct fuse_data *master;
-
-    LIST_ENTRY(fuse_secondary_data) slaves_link;
-};
-
-static __inline__
-struct fuse_secondary_data *
-fuse_get_secondary_mpdata(mount_t mp)
-{
-    struct fuse_secondary_data *fsdat = vfs_fsprivate(mp);
-    return (fsdat->mpri == FM_SECONDARY ? fsdat : NULL);
-}
-
-struct fuse_data *fdata_alloc(struct fuse_softc *fdev, struct proc *p);
+struct fuse_data *fdata_alloc(struct proc *p);
 void fdata_destroy(struct fuse_data *data);
-int  fdata_kick_get(struct fuse_data *data);
-void fdata_kick_set(struct fuse_data *data);
+int  fdata_dead_get(struct fuse_data *data);
+void fdata_set_dead(struct fuse_data *data);
 
 struct fuse_dispatcher {
 
@@ -329,7 +312,6 @@ static __inline__
 void
 fdisp_init(struct fuse_dispatcher *fdisp, size_t iosize)
 {
-    kdebug_printf("-> fdisp=%p, iosize=%lx\n", fdisp, iosize);
     fdisp->iosize = iosize;
     fdisp->tick = NULL;
 }
@@ -347,7 +329,6 @@ int
 fdisp_simple_putget_vp(struct fuse_dispatcher *fdip, enum fuse_opcode op,
                        vnode_t vp, vfs_context_t context)
 {
-    kdebug_printf("-> fdip=%p, opcode=%d, vp=%p, context=%p\n", fdip, op, vp, context);
     fdisp_init(fdip, 0);
     fdisp_make_vp(fdip, op, vp, context);
     return (fdisp_wait_answ(fdip));

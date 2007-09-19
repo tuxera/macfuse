@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 Google. All Rights Reserved.
+ * Copyright (C) 2006-2007 Google. All Rights Reserved.
  * Amit Singh <singh@>
  */
 
@@ -16,22 +16,22 @@ fuse_filehandle_get(vnode_t       vp,
                     fufh_type_t   fufh_type,
                     int           mode)
 {
-    struct fuse_vnode_data *fvdat = VTOFUD(vp);
     struct fuse_dispatcher  fdi;
     struct fuse_open_in    *foi;
     struct fuse_open_out   *foo;
     struct fuse_filehandle *fufh;
+    struct fuse_vnode_data *fvdat = VTOFUD(vp);
 
-    int err = 0;
-    int isdir = 0;
-    int op = FUSE_OPEN;
-    int oflags;
+    int err    = 0;
+    int isdir  = 0;
+    int oflags = 0;
+    int op     = FUSE_OPEN;
 
     fuse_trace_printf("fuse_filehandle_get(vp=%p, fufh_type=%d, mode=%x)\n",
                       vp, fufh_type, mode);
 
     /*
-     * Note that this means we are effectively FILTERING OUT open flags.
+     * Note that this means we are effectively FILTERING OUT open() flags.
      */
     (void)mode;
     oflags = fuse_filehandle_xlate_to_oflags(fufh_type);
@@ -43,7 +43,7 @@ fuse_filehandle_get(vnode_t       vp,
         return 0;
     }
 
-    if (vnode_vtype(vp) == VDIR) {
+    if (vnode_isdir(vp)) {
         isdir = 1;
         op = FUSE_OPENDIR;
         if (fufh_type != FUFH_RDONLY) {
@@ -60,8 +60,6 @@ fuse_filehandle_get(vnode_t       vp,
 
     FUSE_OSAddAtomic(1, (SInt32 *)&fuse_fh_upcall_count);
     if ((err = fdisp_wait_answ(&fdi))) {
-        IOLog("MacFUSE: OUCH! daemon did not give fh (type=%d, err=%d)\n",
-              fufh_type, err);
         if (err == ENOENT) {
             /*
              * See comment in fuse_vnop_reclaim().
@@ -93,11 +91,11 @@ fuse_filehandle_put(vnode_t vp, vfs_context_t context, fufh_type_t fufh_type,
     struct fuse_dispatcher  fdi;
     struct fuse_release_in *fri;
     struct fuse_vnode_data *fvdat = VTOFUD(vp);
-    struct fuse_filehandle *fufh = NULL;
+    struct fuse_filehandle *fufh  = NULL;
 
-    int op = FUSE_RELEASE;
-    int err = 0;
+    int err   = 0;
     int isdir = 0;
+    int op    = FUSE_RELEASE;
 
     fuse_trace_printf("fuse_filehandle_put(vp=%p, fufh_type=%d)\n",
                       vp, fufh_type);
@@ -120,10 +118,11 @@ fuse_filehandle_put(vnode_t vp, vfs_context_t context, fufh_type_t fufh_type,
     }
 
     if (fuse_isdeadfs(vp)) {
+        FUSE_OSAddAtomic(-1, (SInt32 *)&fuse_fh_current);
         goto out;
     }
 
-    if (vnode_vtype(vp) == VDIR) {
+    if (vnode_isdir(vp)) {
         op = FUSE_RELEASEDIR;
         isdir = 1;
     }

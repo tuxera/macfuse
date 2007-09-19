@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 Google. All Rights Reserved.
+ * Copyright (C) 2006-2007 Google. All Rights Reserved.
  * Amit Singh <singh@>
  */
 
@@ -46,9 +46,9 @@ fuse_internal_access(vnode_t                   vp,
                      struct fuse_access_param *facp)
 {
     int err = 0;
+    int default_error = 0;
     uint32_t mask = 0;
     int dataflags;
-    int vtype;
     mount_t mp;
     struct fuse_dispatcher fdi;
     struct fuse_access_in *fai;
@@ -57,17 +57,26 @@ fuse_internal_access(vnode_t                   vp,
     fuse_trace_printf_func();
 
     mp = vnode_mount(vp);
-    vtype = vnode_vtype(vp);
 
     data = fuse_get_mpdata(mp);
     dataflags = data->dataflags;
 
-    if (dataflags & FSESS_DEFER_AUTH) {
+    /* Allow for now; let checks be handled inline later. */
+    if (fuse_isdeferpermissions_mp(mp)) {
         return 0;
     }
 
-    if ((action & KAUTH_VNODE_GENERIC_WRITE_BITS) && vfs_isrdonly(mp)) {
-        return EACCES;
+    if (facp->facc_flags & FACCESS_FROM_VNOP) {
+        default_error = ENOTSUP;
+    }
+
+    /*
+     * (action & KAUTH_VNODE_GENERIC_WRITE_BITS) on a read-only file system
+     * would have been handled by higher layers.
+     */
+
+    if (!fuse_implemented(data, FSESS_NOIMPLBIT(ACCESS))) {
+        return default_error;
     }
 
     /* Unless explicitly permitted, deny everyone except the fs owner. */
@@ -83,38 +92,17 @@ fuse_internal_access(vnode_t                   vp,
     }
 
     if (!(facp->facc_flags & FACCESS_DO_ACCESS)) {
-        return 0;
+        return default_error;
     }
 
-    if (((vtype == VREG) && (action & KAUTH_VNODE_GENERIC_EXECUTE_BITS))) {
-#if M_MACFUSE_NEED_MOUNT_ARGUMENT_FOR_THIS
-        // Let the kernel handle this through open/close heuristics.
-        return ENOTSUP;
-#else
-        // Let the kernel handle this.
-        return 0;
-#endif
-    }
-
-    if (fuse_get_mpdata(mp)->noimplflags & FSESS_NOIMPL(ACCESS)) {
-        // Let the kernel handle this.
-        return 0;
-    }
-
-    if (dataflags & FSESS_DEFAULT_PERMISSIONS) {
-        // Let the kernel handle this.
-        return 0;
-    }
-
-    if (vtype == VDIR) {
-        if (action &
-            (KAUTH_VNODE_LIST_DIRECTORY | KAUTH_VNODE_READ_EXTATTRIBUTES)) {
+    if (vnode_isdir(vp)) {
+        if (action & (KAUTH_VNODE_LIST_DIRECTORY   |
+                      KAUTH_VNODE_READ_EXTATTRIBUTES)) {
             mask |= R_OK;
         }
-        if (action & (KAUTH_VNODE_ADD_FILE | KAUTH_VNODE_ADD_SUBDIRECTORY)) {
-            mask |= W_OK;
-        }
-        if (action & KAUTH_VNODE_DELETE_CHILD) {
+        if (action & (KAUTH_VNODE_ADD_FILE         |
+                      KAUTH_VNODE_ADD_SUBDIRECTORY |
+                      KAUTH_VNODE_DELETE_CHILD)) {
             mask |= W_OK;
         }
         if (action & KAUTH_VNODE_SEARCH) {
@@ -132,11 +120,7 @@ fuse_internal_access(vnode_t                   vp,
         }
     }
 
-    if (action & KAUTH_VNODE_DELETE) {
-        mask |= W_OK;
-    }
-
-    if (action & (KAUTH_VNODE_WRITE_ATTRIBUTES |
+    if (action & (KAUTH_VNODE_WRITE_ATTRIBUTES    |
                   KAUTH_VNODE_WRITE_EXTATTRIBUTES |
                   KAUTH_VNODE_WRITE_SECURITY)) {
         mask |= W_OK;
@@ -160,26 +144,21 @@ fuse_internal_access(vnode_t                   vp,
          * Make sure we don't come in here again.
          */
         vfs_clearauthopaque(mp);
-        fuse_get_mpdata(mp)->noimplflags |= FSESS_NOIMPL(ACCESS);
-        err = 0;
+        fuse_clear_implemented(data, FSESS_NOIMPLBIT(ACCESS));
+        err = default_error;
     }
 
     if (err == ENOENT) {
-
-        int dorevoke = 1;
 
         IOLog("MacFUSE: disappearing vnode %p (root=%d, type=%d, action=%x)\n",
               vp, vnode_isvroot(vp), vnode_vtype(vp), action);
 
         /*
-         * Finder's /.Trashes/<uid> issue... avoid deadlock
+         * On 10.4, I think I can get Finder to lock because of /.Trashes/<uid>
+         * unless I use REVOKE_NONE here.
          */
-        if (FUSE_KL_skiprevoke(vp, action)) {
-            dorevoke = 0;
-            IOLog("MacFUSE: skipping revoke on vnode %p\n", vp);
-        }
-
-        fuse_internal_vnode_disappear(vp, context, dorevoke);
+         
+        fuse_internal_vnode_disappear(vp, context, REVOKE_SOFT);
     }
 
     return err;
@@ -195,9 +174,9 @@ fuse_internal_fsync_callback(struct fuse_ticket *ftick, __unused uio_t uio)
 
     if (ftick->tk_aw_ohead.error == ENOSYS) {
         if (fticket_opcode(ftick) == FUSE_FSYNC) {
-            ftick->tk_data->noimplflags |= FSESS_NOIMPL(FSYNC);
+            fuse_clear_implemented(ftick->tk_data, FSESS_NOIMPLBIT(FSYNC));
         } else if (fticket_opcode(ftick) == FUSE_FSYNCDIR) {
-            ftick->tk_data->noimplflags |= FSESS_NOIMPL(FSYNCDIR);
+            fuse_clear_implemented(ftick->tk_data, FSESS_NOIMPLBIT(FSYNCDIR));
         } else {
             IOLog("MacFUSE: unexpected opcode in sync handling\n");
         }
@@ -223,7 +202,7 @@ fuse_internal_fsync(vnode_t                 vp,
 
     fdip->iosize = sizeof(*ffsi);
     fdip->tick = NULL;
-    if (vnode_vtype(vp) == VDIR) {
+    if (vnode_isdir(vp)) {
         op = FUSE_FSYNCDIR;
     }
     
@@ -312,7 +291,7 @@ fuse_internal_readdir(vnode_t                 vp,
         fri->fh = fufh->fh_id;
         fri->offset = uio_offset(uio);
         data = fuse_get_mpdata(vnode_mount(vp));
-        fri->size = min(uio_resid(uio), data->iosize); // mp->max_read
+        fri->size = min(uio_resid(uio), data->iosize);
 
         if ((err = fdisp_wait_answ(&fdi))) {
             goto out;
@@ -329,6 +308,7 @@ fuse_internal_readdir(vnode_t                 vp,
     }
 
 /* done: */
+
     fuse_ticket_drop(fdi.tick);
 
 out:
@@ -382,7 +362,7 @@ fuse_internal_readdir_processdata(vnode_t          vp,
          * }
          */
 
-        if (!fudge->namelen) {
+        if (!fudge->namelen) { 
             err = EINVAL;
             break;
         }
@@ -393,7 +373,7 @@ fuse_internal_readdir_processdata(vnode_t          vp,
         }
 
 #define GENERIC_DIRSIZ(dp) \
-    ((sizeof (struct dirent) - (MAXNAMLEN+1)) + (((dp)->d_namlen+1 + 3) &~ 3))
+  ((sizeof(struct dirent) - (MAXNAMLEN + 1)) + (((dp)->d_namlen + 1 + 3) & ~3))
 
         bytesavail = GENERIC_DIRSIZ((struct pseudo_dirent *)&fudge->namelen); 
 
@@ -406,14 +386,14 @@ fuse_internal_readdir_processdata(vnode_t          vp,
         fiov_adjust(cookediov, bytesavail);
 
         de = (struct dirent *)cookediov->base;
-        de->d_fileno = fudge->ino; /* XXX cast from 64 to 32 bits */
+        de->d_fileno = fudge->ino; /* XXX: truncation */
         de->d_reclen = bytesavail;
-        de->d_type = fudge->type; 
+        de->d_type   = fudge->type; 
         de->d_namlen = fudge->namelen;
 
         /* Filter out any ._* files if the mount is configured as such. */
-        if (fuse_skip_apple_special_mp(vnode_mount(vp),
-                                       fudge->name, fudge->namelen)) {
+        if (fuse_skip_apple_double_mp(vnode_mount(vp),
+                                      fudge->name, fudge->namelen)) {
             de->d_fileno = 0;
             de->d_type = DT_WHT;
         }
@@ -447,7 +427,7 @@ fuse_unlink_callback(vnode_t vp, void *cargs)
 
     target_nlink = *(uint64_t *)cargs;
 
-    if ((vap->va_nlink == target_nlink) && (vnode_vtype(vp) == VREG)) {
+    if ((vap->va_nlink == target_nlink) && (vnode_isreg(vp))) {
         fuse_invalidate_attr(vp);
     }
 
@@ -465,13 +445,13 @@ fuse_internal_remove(vnode_t               dvp,
 {
     struct fuse_dispatcher fdi;
     struct vnode_attr *vap = VTOVA(vp);
+
+    int err = 0;
+
 #if M_MACFUSE_INVALIDATE_CACHED_VATTRS_UPON_UNLINK
     int need_invalidate = 0;
     uint64_t target_nlink = 0;
 #endif
-    int err = 0;
-
-    debug_printf("dvp=%p, cnp=%p, op=%d, context=%p\n", vp, cnp, op, context);
 
     fdisp_init(&fdi, cnp->cn_namelen + 1);
     fdisp_make_vp(&fdi, op, dvp, context);
@@ -550,18 +530,16 @@ fuse_internal_rename(vnode_t               fdvp,
 
 __private_extern__
 int
-fuse_internal_revoke(vnode_t vp, int flags, vfs_context_t context)
+fuse_internal_revoke(vnode_t vp, int flags, vfs_context_t context, int how)
 {
-    int ret;
+    int ret = 0;
     struct fuse_vnode_data *fvdat = VTOFUD(vp);
 
-    fvdat->flag |= FN_REVOKING;
-
-    IOLog("MacFUSE: revoking vnode %p\n", vp);
-    ret = vn_revoke(vp, flags, context);
-
-    fvdat->flag &= ~FN_REVOKING;
     fvdat->flag |= FN_REVOKED;
+
+    if (how == REVOKE_HARD) {
+        ret = vn_revoke(vp, flags, context);
+    }
 
     return ret;
 }
@@ -573,7 +551,6 @@ int
 fuse_internal_strategy(vnode_t vp, buf_t bp)
 {
     int biosize;
-    int err = 0;
     int chunksize;
     int mapped = FALSE;
     int mode;
@@ -581,39 +558,34 @@ fuse_internal_strategy(vnode_t vp, buf_t bp)
     int respsize;
     int vtype = vnode_vtype(vp);
 
-    caddr_t  bufdat;
-    int32_t  bflags = buf_flags(bp);
-    off_t    left;
-    off_t    offset;
+    int err = 0;
+
+    caddr_t bufdat;
+    off_t   left;
+    off_t   offset;
+    int32_t bflags = buf_flags(bp);
 
     fufh_type_t             fufh_type;
     struct fuse_dispatcher  fdi;
     struct fuse_data       *data;
     struct fuse_vnode_data *fvdat = VTOFUD(vp);
     struct fuse_filehandle *fufh = NULL;
+    mount_t mp = vnode_mount(vp);
 
-    data = fuse_get_mpdata(vnode_mount(vp));
+    data = fuse_get_mpdata(mp);
 
-    /*
-     * XXX
-     * XXX: Wait, what happened here?
-     * XXX
-     */
-    //biosize = data->iosize;
-    //biosize = data->blocksize;
     biosize = data->blocksize;
 
     if (!(vtype == VREG || vtype == VDIR)) {
-        debug_printf("STRATEGY: unsupported vnode type\n");
-        return (ENOTSUP);
+        return ENOTSUP;
     }
  
     if (bflags & B_READ) {
         mode = FREAD;
-        fufh_type = FUFH_RDONLY; // FUFH_RDWR will also do
+        fufh_type = FUFH_RDONLY; /* FUFH_RDWR will also do */
     } else {
         mode = FWRITE;
-        fufh_type = FUFH_WRONLY; // FUFH_RDWR will also do
+        fufh_type = FUFH_WRONLY; /* FUFH_RDWR will also do */
     }
 
     fufh = &(fvdat->fufh[fufh_type]);
@@ -623,27 +595,38 @@ fuse_internal_strategy(vnode_t vp, buf_t bp)
         if (!(fufh->fufh_flags & FUFH_VALID)) {
             fufh = NULL;
         } else {
-            debug_printf("strategy falling back to FUFH_RDWR ... OK\n");
+            /* We've successfully fallen back to FUFH_RDWR. */
         }
     }
 
     if (!fufh) {
+
         if (mode == FREAD) {
             fufh_type = FUFH_RDONLY;
         } else {
             fufh_type = FUFH_RDWR;
         }
+
+        /*
+         * Lets NOT do the filehandle preflight check here.
+         */
+
         err = fuse_filehandle_get(vp, NULL, fufh_type, 0 /* mode */);
+
         if (!err) {
             fufh = &(fvdat->fufh[fufh_type]);
             fufh->fufh_flags |= FUFH_STRATEGY;
-            debug_printf("STRATEGY: created *new* fufh of type %d\n",
-                         fufh_type);
+
+            /* We've created a NEW fufh of type fufh_type. */
         }
-    } else {
+
+    } else { /* good fufh */
+
         FUSE_OSAddAtomic(1, (SInt32 *)&fuse_fh_reuse_count);
-        debug_printf("STRATEGY: using existing fufh of type %d\n", fufh_type);
+
+        /* We're using an existing fufh of type fufh_type. */
     }
+
     if (err) {
 
          /* A more typical error case. */
@@ -653,14 +636,10 @@ fuse_internal_strategy(vnode_t vp, buf_t bp)
              return EIO;
          }
 
-         /*
-          * Thinking about this more, I don't think we should panic here.
-          * But then, I don't have time to think right now.
-          *
-          * panic()?
-          */
-         IOLog("MacFUSE: failed to get fh from strategy (err=%d)\n", err);
-         if (!vfs_issynchronous(vnode_mount(vp))) {
+         IOLog("MacFUSE: strategy failed to get fh "
+               "(vtype=%d, fufh_type=%d, err=%d)\n", vtype, fufh_type, err);
+
+         if (!vfs_issynchronous(mp)) {
              IOLog("MacFUSE: asynchronous write failed!\n");
          }
 
@@ -671,17 +650,18 @@ fuse_internal_strategy(vnode_t vp, buf_t bp)
 
     fufh = &(fvdat->fufh[fufh_type]);
 
-#define B_INVAL         0x00040000      /* Does not contain valid info. */
-#define B_ERROR         0x00080000      /* I/O error occurred. */
+#define B_INVAL 0x00040000 /* Does not contain valid info. */
+#define B_ERROR 0x00080000 /* I/O error occurred. */
+
     if (bflags & B_INVAL) {
-        debug_printf("*** WHOA: B_INVAL\n");
+        IOLog("MacFUSE: buffer does not contain valid information\n");
     } 
+
     if (bflags & B_ERROR) {
-        debug_printf("*** WHOA: B_ERROR\n");
+        IOLog("MacFUSE: an I/O error has occured\n");
     }
 
     if (buf_count(bp) == 0) {
-        debug_printf("STRATEGY: zero buf count?\n");
         return (0);
     }
 
@@ -701,7 +681,6 @@ fuse_internal_strategy(vnode_t vp, buf_t bp)
                 buf_seterror(bp, EINVAL);
             }
             buf_biodone(bp);
-            // fufh->useco--;
             return 0;
         }
 
@@ -712,7 +691,6 @@ fuse_internal_strategy(vnode_t vp, buf_t bp)
 
         if (buf_map(bp, &bufdat)) {
             IOLog("MacFUSE: failed to map buffer in strategy\n");
-            // fufh->useco--;
             return EFAULT;
         } else {
             mapped = TRUE;
@@ -783,34 +761,30 @@ fuse_internal_strategy(vnode_t vp, buf_t bp)
         int merr = 0;
         off_t diff;
 
-#if M_MACFUSE_EXPERIMENTAL_JUNK
         /*
-         * Wanna experiment with some panics?
-         * Try doing something like:
+         * XXX: historical
+         *
+         * Panic? Try doing something like:
          *
          *   err = EIO;
          *   goto out;
          *
          * Investigate later.
          */
-#endif
-
-        debug_printf("WRITE: preparing for write\n");
 
         if (buf_map(bp, &bufdat)) {
             IOLog("MacFUSE: failed to map buffer in strategy\n");
-            // fufh->useco--;
             return EFAULT;
         } else {
             mapped = TRUE;
         }
 
-        // Write begin
+        /* Write begin */
 
         buf_setresid(bp, buf_count(bp));
         offset = (off_t)((off_t)buf_blkno(bp) * biosize);
 
-        // TBD: Check here for extension (writing past end)
+        /* XXX: TBD -- Check here for extension (writing past end) */
 
         left = buf_count(bp);
 
@@ -831,8 +805,7 @@ fuse_internal_strategy(vnode_t vp, buf_t bp)
             fdi.tick->tk_ms_bufdata = bufdat;
             fdi.tick->tk_ms_bufsize = chunksize;
 
-            debug_printf("WRITE: about to write at offset %lld chunksize %d\n",
-                         offset, chunksize);
+            /* About to write <chunksize> at <offset> */
 
             if ((err = fdisp_wait_answ(&fdi))) {
                 merr = 1;
@@ -855,83 +828,17 @@ fuse_internal_strategy(vnode_t vp, buf_t bp)
         if (merr) {
             goto out;
         }
-
-#if M_MACFUSE_EXPERIMENTAL_JUNK
-        bufdat += buf_dirtyoff(bp);
-        offset = (off_t)buf_blkno(bp) * biosize + buf_dirtyoff(bp);
-
-        debug_printf("WRITE: dirtyoff = %d, dirtyend = %d, count = %d\n",
-                     buf_dirtyoff(bp), buf_dirtyend(bp), buf_count(bp));
-
-        while (buf_dirtyend(bp) > buf_dirtyoff(bp)) {
-
-            debug_printf("WRITE: taking a shot\n");
-            chunksize = min(buf_dirtyend(bp) - buf_dirtyoff(bp),
-                            data->iosize); // get v_mount's max w 
-    
-            fdi.iosize = sizeof(*fwi);
-            op = op ?: FUSE_WRITE;
-            fdisp_make_vp(&fdi, op, vp, (vfs_context_t)0);
-        
-            fwi = fdi.indata;
-            fwi->fh = fufh->fh_id;
-            // fwi->offset = (off_t)buf_blkno(bp) * biosize + buf_dirtyoff(bp);
-            fwi->offset = offset;
-            fwi->size = chunksize;
-            fdi.tick->tk_ms_type = FT_M_BUF;
-            fdi.tick->tk_ms_bufdata = bufdat;
-            fdi.tick->tk_ms_bufsize = chunksize;
-            debug_printf("WRITE: about to write at offset %lld chunksize %d\n",
-                   offset, chunksize);
-            if ((err = fdisp_wait_answ(&fdi))) {
-                IOLog("MacFUSE: daemon returned error %d in strategy\n", err);
-                merr = 1;
-                break;
-            }
-    
-            fwo = fdi.answ;
-            diff = chunksize - fwo->size;
-            if (diff < 0) {
-                err = EINVAL;
-                break;
-            }
-    
-            buf_setdirtyoff(bp, buf_dirtyoff(bp) + fwo->size);
-            offset += fwo->size;
-        }
-
-        if (buf_dirtyend(bp) == buf_dirtyoff(bp)) {
-            buf_setdirtyend(bp, 0);
-            buf_setdirtyoff(bp, 0);
-        }
-
-        buf_setresid(bp, buf_dirtyend(bp) - buf_dirtyoff(bp));
-
-        if (merr)
-            goto out;
-
-        fuse_invalidate_attr(vp);
-#endif
     }
 
-    if (fdi.tick)
+    if (fdi.tick) {
         fuse_ticket_drop(fdi.tick);
-    else
-        debug_printf("no ticket on leave\n");
+    } else {
+        /* No ticket upon leaving */
+    }
 
 out:
 
-#if M_MACFUSE_EXPERIMENTAL_JUNK
-    if (fufh) {
-        fufh->useco--;
-        if (didnewfh) {
-            debug_printf("strategy internal fufh count is %d\n", fufh->useco);
-        }
-    }
-#endif
-
     if (err) {
-        debug_printf("STRATEGY: there was an error %d\n", err);
         buf_seterror(bp, err);
     }
 
@@ -1035,9 +942,8 @@ fuse_internal_newentry_makerequest(mount_t                 mp,
                                    struct fuse_dispatcher *fdip,
                                    vfs_context_t           context)
 {
-    debug_printf("fdip=%p, context=%p\n", fdip, context);
-
     fdisp_init(fdip, bufsize + cnp->cn_namelen + 1);
+
     fdisp_make(fdip, op, mp, dnid, context);
     memcpy(fdip->indata, buf, bufsize);
     memcpy((char *)fdip->indata + bufsize, cnp->cn_nameptr, cnp->cn_namelen);
@@ -1057,10 +963,6 @@ fuse_internal_newentry_core(vnode_t                 dvp,
     struct fuse_entry_out *feo;
     mount_t mp = vnode_mount(dvp);
 
-    debug_printf("fdip=%p, context=%p\n", fdip, context);
-
-    // Double-check that we aren't MNT_RDONLY?
-
     if ((err = fdisp_wait_answ(fdip))) {
         return (err);
     }
@@ -1071,16 +973,7 @@ fuse_internal_newentry_core(vnode_t                 dvp,
         goto out;
     }
 
-    err = fuse_vget_i(mp,
-                      feo->nodeid,
-                      context,
-                      dvp,
-                      vpp,
-                      cnp,
-                      vtyp,
-                      FUSE_ZERO_SIZE,
-                      VG_FORCENEW,
-                      VTOI(dvp));
+    err = fuse_vget_i(vpp, 0 /* flags */, feo, cnp, dvp, mp, context);
     if (err) {
         fuse_internal_forget_send(mp, context, feo->nodeid, 1, fdip);
         return err;
@@ -1109,9 +1002,7 @@ fuse_internal_newentry(vnode_t               dvp,
     struct fuse_dispatcher fdi;
     mount_t mp = vnode_mount(dvp);
     
-    debug_printf("context=%p\n", context);
-
-    if (fuse_skip_apple_special_mp(mp, cnp->cn_nameptr, cnp->cn_namelen)) {
+    if (fuse_skip_apple_double_mp(mp, cnp->cn_nameptr, cnp->cn_namelen)) {
         return EACCES;
     }
     
@@ -1132,8 +1023,6 @@ fuse_internal_forget_callback(struct fuse_ticket *ftick, __unused uio_t uio)
 {
     struct fuse_dispatcher fdi;
 
-    debug_printf("ftick=%p, uio=%p\n", ftick, uio);
-
     fdi.tick = ftick;
 
     fuse_internal_forget_send(ftick->tk_data->mp, (vfs_context_t)0, 
@@ -1151,9 +1040,6 @@ fuse_internal_forget_send(mount_t                 mp,
                           struct fuse_dispatcher *fdip)
 {
     struct fuse_forget_in *ffi;
-
-    debug_printf("mp=%p, context=%p, nodeid=%llx, nlookup=%lld, fdip=%p\n",
-                 mp, context, nodeid, nlookup, fdip);
 
     /*
      * KASSERT(nlookup > 0, ("zero-times forget for vp #%llu",
@@ -1184,19 +1070,19 @@ fuse_internal_interrupt_send(struct fuse_ticket *ftick)
     fii = fdi.indata;
     fii->unique = ftick->tk_unique;
     fticket_invalidate(fdi.tick);
-    fuse_insert_message(fdi.tick);
+    fuse_insert_message_head(fdi.tick);
 }
 
 __private_extern__
 void
-fuse_internal_vnode_disappear(vnode_t vp, vfs_context_t context, int dorevoke)
+fuse_internal_vnode_disappear(vnode_t vp, vfs_context_t context, int how)
 {   
     int err = 0;
 
     fuse_vncache_purge(vp);
 
-    if (dorevoke) {
-        err = fuse_internal_revoke(vp, REVOKEALL, context);
+    if (how != REVOKE_NONE) {
+        err = fuse_internal_revoke(vp, REVOKEALL, context, how);
         if (err) {
             IOLog("MacFUSE: disappearing act: revoke failed (%d)\n", err);
         }
@@ -1210,59 +1096,23 @@ fuse_internal_vnode_disappear(vnode_t vp, vfs_context_t context, int dorevoke)
 
 /* fuse start/stop */
 
-#if M_MACFUSE_ENABLE_INIT_TIMEOUT
-
-__private_extern__
-void
-fuse_internal_thread_call_expiry_handler(void *param0, void *param1)
-{
-    (void)param1;
-    int pid = 0;
-    struct fuse_data *data = (struct fuse_data *)param0;
-    fuse_lck_mtx_lock(data->callout_mtx);
-    pid = data->daemonpid;
-    fdata_kick_set(data);
-
-    (void)KUNCUserNotificationDisplayNotice(
-                                      0,             // noticeTimeout
-                                      0,             // flags
-                                      NULL,          // iconPath
-                                      NULL,          // soundPath
-                                      NULL,          // localizationPath
-                                      data->volname, // alertHeader
-                                      FUSE_INIT_TIMEOUT_NOTICE_MESSAGE,
-                                      FUSE_INIT_TIMEOUT_DEFAULT_BUTTON_TITLE);
-
-    fuse_lck_mtx_unlock(data->callout_mtx);
-
-    if (pid) {
-        proc_signal(pid, FUSE_POSTUNMOUNT_SIGNAL);
-    }
-}
-
-#endif
-
 __private_extern__
 int
-fuse_internal_init_callback(struct fuse_ticket *ftick, uio_t uio)
+fuse_internal_init_synchronous(struct fuse_ticket *ftick)
 {
     int err = 0;
-    struct fuse_data     *data = ftick->tk_data;
     struct fuse_init_out *fiio;
+    struct fuse_data *data = ftick->tk_data;
 
     if ((err = ftick->tk_aw_ohead.error)) {
         goto out;
     }
 
-    if ((err = fticket_pull(ftick, uio))) {
-        goto out;
-    }
-
     fiio = fticket_resp(ftick)->base;
 
-    /* XXX: Do we want to check anything further besides this? */
-    if (fiio->major < 7) {
-        debug_printf("userpace version too low\n");
+    if ((fiio->major < MACFUSE_MIN_USER_VERSION_MAJOR) ||
+        (fiio->minor < MACFUSE_MIN_USER_VERSION_MINOR)){
+        IOLog("MacFUSE: user-space library has too low a version\n");
         err = EPROTONOSUPPORT;
         goto out;
     }
@@ -1270,7 +1120,8 @@ fuse_internal_init_callback(struct fuse_ticket *ftick, uio_t uio)
     data->fuse_libabi_major = fiio->major;
     data->fuse_libabi_minor = fiio->minor;
 
-    if (fuse_libabi_geq(data, 7, 5)) {
+    if (fuse_libabi_geq(data, MACFUSE_MIN_USER_VERSION_MAJOR,
+                              MACFUSE_MIN_USER_VERSION_MINOR)) {
         if (fticket_resp(ftick)->len == sizeof(struct fuse_init_out)) {
             data->max_write = fiio->max_write;
         } else {
@@ -1285,16 +1136,8 @@ out:
     fuse_ticket_drop(ftick);
 
     if (err) {
-        fdata_kick_set(data);
+        fdata_set_dead(data);
     }
-
-#if M_MACFUSE_ENABLE_INIT_TIMEOUT
-    /* INIT_CALLOUT */
-    fuse_lck_mtx_lock(data->callout_mtx);
-    (void)thread_call_cancel(data->thread_call);
-    data->callout_status = INIT_CALLOUT_INACTIVE;
-    fuse_lck_mtx_unlock(data->callout_mtx);
-#endif
 
     fuse_lck_mtx_lock(data->ticket_mtx);
     data->dataflags |= FSESS_INITED;
@@ -1305,9 +1148,10 @@ out:
 }
 
 __private_extern__
-void
+int
 fuse_internal_send_init(struct fuse_data *data, vfs_context_t context)
 {
+    int err = 0;
     struct fuse_init_in   *fiii;
     struct fuse_dispatcher fdi;
 
@@ -1319,19 +1163,98 @@ fuse_internal_send_init(struct fuse_data *data, vfs_context_t context)
     fiii->max_readahead = data->iosize * 16;
     fiii->flags = 0;
 
-#if M_MACFUSE_ENABLE_INIT_TIMEOUT
-    {
-        /* INIT_CALLOUT */
-        uint64_t deadline;
-        clock_interval_to_deadline(data->init_timeout.tv_sec, kSecondScale,
-                                   &deadline);
-        fuse_lck_mtx_lock(data->callout_mtx);
-        thread_call_enter_delayed(data->thread_call, deadline);
-        data->callout_status = INIT_CALLOUT_ACTIVE;
-        fuse_lck_mtx_unlock(data->callout_mtx);
-    }
-#endif
+    /* blocking FUSE_INIT up to user space */
 
-    fuse_insert_callback(fdi.tick, fuse_internal_init_callback);
-    fuse_insert_message(fdi.tick);
+    err = fdisp_wait_answ(&fdi);
+    if (err) {
+        IOLog("MacFUSE: user-space initialization failed (%d)\n", err);
+        return err;
+    }
+
+    err = fuse_internal_init_synchronous(fdi.tick);
+    if (err) {
+        IOLog("MacFUSE: in-kernel initialization failed (%d)\n", err);
+        return err;
+    }
+
+    return 0;
+}
+
+/* other */
+
+#if M_MACFUSE_ENABLE_UNSUPPORTED
+extern char *vnode_getname(vnode_t vp);
+extern void  vnode_putname(char *name);
+#endif /* M_MACFUSE_ENABLE_UNSUPPORTED */
+
+static int
+fuse_internal_print_vnodes_callback(vnode_t vp, __unused void *cargs)
+{
+    char *name = NULL;
+    struct fuse_vnode_data *fvdat = VTOFUD(vp);
+
+#if M_MACFUSE_ENABLE_UNSUPPORTED
+    name = vnode_getname(vp);
+#endif /* M_MACFUSE_ENABLE_UNSUPPORTED */
+
+    if (name) {
+        IOLog("vp=%p ino=%lld parent=%lld inuse=%d %s\n",
+              vp, fvdat->nodeid, fvdat->parent_nodeid,
+              vnode_isinuse(vp, 0), name);
+    } else {
+        if (fvdat->nodeid == FUSE_ROOT_ID) {
+            IOLog("vp=%p ino=%lld parent=%lld inuse=%d /\n",
+                  vp, fvdat->nodeid, fvdat->parent_nodeid,
+                  vnode_isinuse(vp, 0));
+        } else {
+            IOLog("vp=%p ino=%lld parent=%lld inuse=%d\n",
+                  vp, fvdat->nodeid, fvdat->parent_nodeid,
+                  vnode_isinuse(vp, 0));
+        }
+    }
+
+#if M_MACFUSE_ENABLE_UNSUPPORTED
+    if (name) {
+        vnode_putname(name);
+    }
+#endif /* M_MACFUSE_ENABLE_UNSUPPORTED */
+ 
+    return VNODE_RETURNED;
+}
+
+__private_extern__
+void
+fuse_internal_print_vnodes(mount_t mp)
+{
+    vnode_iterate(mp, VNODE_ITERATE_ALL,
+                  fuse_internal_print_vnodes_callback, NULL);
+}
+
+__private_extern__
+void
+fuse_preflight_log(vnode_t vp, fufh_type_t fufh_type, int err, char *message)
+{
+    char *name = NULL;
+
+#if M_MACFUSE_ENABLE_UNSUPPORTED
+    name = vnode_getname(vp);
+#else
+    (void)name;
+    (void)vp;
+#endif /* M_MACFUSE_ENABLE_UNSUPPORTED */
+
+    if (name) {
+        IOLog("MacFUSE: file handle preflight "
+              "(caller=%s, type=%d, err=%d, name=%s)\n",
+              message, fufh_type, err, name);
+    } else {
+        IOLog("MacFUSE: file handle preflight "
+              "(caller=%s, type=%d, err=%d)\n", message, fufh_type, err);
+    }
+
+#if M_MACFUSE_ENABLE_UNSUPPORTED
+    if (name) {
+        vnode_putname(name);
+    }
+#endif /* M_MACFUSE_ENABLE_UNSUPPORTED */
 }

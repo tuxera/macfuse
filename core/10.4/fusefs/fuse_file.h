@@ -1,16 +1,17 @@
 /*
- * Copyright (C) 2006 Google. All Rights Reserved.
+ * Copyright (C) 2006-2007 Google. All Rights Reserved.
  * Amit Singh <singh@>
  */
 
 #ifndef _FUSE_FILE_H_
 #define _FUSE_FILE_H_
 
-#include <sys/types.h>
-#include <sys/kernel_types.h>
 #include <sys/fcntl.h>
+#include <sys/kauth.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <sys/mount.h>
+#include <sys/types.h>
 #include <sys/vnode.h>
 
 typedef enum fufh_type {
@@ -77,15 +78,19 @@ fuse_filehandle_xlate_to_oflags(fufh_type_t type)
     int oflags = -1;
 
     switch (type) {
+
     case FUFH_RDONLY:
         oflags = O_RDONLY;
         break;
+
     case FUFH_WRONLY:
         oflags = O_WRONLY;
         break;
+
     case FUFH_RDWR:
         oflags = O_RDWR;
         break;
+
     default:
         break;
     }
@@ -93,8 +98,66 @@ fuse_filehandle_xlate_to_oflags(fufh_type_t type)
     return oflags;
 }
 
+/*
+ * 0 return => can proceed
+ */
+static __inline__
+int
+fuse_filehandle_preflight_status(vnode_t vp, vnode_t dvp, vfs_context_t context,
+                                 fufh_type_t fufh_type)
+{
+    vfs_context_t icontext = context;
+    kauth_action_t action  = 0;
+    mount_t mp = vnode_mount(vp);
+    int err = 0;
+    int needrele = 0;
+
+    if (vfs_authopaque(mp) || !vfs_issynchronous(mp) || !vnode_isreg(vp)) {
+        goto out;
+    }
+
+    if (!icontext) {
+        icontext = vfs_context_create((vfs_context_t)0);
+        needrele = 1;
+    }
+
+    if (!icontext) {
+        goto out;
+    }
+
+    switch (fufh_type) {
+    case FUFH_RDONLY:
+        action |= KAUTH_VNODE_READ_DATA;
+        break;
+
+    case FUFH_WRONLY:
+        action |= KAUTH_VNODE_WRITE_DATA;
+        break;
+
+    case FUFH_RDWR:
+        action |= (KAUTH_VNODE_READ_DATA | KAUTH_VNODE_WRITE_DATA);
+        break;
+
+    default: 
+        err = EINVAL;
+        break;
+    }
+
+    if (!err) {
+        err = vnode_authorize(vp, dvp, action, icontext);
+    }
+
+out:
+    if (needrele && icontext) {
+        (void)vfs_context_rele(icontext);
+    }
+
+    return err;
+}
+
 int fuse_filehandle_get(vnode_t vp, vfs_context_t context,
                         fufh_type_t fufh_type, int mode);
+
 int fuse_filehandle_put(vnode_t vp, vfs_context_t context,
                         fufh_type_t fufh_type, int foregrounded);
 

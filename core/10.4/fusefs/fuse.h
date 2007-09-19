@@ -1,10 +1,10 @@
 /*
- * Copyright (C) 2006 Google. All Rights Reserved.
+ * Copyright (C) 2006-2007 Google. All Rights Reserved.
  * Amit Singh <singh@>
  */
 
-#ifndef _FUSE_H_
-#define _FUSE_H_
+#ifndef _MACFUSE_H_
+#define _MACFUSE_H_
 
 #include <sys/param.h>
 #include <sys/types.h>
@@ -154,13 +154,14 @@ FUSE_OSFree(void *addr, uint32_t size, OSMallocTag tag)
 
     FUSE_OSAddAtomic(-(size), (SInt32 *)&fuse_memory_allocated);
 }
+
 #else
 
-#define FUSE_OSAddAtomic(amount, value) {}
-#define FUSE_OSMalloc(size, tag)        OSMalloc((size), (tag))
-#define FUSE_OSFree(addr, size, tag)    OSFree((addr), (size), (tag))
+#define FUSE_OSAddAtomic(amount, value)    {}
+#define FUSE_OSMalloc(size, tag)           OSMalloc((size), (tag))
+#define FUSE_OSFree(addr, size, tag)       OSFree((addr), (size), (tag))
 
-#endif /* FUSE_TRACK_STATISTICS */
+#endif /* FUSE_TRACK_STATS */
 
 static __inline__
 void *
@@ -181,4 +182,4 @@ FUSE_OSRealloc(void *oldptr, int oldsize, int newsize)
     return (data);
 }
 
-#endif /* _FUSE_H_ */
+#endif /* _MACFUSE_H_ */

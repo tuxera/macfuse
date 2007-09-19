@@ -256,14 +256,14 @@
 							<array>
 								<string>089C166AFE841209C02AAC07</string>
 								<string>1C37FBAC04509CD000000102</string>
-								<string>54A2D0F10C346735007760D5</string>
+								<string>544ECE080CA09F5E00EA017A</string>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>13</integer>
+									<integer>14</integer>
+									<integer>9</integer>
 									<integer>8</integer>
-									<integer>7</integer>
 								</array>
 							</array>
 							<key>PBXSmartGroupTreeModuleOutlineStateVisibleRectKey</key>
@@ -286,7 +286,7 @@
 							<real>186</real>
 						</array>
 						<key>RubberWindowFrame</key>
-						<string>271 134 1049 607 0 0 1440 878 </string>
+						<string>495 215 1049 607 0 0 1440 878 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -323,7 +323,7 @@
 								<key>Frame</key>
 								<string>{{0, 0}, {841, 0}}</string>
 								<key>RubberWindowFrame</key>
-								<string>271 134 1049 607 0 0 1440 878 </string>
+								<string>495 215 1049 607 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
@@ -343,7 +343,7 @@
 								<key>Frame</key>
 								<string>{{0, 5}, {841, 561}}</string>
 								<key>RubberWindowFrame</key>
-								<string>271 134 1049 607 0 0 1440 878 </string>
+								<string>495 215 1049 607 0 0 1440 878 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
@@ -367,9 +367,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>54A2D0EF0C3466A3007760D5</string>
+				<string>544ECE170CA09F5F00EA017A</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>54A2D0F00C3466A3007760D5</string>
+				<string>544ECE180CA09F5F00EA017A</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -514,7 +514,7 @@
 		<string>/work/macfuse/core/10.4/fusefs/fusefs.xcodeproj</string>
 	</array>
 	<key>WindowString</key>
-	<string>271 134 1049 607 0 0 1440 878 </string>
+	<string>495 215 1049 607 0 0 1440 878 </string>
 	<key>WindowTools</key>
 	<array>
 		<dict>

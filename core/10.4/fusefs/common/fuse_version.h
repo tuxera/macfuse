@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 Google. All Rights Reserved.
+ * Copyright (C) 2006-2007 Google. All Rights Reserved.
  * Amit Singh <singh@>
  */
 
@@ -24,8 +24,6 @@
         MACFUSE_STRINGIFY(MACFUSE_BUNDLE_IDENTIFIER_TRUNK_LITERAL)
 
 #define MACFUSE_TIMESTAMP __DATE__ ", " __TIME__
-
-#define MACFUSE_OS_VERSION_LITERAL 10.4
 
 #define MACFUSE_VERSION_LITERAL 0.5.0
 #define MACFUSE_VERSION         MACFUSE_STRINGIFY(MACFUSE_VERSION_LITERAL)

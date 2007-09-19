@@ -7,6 +7,7 @@
 #define _FUSE_LOCKING_H_
 
 #include "fuse_node.h"
+#include <IOKit/IOLocks.h>
 
 enum fusefslocktype {
     FUSEFS_SHARED_LOCK    = 1,
@@ -35,43 +36,47 @@ extern void fusefs_lck_rw_done(lck_rw_t *);
 extern lck_attr_t     *fuse_lock_attr;
 extern lck_grp_attr_t *fuse_group_attr;
 extern lck_grp_t      *fuse_lock_group;
-extern lck_mtx_t      *fuse_mutex;
+extern lck_mtx_t      *fuse_device_mutex;
 
 #ifdef FUSE_TRACE_LK
 
-#define FUSE_LOCK()                                                 \
-    {                                                               \
-        IOLog("0: FUSE_LOCK(): %s@%d\n", __FUNCTION__, __LINE__);   \
-        lck_mtx_lock(fuse_mutex);                                   \
-        IOLog("1: FUSE_LOCK(): %s@%d\n", __FUNCTION__, __LINE__);   \
-    }
-
-#define FUSE_UNLOCK()                                               \
-    {                                                               \
-        IOLog("1: FUSE_UNLOCK(): %s@%d\n", __FUNCTION__, __LINE__); \
-        lck_mtx_unlock(fuse_mutex);                                 \
-        IOLog("0: FUSE_UNLOCK(): %s@%d\n", __FUNCTION__, __LINE__); \
-    }
-
 #define fuse_lck_mtx_lock(m)                                                  \
     {                                                                         \
-        IOLog("0: lck_mtx_lock(%p): %s@%d\n", (m), __FUNCTION__, __LINE__);   \
+        proc_t __FUNCTION__ ## p = current_proc();                            \
+        IOLog("0: lck_mtx_lock(%p): %s@%d by %d\n", (m), __FUNCTION__,        \
+           __LINE__, (__FUNCTION__ ## p) ? proc_pid(__FUNCTION__ ## p) : 0);  \
         lck_mtx_lock((m));                                                    \
-        IOLog("1: lck_mtx_lock(%p): %s@%d\n", (m), __FUNCTION__, __LINE__);   \
+        IOLog("1: lck_mtx_lock(%p): %s@%d by %d\n", (m), __FUNCTION__,        \
+           __LINE__, (__FUNCTION__ ## p) ? proc_pid(__FUNCTION__ ## p) : 0);  \
     }
 
 #define fuse_lck_mtx_unlock(m)                                                \
     {                                                                         \
-        IOLog("1: lck_mtx_unlock(%p): %s@%d\n", (m), __FUNCTION__, __LINE__); \
+        proc_t __FUNCTION__ ## p = current_proc();                            \
+        IOLog("1: lck_mtx_unlock(%p): %s@%d by %d\n", (m), __FUNCTION__,      \
+           __LINE__, (__FUNCTION__ ## p) ? proc_pid(__FUNCTION__ ## p) : 0);  \
         lck_mtx_unlock((m));                                                  \
-        IOLog("0: lck_mtx_unlock(%p): %s@%d\n", (m), __FUNCTION__, __LINE__); \
+        IOLog("0: lck_mtx_unlock(%p): %s@%d by %d\n", (m), __FUNCTION__,      \
+           __LINE__, (__FUNCTION__ ## p) ? proc_pid(__FUNCTION__ ## p) : 0);  \
     }
 
-#else
-#define FUSE_LOCK()            lck_mtx_lock(fuse_mutex)
-#define FUSE_UNLOCK()          lck_mtx_unlock(fuse_mutex)
-#define fuse_lck_mtx_lock(m)   lck_mtx_lock((m))
-#define fuse_lck_mtx_unlock(m) lck_mtx_unlock((m))
-#endif
+#define fuse_lck_rw_lock_shared(l)      lck_rw_lock_shared((l))
+#define fuse_lck_rw_lock_exclusive(l)   lck_rw_lock_exclusive((l))
+#define fuse_lck_rw_unlock_shared(l)    lck_rw_unlock_shared((l))
+#define fuse_lck_rw_unlock_exclusive(l) lck_rw_unlock_exclusive((l))
+
+#else /* !FUSE_TRACE_LK */
+
+#define fuse_lck_mtx_lock(m)            lck_mtx_lock((m))
+#define fuse_lck_mtx_unlock(m)          lck_mtx_unlock((m))
+
+#define fuse_lck_rw_lock_shared(l)      lck_rw_lock_shared((l))
+#define fuse_lck_rw_lock_exclusive(l)   lck_rw_lock_exclusive((l))
+#define fuse_lck_rw_unlock_shared(l)    lck_rw_unlock_shared((l))
+#define fuse_lck_rw_unlock_exclusive(l) lck_rw_unlock_exclusive((l))
+
+#define fuse_lck_mtx_try_lock(l)        IOLockTryLock((IOLock *)l)
+
+#endif /* FUSE_TRACE_LK */
 
 #endif /* _FUSE_LOCKING_H_ */

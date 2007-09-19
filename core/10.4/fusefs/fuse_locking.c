@@ -1,6 +1,24 @@
 /*
- * Copyright (C) 2006 Google. All Rights Reserved.
+ * Copyright (C) 2006-2007 Google. All Rights Reserved.
  * Amit Singh <singh@>
+ */
+
+/*
+ * Portions Copyright (c) 1999-2003 Apple Computer, Inc. All Rights Reserved.
+ *
+ * This file contains Original Code and/or Modifications of Original Code as
+ * defined in and that are subject to the Apple Public Source License Version
+ * 2.0 (the 'License'). You may not use this file except in compliance with
+ * the License. Please obtain a copy of the License at
+ * http://www.opensource.apple.com/apsl/ and read it before using this file.
+ *
+ * The Original Code and all software distributed under the License are
+ * distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+ * EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT. Please see
+ * the License for the specific language governing rights and limitations
+ * under the License.
  */
 
 #include "fuse.h"
@@ -8,10 +26,12 @@
 #include "fuse_node.h"
 #include "fuse_locking.h"
 
-lck_attr_t     *fuse_lock_attr  = NULL;
-lck_grp_attr_t *fuse_group_attr = NULL;
-lck_grp_t      *fuse_lock_group = NULL;
-lck_mtx_t      *fuse_mutex      = NULL;
+lck_attr_t     *fuse_lock_attr    = NULL;
+lck_grp_attr_t *fuse_group_attr   = NULL;
+lck_grp_t      *fuse_lock_group   = NULL;
+lck_mtx_t      *fuse_device_mutex = NULL;
+
+#if M_MACFUSE_ENABLE_TSLOCKING
 
 /*
  * Largely identical to HFS+ locking. Much of the code is from hfs_cnode.c.
@@ -66,7 +86,7 @@ fusefs_lockpair(fusenode_t cp1, fusenode_t cp2, enum fusefslocktype locktype)
      * Lock in cnode parent-child order (if there is a relationship);
      * otherwise lock in cnode address order.
      */
-    if ((cp1->vtype == VDIR) && (cp1->nid == cp2->parent_nid)) {
+    if ((cp1->vtype == VDIR) && (cp1->nodeid == cp2->parent_nodeid)) {
         first = cp1;
         last = cp2;
     } else if (cp1 < cp2) {
@@ -107,11 +127,11 @@ fusefs_isordered(fusenode_t cp1, fusenode_t cp2)
         return (0);
     }
 
-    if (cp1->nid == cp2->parent_nid) {
+    if (cp1->nodeid == cp2->parent_nodeid) {
         return (1);  /* cp1 is the parent and should go first */
     }
 
-    if (cp2->nid == cp1->parent_nid) {
+    if (cp2->nodeid == cp1->parent_nodeid) {
         return (0);  /* cp1 is the child and should go last */
     }
 
@@ -201,7 +221,7 @@ fusefs_unlock(fusenode_t cp)
 #endif
 
     if (c_flag & (C_NEED_DVNODE_PUT | C_NEED_DATA_SETSIZE)) {
-        vp = cp->c_vp;
+        vp = cp->vp;
     }
 
 #if M_MACFUSE_RSRC_FORK
@@ -319,6 +339,8 @@ fusefs_unlock_truncate(fusenode_t cp)
 {
     fusefs_lck_rw_done(cp->truncatelock);
 }
+
+#endif
 
 #include <IOKit/IOLocks.h>
 
