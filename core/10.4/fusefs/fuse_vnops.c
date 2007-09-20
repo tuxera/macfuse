@@ -1262,7 +1262,7 @@ calldaemon:
          * We could do negative caching here.
          *
          * if ((cnp->cn_flags & MAKEENTRY) & (nameiop != CREATE)) {
-         *     fuse_vncache_enter(dvp, ...);
+         *     fuse_vncache_enter(dvp, NULLVP, cnp);
          * }
          */
 
