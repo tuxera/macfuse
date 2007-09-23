@@ -239,6 +239,13 @@ fuse_vfs_mount(mount_t mp, __unused vnode_t devvp, user_addr_t udata,
         mntopts |= FSESS_KILL_ON_UNMOUNT;
     }
 
+    if (fusefs_args.altflags & FUSE_MOPT_NO_LOCALCACHES) {
+        mntopts |= FUSE_MOPT_NO_ATTRCACHE;
+        mntopts |= FUSE_MOPT_NO_READAHEAD;
+        mntopts |= FUSE_MOPT_NO_UBC;
+        mntopts |= FUSE_MOPT_NO_VNCACHE;
+    }
+
     if (fusefs_args.altflags & FUSE_MOPT_NO_ATTRCACHE) {
         mntopts |= FSESS_NO_ATTRCACHE;
     }
@@ -252,30 +259,20 @@ fuse_vfs_mount(mount_t mp, __unused vnode_t devvp, user_addr_t udata,
     }
 
     if (fusefs_args.altflags & FUSE_MOPT_NO_VNCACHE) {
-        if (fusefs_args.altflags & FUSE_MOPT_EXTENDED_SECURITY) {
-            /* 'novncache' and 'extended_security' don't mix well. */
+        mntopts |= FSESS_NO_VNCACHE;
+    }
+
+    if (fusefs_args.altflags & FUSE_MOPT_NEGATIVE_VNCACHE) {
+        if (mntopts & FSESS_NO_VNCACHE) {
             return EINVAL;
         }
-        mntopts |= FSESS_NO_VNCACHE;
-        mntopts |= (FSESS_NO_ATTRCACHE | FSESS_NO_READAHEAD | FSESS_NO_UBC);
-    }
-
-    if (fusefs_args.altflags & FUSE_MOPT_NO_LOCALCACHES) {
-        fusefs_args.altflags |= FUSE_MOPT_NO_READAHEAD;
-        fusefs_args.altflags |= FUSE_MOPT_NO_UBC;
-        fusefs_args.altflags |= FUSE_MOPT_NO_VNCACHE;
-    }
-
-    if (mntopts & FSESS_NO_UBC) {
-        /* If no buffer cache, disallow exec from file system. */
-        vfs_setflags(mp, MNT_NOEXEC);
+        mntopts |= FSESS_NEGATIVE_VNCACHE;
     }
 
     if (fusefs_args.altflags & FUSE_MOPT_NO_SYNCWRITES) {
 
         /* Cannot mix 'nosyncwrites' with 'noubc' or 'noreadahead'. */
-        if (fusefs_args.altflags &
-            (FUSE_MOPT_NO_UBC | FUSE_MOPT_NO_READAHEAD)) {
+        if (mntopts | (FSESS_NO_READAHEAD | FSESS_NO_UBC)) {
             return EINVAL;
         }
 
@@ -293,7 +290,10 @@ fuse_vfs_mount(mount_t mp, __unused vnode_t devvp, user_addr_t udata,
         vfs_setflags(mp, MNT_SYNCHRONOUS);
     }
 
-    err = 0;
+    if (mntopts & FSESS_NO_UBC) {
+        /* If no buffer cache, disallow exec from file system. */
+        vfs_setflags(mp, MNT_NOEXEC);
+    }
 
     vfs_setauthopaque(mp);
     vfs_setauthopaqueaccess(mp);
@@ -316,6 +316,10 @@ fuse_vfs_mount(mount_t mp, __unused vnode_t devvp, user_addr_t udata,
         mntopts |= FSESS_EXTENDED_SECURITY;
         vfs_setextendedsecurity(mp);
     }
+
+    /* done checking incoming option bits */
+
+    err = 0;
 
     vfs_setfsprivate(mp, NULL);
 

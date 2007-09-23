@@ -68,6 +68,7 @@ struct mntopt mopts[] = {
     { "iosize=",             0, FUSE_MOPT_IOSIZE,                 1 }, // kused
     { "jail_symlinks",       0, FUSE_MOPT_JAIL_SYMLINKS,          1 }, // kused
     { "kill_on_unmount",     0, FUSE_MOPT_KILL_ON_UNMOUNT,        1 }, // kused 
+    { "negative_vncache",    0, FUSE_MOPT_NEGATIVE_VNCACHE,       1 }, // kused
     { "ping_diskarb",        0, FUSE_MOPT_PING_DISKARB,           1 }, // kused
     { "use_ino",             0, FUSE_MOPT_USE_INO,                1 },
     { "volname=",            0, FUSE_MOPT_VOLNAME,                1 }, // kused
@@ -801,10 +802,18 @@ main(int argc, char **argv)
         }
     }
 
+    /* allow_root and allow_other checks are done in the kernel. */
+
     if (altflags & FUSE_MOPT_NO_LOCALCACHES) {
+        altflags |= FUSE_MOPT_NO_ATTRCACHE;
         altflags |= FUSE_MOPT_NO_READAHEAD;
         altflags |= FUSE_MOPT_NO_UBC;
         altflags |= FUSE_MOPT_NO_VNCACHE;
+    }
+
+    if ((altflags & FUSE_MOPT_NEGATIVE_VNCACHE) &&
+        (altflags & FUSE_MOPT_NO_VNCACHE)) { 
+        errx(1, "'negative_vncache' can't be used with 'novncache'");
     }
 
     /*
@@ -821,14 +830,6 @@ main(int argc, char **argv)
     if ((altflags & FUSE_MOPT_NO_SYNCONCLOSE) &&
         !(altflags & FUSE_MOPT_NO_SYNCWRITES)) {
         errx(1, "the 'nosynconclose' option requires 'nosyncwrites'");
-    }
-
-    /*
-     * 'novncache' must not appear with 'extended_security'
-     */
-    if ((altflags & FUSE_MOPT_NO_VNCACHE) &&
-        (altflags & FUSE_MOPT_EXTENDED_SECURITY)) {
-        errx(1, "'novncache' can't be used with 'extended_security'");
     }
 
     if ((altflags & FUSE_MOPT_DEFAULT_PERMISSIONS) &&
@@ -953,6 +954,7 @@ showhelp()
       "    -o iosize=<size>       specify maximum I/O size in bytes\n" 
       "    -o jail_symlinks       contain symbolic links within the mount\n"
       "    -o kill_on_unmount     kernel will send a signal (SIGKILL by default) to the\n                           daemon after unmount finishes\n" 
+      "    -o negative_vncache    enable vnode name caching of non-existent objects\n"
       "    -o volname=<name>      set the file system's volume name\n"      
       "\nAvailable negative mount options:\n"
       "    -o noalerts            disable all graphical alerts (if any) in MacFUSE Core\n"
