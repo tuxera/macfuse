@@ -189,7 +189,7 @@ fuse_vfs_mount(mount_t mp, __unused vnode_t devvp, user_addr_t udata,
     if (fusefs_args.altflags & FUSE_MOPT_ALLOW_ROOT) {
         int is_member = 0;
         if ((kauth_cred_ismember_gid(kauth_cred_get(), fuse_admin_group,
-                                    &is_member) == 0) && is_member) {
+                                     &is_member) == 0) && is_member) {
             mntopts |= FSESS_ALLOW_ROOT;
         } else {
             IOLog("MacFUSE: caller not a member of MacFUSE admin group (%d)\n",
@@ -198,7 +198,11 @@ fuse_vfs_mount(mount_t mp, __unused vnode_t devvp, user_addr_t udata,
         }
     } else if (fusefs_args.altflags & FUSE_MOPT_ALLOW_OTHER) {
         if (!fuse_allow_other && !fuse_vfs_context_issuser(context)) {
-            return EPERM;
+            int is_member = 0;
+            if ((kauth_cred_ismember_gid(kauth_cred_get(), fuse_admin_group,
+                                         &is_member) != 0) || !is_member) {
+                return EPERM;
+            }
         }
         mntopts |= FSESS_ALLOW_OTHER;
     }
