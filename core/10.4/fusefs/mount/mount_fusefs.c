@@ -64,6 +64,7 @@ struct mntopt mopts[] = {
     { "fsid=" ,              0, FUSE_MOPT_FSID,                   1 }, // kused
     { "fsname=",             0, FUSE_MOPT_FSNAME,                 1 }, // kused
     { "fssubtype=",          0, FUSE_MOPT_FSSUBTYPE,              1 }, // kused
+    { "fstypename=",         0, FUSE_MOPT_FSTYPENAME,             1 }, // kused
     { "init_timeout=",       0, FUSE_MOPT_INIT_TIMEOUT,           1 }, // kused
     { "iosize=",             0, FUSE_MOPT_IOSIZE,                 1 }, // kused
     { "jail_symlinks",       0, FUSE_MOPT_JAIL_SYMLINKS,          1 }, // kused
@@ -170,7 +171,7 @@ fsbundle_find_fssubtype(const char *bundle_path_C,
                         const char *claimed_name_C,
                         uint32_t    claimed_fssubtype)
 {
-    uint32_t result = MACFUSE_FSSUBTYPE_UNKNOWN;
+    uint32_t result = FUSE_FSSUBTYPE_UNKNOWN;
 
     CFStringRef bundle_path_string  = NULL;
     CFStringRef claimed_name_string = NULL;
@@ -229,13 +230,13 @@ fsbundle_find_fssubtype(const char *bundle_path_C,
                                  (const void **)keys,
                                  (const void **)subdicts);
 
-    if (claimed_fssubtype == MACFUSE_FSSUBTYPE_INVALID) {
+    if (claimed_fssubtype == FUSE_FSSUBTYPE_INVALID) {
         goto lookupbyfsname;
     }
 
     for (idx = 0; idx < count; idx++) {
         CFNumberRef n = NULL;
-        uint32_t candidate_fssubtype = MACFUSE_FSSUBTYPE_INVALID;
+        uint32_t candidate_fssubtype = FUSE_FSSUBTYPE_INVALID;
         if (CFDictionaryGetValueIfPresent(subdicts[idx],
                                           (const void *)CFSTR(kFSSubTypeKey),
                                           (const void **)&n)) {
@@ -270,7 +271,7 @@ lookupbyfsname:
         }
         if (found) {
             CFNumberRef n = NULL;
-            uint32_t candidate_fssubtype = MACFUSE_FSSUBTYPE_INVALID;
+            uint32_t candidate_fssubtype = FUSE_FSSUBTYPE_INVALID;
             if (CFDictionaryGetValueIfPresent(
                     subdicts[idx], (const void *)CFSTR(kFSSubTypeKey),
                     (const void **)&n)) {
@@ -315,13 +316,13 @@ static __inline__ int
 fuse_to_fssubtype(void **target, void *value, void *fallback)
 {
     char *name = getenv("MOUNT_FUSEFS_DAEMON_PATH");
-   
-    *(uint32_t *)target = MACFUSE_FSSUBTYPE_INVALID;
+
+    *(uint32_t *)target = FUSE_FSSUBTYPE_INVALID;
 
     if (value) {
         int ret = fuse_to_uint32(target, value, fallback);
         if (ret) {
-            *(uint32_t *)target = MACFUSE_FSSUBTYPE_INVALID;
+            *(uint32_t *)target = FUSE_FSSUBTYPE_INVALID;
         }
     }
 
@@ -336,6 +337,7 @@ static uint32_t  daemon_timeout = FUSE_DEFAULT_DAEMON_TIMEOUT;
 static uint32_t  fsid           = 0;
 static char     *fsname         = NULL;
 static uint32_t  fssubtype      = 0;
+static char     *fstypename     = NULL;
 static uint32_t  init_timeout   = FUSE_DEFAULT_INIT_TIMEOUT;
 static uint32_t  iosize         = FUSE_DEFAULT_IOSIZE;
 static uint32_t  drandom        = 0;
@@ -406,6 +408,15 @@ struct mntval mvals[] = {
         "invalid value for argument fssubtype"
     },
     {
+        FUSE_MOPT_FSTYPENAME,
+        NULL,
+        0,
+        fuse_to_string,
+        NULL,
+        (void **)&fstypename,
+        "invalid value for argument fstypename"
+    },
+    {
         FUSE_MOPT_VOLNAME,
         NULL,
         0,
@@ -428,8 +439,7 @@ fuse_process_mvals(void)
     for (mv = mvals; mv->mv_mntflag; mv++) {
         ret = mv->mv_converter(mv->mv_target, mv->mv_value, mv->mv_fallback);
         if (ret) {
-            fprintf(stderr, "%s\n", mv->mv_errstr);
-            exit(ret);
+            errx(EX_USAGE, "%s", mv->mv_errstr);
         }
     }
 }
@@ -640,6 +650,8 @@ main(int argc, char **argv)
         showhelp();
     }
 
+    memset((void *)&args, 0, sizeof(args));
+
     do {
         for (i = 0; i < 3; i++) {
             if (optind < argc && argv[optind][0] != '-') {
@@ -713,13 +725,14 @@ main(int argc, char **argv)
     }
 
     if (!fdnam) {
-        errx(1, "missing MacFUSE device file descriptor");
+        errx(EX_USAGE, "missing MacFUSE device file descriptor");
     }
 
     errno = 0;
     fd = strtol(fdnam, NULL, 10);
     if ((errno == EINVAL) || (errno == ERANGE)) {
-        errx(1, "invalid name (%s) for MacFUSE device file descriptor", fdnam);
+        errx(EX_USAGE,
+             "invalid name (%s) for MacFUSE device file descriptor", fdnam);
     }
 
     signal_fd = fd;
@@ -730,7 +743,7 @@ main(int argc, char **argv)
         struct stat sb;
 
         if (fstat(fd, &sb) == -1) {
-            err(1, "fstat failed for MacFUSE device file descriptor");
+            err(EX_OSERR, "fstat failed for MacFUSE device file descriptor");
         }
         args.rdev = sb.st_rdev;
         strcpy(ndev, _PATH_DEV);
@@ -740,14 +753,14 @@ main(int argc, char **argv)
 
         if (strncmp(ndevbas, MACFUSE_DEVICE_BASENAME,
                     strlen(MACFUSE_DEVICE_BASENAME))) {
-            errx(1, "mounting inappropriate device");
+            errx(EX_USAGE, "mounting inappropriate device");
         }
 
         errno = 0;
         dindex = strtol(ndevbas + strlen(MACFUSE_DEVICE_BASENAME), NULL, 10);
         if ((errno == EINVAL) || (errno == ERANGE) ||
             (dindex < 0) || (dindex > MACFUSE_NDEVICES)) {
-            errx(1, "invalid MacFUSE device unit (#%d)\n", dindex);
+            errx(EX_USAGE, "invalid MacFUSE device unit (#%d)\n", dindex);
         }
     }
 
@@ -763,15 +776,17 @@ main(int argc, char **argv)
         break;
 
     case ESRCH:
-        errx(1, "the MacFUSE kernel extension is not loaded");
+        errx(EX_UNAVAILABLE, "the MacFUSE kernel extension is not loaded");
         break;
 
     case EINVAL:
-        errx(1, "the loaded MacFUSE kernel extension has a mismatched version");
+        errx(EX_UNAVAILABLE,
+             "the loaded MacFUSE kernel extension has a mismatched version");
         break;
 
     default:
-        errx(1, "failed to query the loaded MacFUSE kernel extension (%d)",
+        errx(EX_UNAVAILABLE,
+             "failed to query the loaded MacFUSE kernel extension (%d)",
              result);
         break;
     }
@@ -782,7 +797,7 @@ main(int argc, char **argv)
     }
 
     if (!mntpath) {
-        errx(1, "missing mount point");
+        errx(EX_USAGE, "missing mount point");
     }
 
     (void)checkpath(mntpath, args.mntpath);
@@ -792,13 +807,20 @@ main(int argc, char **argv)
     fuse_process_mvals();
 
     if (statfs(mntpath, &statfsb)) {
-        errx(1, "cannot stat the mount point %s", mntpath);
+        errx(EX_OSFILE, "cannot stat the mount point %s", mntpath);
     }
 
     if ((strlen(statfsb.f_fstypename) == strlen(MACFUSE_FS_TYPE)) &&
         (strcmp(statfsb.f_fstypename, MACFUSE_FS_TYPE) == 0)) {
         if (!(altflags & FUSE_MOPT_ALLOW_RECURSION)) {
-            errx(1, "mount point %s is itself on a MacFUSE volume", mntpath);
+            errx(EX_USAGE,
+                 "mount point %s is itself on a MacFUSE volume", mntpath);
+        }
+    } if (strncmp(statfsb.f_fstypename, FUSE_FSTYPENAME_PREFIX,
+                  strlen(FUSE_FSTYPENAME_PREFIX)) == 0) {
+        if (!(altflags & FUSE_MOPT_ALLOW_RECURSION)) {
+            errx(EX_USAGE,
+                 "mount point %s is itself on a MacFUSE volume", mntpath);
         }
     }
 
@@ -812,8 +834,8 @@ main(int argc, char **argv)
     }
 
     if ((altflags & FUSE_MOPT_NEGATIVE_VNCACHE) &&
-        (altflags & FUSE_MOPT_NO_VNCACHE)) { 
-        errx(1, "'negative_vncache' can't be used with 'novncache'");
+        (altflags & FUSE_MOPT_NO_VNCACHE)) {
+        errx(EX_USAGE, "'negative_vncache' can't be used with 'novncache'");
     }
 
     /*
@@ -821,7 +843,8 @@ main(int argc, char **argv)
      */
     if ((altflags & FUSE_MOPT_NO_SYNCWRITES) &&
         (altflags & (FUSE_MOPT_NO_UBC | FUSE_MOPT_NO_READAHEAD))) {
-        errx(1, "disabling local caching can't be used with 'nosyncwrites'");
+        errx(EX_USAGE,
+             "disabling local caching can't be used with 'nosyncwrites'");
     }
 
     /*
@@ -829,12 +852,13 @@ main(int argc, char **argv)
      */
     if ((altflags & FUSE_MOPT_NO_SYNCONCLOSE) &&
         !(altflags & FUSE_MOPT_NO_SYNCWRITES)) {
-        errx(1, "the 'nosynconclose' option requires 'nosyncwrites'");
+        errx(EX_USAGE, "the 'nosynconclose' option requires 'nosyncwrites'");
     }
 
     if ((altflags & FUSE_MOPT_DEFAULT_PERMISSIONS) &&
         (altflags & FUSE_MOPT_DEFER_PERMISSIONS)) {
-        errx(1, "'default_permissions' can't be used with 'defer_permissions'");
+        errx(EX_USAGE,
+             "'default_permissions' can't be used with 'defer_permissions'");
     }
 
     if (getenv("MOUNT_FUSEFS_NO_ALERTS")) {
@@ -860,7 +884,7 @@ main(int argc, char **argv)
 
     result = ioctl(fd, FUSEDEVIOCGETRANDOM, &drandom);
     if (result) {
-        errx(1, "failed to negotiate with /dev/fuse%d", dindex);
+        errx(EX_UNAVAILABLE, "failed to negotiate with /dev/fuse%d", dindex);
     }
 
     args.altflags       = altflags;
@@ -886,6 +910,15 @@ main(int argc, char **argv)
         }
     } else {
         snprintf(args.fsname, MAXPATHLEN, "%s", fsname);
+    }
+
+    if (fstypename) {
+        if (strlen(fstypename) > FUSE_FSTYPENAME_MAXLEN) {
+            errx(EX_USAGE, "fstypename can be at most %d characters",
+                 FUSE_FSTYPENAME_MAXLEN);
+        } else {
+            snprintf(args.fstypename, MFSTYPENAMELEN, fstypename);
+        }
     }
 
     if (!volname) {
@@ -951,6 +984,7 @@ showhelp()
       "    -o fsid=<fsid>         set the second 32-bit component of the fsid\n"
       "    -o fsname=<name>       set the file system's name\n"
       "    -o fssubtype=<num>     set the file system's fssubtype identifier\n"
+      "    -o fstypename=<name>   set the file system's type name\n"
       "    -o iosize=<size>       specify maximum I/O size in bytes\n" 
       "    -o jail_symlinks       contain symbolic links within the mount\n"
       "    -o kill_on_unmount     kernel will send a signal (SIGKILL by default) to the\n                           daemon after unmount finishes\n" 
