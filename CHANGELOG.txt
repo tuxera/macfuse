@@ -1,5 +1,111 @@
 = Changes and Feature Additions in MacFUSE Core Binary Releases =
 
+== MacFUSE 1.0.0 (October ?, 2007) ==
+
+=== Leopard Support ===
+
+  * Largely identical codebases for Mac OS X "Tiger" and "Leopard". Platform-specific optimizations and improvements where possible and appropriate.
+  * Leopard binaries, both for kernel and user code, link against 10.5 SDKs.
+  * Operating environment compatibility now checked and ensured at various levels: in the user-space library, in the mount utility, and in the load utility. Compatibility failure is reported through system-wide notifications and through GUI dialogs, which can optionally be suppressed.
+  * `open` now supports `O_SYMLINK`.
+  * Reference file system now supports `lchmod`.
+  * Leopard-specific volume capabilities, volume attributes, and file attributes recognized.
+  * Much improved Finder interaction: better mount-time behavior, better support for Finder metadata, better handling of file system failure.
+  * Custom volume icon support based entirely on extended attributes.
+
+=== New/Improved Mount-Time Options ===
+
+  * This release has several new mount-time options. Please see http://code.google.com/p/macfuse/wiki/OPTIONS for details.
+
+=== Improvements and Feature Additions (Kernel) ===
+
+  * Improved operation when in direct I/O mode: better pagein/pageout failure handling; cached file size purged appropriately upon writes; execution denial when direct I/O enabled.
+  * Improved permissions handling that can adaptively take input from the kernel, the kernel part of MacFUSE, and user-space file systems.
+  * Improved extended attributes handling that can adaptively take input from the kernel, the kernel part of MacFUSE, and user-space file systems.
+  * Improved handling of resource forks--can be handled entirely through Apple Double files, entirely through extended attributes, or a mix thereof.
+  * Support for "large" resource forks (and large extended attributes in general). Default sane upper limit (compile-time) is 4MB.
+  * Mounting behavior is now always synchronous. That is, mount processing in the kernel now waits (with a timeout) for user space to respond before returning success. This means calls such as `statfs`/`statvfs` don't have to cook up any fake data in the window in which programs (particularly the Finder) want to query the volume before user space has responded.
+  * Rewritten, finer grained device layer locking.
+  * Improved vnode revocation and triggers for such revocation.
+  * Improved dead file system (deadfs) shim built into MacFUSE.
+  * Added generation number propagation.
+  * Added support for message queueing at either the head or the tail of the kernel-user pipe.
+  * Improved `mmap` handling, with fault tolerant file handle fetching.
+  * Improved I/O handling in the case where vnop_strategy has to retrieve a file handle at the "last moment" (`execve`, asynchronous I/O, and possibly `mmap` paths).
+  * Randomly generated "secrets" shared between the `/dev/fuseN` device opener and the file system mounter (the two can be separate processes or the same process).
+  * Root vnode now cached in the private mount data.
+  * Optional preflight authorization for the case where we fetch a file handle without a preceding open call.
+  * Optional negative name caching.
+  * Optional munging of the file system type name in the kernel (allows user-space file systems to use their own file system bundles).
+  * Improved authorization of sensitive mount-time options such as `allow_other` and `allow_root`.
+  * New mechanism for per-file buffer cache purging; can be used by user-space file systems.
+  * Support for custom killing of IPC tickets (`FT_KILL`).
+  * Support for "canfail" (non-panic'ing) versions of memory allocation and IPC parameter packing calls.
+  * Experimental support for the `FUSE_INTERRUPT` message.
+
+=== Improvements and Feature Additions (User Space) ===
+
+  * Custom volume icon support is now provided through a _stack module_ in the user-space library.
+  * User-space library now based on FUSE library version 2.7.0, with several improvements and new features such as _module stacking_.
+  * Improved termination behavior in the user-space library--things should clean up better and several unmount/exit-time issues should no longer occur.
+  * The user-space library now uses a custom (POSIX-like) implementation of semaphores that's better suited to MacFUSE.
+  * Improved Darwin-specific abstraction in the user-space library. Code factored out to `fuse_darwin.c`, `fuse_darwin.h`, and `mount_darwin.c`. Darwin-specific features available to third parties accessible through `fuse_darwin.h`.
+  * The pass-through file system (xmp) has been overhauled for MacFUSE to be a reference file system. In particular, it has more extensive support for resource forks and extended attributes in general.
+  * `mount_fusefs` now dynamically looks up file system personalities in the on-disk `Info.plist` file; has fuzzy match support for heuristic matching of a file system type to the exec path of a file system daemon.
+
+=== Performance and Resource Consumption ===
+
+  * Greatly reduced kernel memory consumption. Proactive memory freeing triggered when giant buffers are detected.
+  * Logic overhauling and redundancy analysis used to reduce the number of certain calls (such as `vnop_access`) in highly trafficked paths.
+
+=== Bugfixes (Kernel) ===
+
+  * Fixed `mmap` descriptor-type mismatch issue.
+  * Fixed an erroneous delete/rename-time kauth check.
+  * Fixed a leak in vnode destruction code.
+  * Fixed a termination-time race in the kernel.
+  * Fixed an issue where the size of a newly created directory wasn't immediately available in the vnode's attributes.
+  * Fixed a file handle race that occurred in user space but due to a non-blocking operation by the kernel.
+  * Fixed `vnode_iterate` deadlock at unmount time.
+  * Fixed a `realloc` panic.
+  * Fixed parent ID issue for the root vnode.
+  * Fixed issue when file handle tracking would be out of whack (non-fatal) if a file system died abruptly.
+  * Fixed locking issue with vnode printing.
+  * Fixed `fsync` behavior to be synchronous when appropriate.
+  * Fixed deadlock because of a bug in the deadfs shim.
+  * Fixed a bug in the handling of per-vnode noncached I/O.
+
+=== Bugfixes (User Space) ===
+
+  * Fixed an issue with the user-space daemon not exiting upon certain failed mount attempts.
+  * Fixed thread cancelation issues in the user-space library.
+  * Fixed an issue with the unmount code in the user-space library depending on the mount path alone.
+  * Fixed issue with Python bindings not loading with the bleeding edge version of MacFUSE.
+
+=== Introspection and Debugging Support ===
+
+  * Added debugging control for printing all vnodes for a given mount.
+  * Added debugging control for "hard killing" a MacFUSE volume.
+  * More detailed log messages (with vnode names in some cases).
+  * Several counters, resource usage statistics, and tunable variables accessible through the sysctl interface. (Try `sysctl macfuse`)
+
+=== New/Updated Documentation ===
+
+  * Mount-Time Options (http://code.google.com/p/macfuse/wiki/OPTIONS)
+  * FAQ (http://code.google.com/p/macfuse/wiki/FAQ)
+  * HOWTO (http://code.google.com/p/macfuse/wiki/HOWTO)
+
+=== Build and Packaging Improvements ===
+
+  * Much simplified compilation and package building: a single command can build all components into a ready-to-install package. Unified and simplified configuration scripts now available for both core MacFUSE components as well as file systems such as sshfs.
+  * Improved packaging. Note that the MacFUSE disk image name now includes the OS version.
+  * Cleaner project structure as visible in Xcode. Leopard version done in Xcode 3.x.
+
+=== Specific File Systems ===
+
+  * Several improvements and bugfixes for sshfs.
+  * procfs overhauled; now Leopard-only.
+
 == MacFUSE 0.4.0 (June 5, 2007) ==
 
   * Support for custom volume icons in the user-space library (see [CUSTOM_VOLUME_ICON] for details). You can specify a volume icon through the new `volicon` option.
