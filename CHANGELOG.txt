@@ -46,7 +46,7 @@
 === Improvements and Feature Additions (User Space) ===
 
   * Custom volume icon support is now provided through a _stack module_ in the user-space library.
-  * User-space library now based on FUSE library version 2.7.0, with several improvements and new features such as _module stacking_.
+  * User-space library now based on FUSE library version 2.7.1, with several improvements and new features such as _module stacking_.
   * Improved termination behavior in the user-space library--things should clean up better and several unmount/exit-time issues should no longer occur.
   * The user-space library now uses a custom (POSIX-like) implementation of semaphores that's better suited to MacFUSE.
   * Improved Darwin-specific abstraction in the user-space library. Code factored out to `fuse_darwin.c`, `fuse_darwin.h`, and `mount_darwin.c`. Darwin-specific features available to third parties accessible through `fuse_darwin.h`.
