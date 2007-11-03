@@ -16,7 +16,9 @@ OUTPUT_PACKAGE="$BUILD_DIR/MacFUSE Core.pkg"
 SRC_TARBALL="$BUILD_DIR/macfuse-core-$OS_VERSION-$MACFUSE_VERSION.tar.bz2"
 
 DISTRIBUTION_FOLDER="$BUILD_DIR/Distribution_folder"
-INSTALL_RESOURCES="./Install_resources"
+INSTALL_RESOURCES_NAME="Install_resources"
+INSTALL_RESOURCES_SRC="./$INSTALL_RESOURCES_NAME"
+INSTALL_RESOURCES="$BUILD_DIR/$INSTALL_RESOURCES_NAME"
 INFO_PLIST_IN="Info.plist.in"
 INFO_PLIST_OUT="${BUILD_DIR}/Info.plist"
 DESCRIPTION_PLIST="./Description.plist"
@@ -40,9 +42,9 @@ then
   echo "Unable to find src tar: '$SRC_TARBALL'"
   exit 1
 fi
-if [ ! -d "$INSTALL_RESOURCES" ]
+if [ ! -d "$INSTALL_RESOURCES_SRC" ]
 then
-  echo "Unable to find install resources dir: '$INSTALL_RESOURCES'"
+  echo "Unable to find install resources dir: '$INSTALL_RESOURCES_SRC'"
   exit 1
 fi
 if [ ! -f "$INFO_PLIST_IN" ]
@@ -90,6 +92,9 @@ sudo cp "$UNINSTALL_SCRIPT" "$UNINSTALL_DST"
 sudo chmod 755 "$UNINSTALL_DST"
 sudo chown root:wheel "$UNINSTALL_DST"
 
+# Copy package resources to build directory while stripping out .svn etc.
+sudo tar --exclude '.svn' -cpvf - "$INSTALL_RESOURCES_SRC" | sudo tar -C "$BUILD_DIR" -xpvf -
+
 # Fix up the Info.plist
 sed -e "s/MACFUSE_VERSION_LITERAL/$MACFUSE_VERSION/g" < "$INFO_PLIST_IN" > "$INFO_PLIST_OUT"
 
@@ -116,7 +121,7 @@ then
 fi
 
 # Attach/mount the volume.
-sudo hdiutil attach "$SCRATCH_DMG"
+sudo hdiutil attach -nobrowse "$SCRATCH_DMG"
 if [ $? -ne 0 ]
 then
     echo "Failed to attach scratch disk image: $SCRATCH_DMG"

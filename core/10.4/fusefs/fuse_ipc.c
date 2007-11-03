@@ -324,7 +324,7 @@ out:
     fuse_lck_mtx_unlock(ftick->tk_aw_mtx);
 
     if (!(err || fticket_answered(ftick))) {
-        debug_printf("MacFUSE requester was woken up but still no answer");
+        IOLog("MacFUSE: requester was woken up but still no answer");
         err = ENXIO;
     }
 
@@ -349,8 +349,8 @@ fticket_aw_pull_uio(struct fuse_ticket *ftick, uio_t uio)
             }
             err = uiomove(fticket_resp(ftick)->base, len, uio);
             if (err) {
-                debug_printf("FT_A_FIOV: error is %d (%p, %ld, %p)\n",
-                             err, fticket_resp(ftick)->base, len, uio);
+                IOLog("MacFUSE: FT_A_FIOV error is %d (%p, %ld, %p)\n",
+                      err, fticket_resp(ftick)->base, len, uio);
             }
             break;
 
@@ -358,8 +358,8 @@ fticket_aw_pull_uio(struct fuse_ticket *ftick, uio_t uio)
             ftick->tk_aw_bufsize = len;
             err = uiomove(ftick->tk_aw_bufdata, len, uio);
             if (err) {
-                debug_printf("FT_A_BUF: error is %d (%p, %ld, %p)\n",
-                             err, ftick->tk_aw_bufdata, len, uio);
+                IOLog("MacFUSE: FT_A_BUF error is %d (%p, %ld, %p)\n",
+                      err, ftick->tk_aw_bufdata, len, uio);
             }
             break;
 
