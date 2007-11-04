@@ -65,7 +65,7 @@ fi
 
 SCRATCH_DMG="$BUILD_DIR/scratch.dmg"
 FINAL_DMG="$BUILD_DIR/MacFUSE-Core-$OS_VERSION-$MACFUSE_VERSION.dmg"
-VOLUME_NAME="MacFUSE Core $MACFUSE_VERSION"
+VOLUME_NAME="MacFUSE Core $OS_VERSION-$MACFUSE_VERSION"
 
 # Remove any previous runs
 sudo rm -rf "$DISTRIBUTION_FOLDER"
@@ -121,7 +121,7 @@ then
 fi
 
 # Attach/mount the volume.
-sudo hdiutil attach -nobrowse "$SCRATCH_DMG"
+sudo hdiutil attach -private -nobrowse "$SCRATCH_DMG"
 if [ $? -ne 0 ]
 then
     echo "Failed to attach scratch disk image: $SCRATCH_DMG"
