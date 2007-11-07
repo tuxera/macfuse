@@ -1,6 +1,34 @@
 = Changes and Feature Additions in MacFUSE Core Binary Releases =
 
-== MacFUSE 1.0.0 (October ?, 2007) ==
+== MacFUSE 1.1 (November 6, 2007) ==
+
+== Improvements (Kernel) ==
+
+  * Improved handling of synchronous I/O and uncached I/O.
+  * `vnop_access()` now summarily allows calls for symbolic links.
+
+=== Bugfixes (Kernel) ===
+
+  * Fixed issue with writes to newly created `._` files in `noubc` (no unified buffer cache) mode. The issue could lead to failed file creation and/or failed file copies.
+  * Fixed issue with handling the root vnode's parent ID when `use_ino` is in effect. The issue led to the Finder refusing to copy _from_ certain volumes.
+
+== Improvements (User Space) ==
+
+  * Added `const char *macfuse_version(void)` to the user-space library.
+  * Added `void fuse_unmount_compat22(const char *mountpoint)` to the user-space library.
+  * Simplified `xmp_access()` in the `fusexmp_fh` example file system.
+
+== Bugfixes (User Space)
+
+  * Fixed incorrect `listxattr()` behavior In the `fusexmp_fh` example file system. The issue could lead to a failed file copy when the source had both ACLs and non-ACL extended attributes.
+
+=== Build and Packaging Improvements ===
+
+  * MacFUSE releases for "Leopard" and "Tiger" now have different version numbers. See [MACFUSE_VERSIONING] for details.
+  * Fixed `make-pkg.sh` so as not to include spurious `.svn` directories in its output on Leopard.
+  * Added operating system version to the disk image volume name.
+
+== MacFUSE 1.0.0 (October 26, 2007) ==
 
 === Leopard Support ===
 
@@ -12,6 +40,7 @@
   * Leopard-specific volume capabilities, volume attributes, and file attributes recognized.
   * Much improved Finder interaction: better mount-time behavior, better support for Finder metadata, better handling of file system failure.
   * Custom volume icon support based entirely on extended attributes.
+  * Installed under `/Library/Filesystems/` on Leopard.
 
 === New/Improved Mount-Time Options ===
 
@@ -41,7 +70,6 @@
   * New mechanism for per-file buffer cache purging; can be used by user-space file systems.
   * Support for custom killing of IPC tickets (`FT_KILL`).
   * Support for "canfail" (non-panic'ing) versions of memory allocation and IPC parameter packing calls.
-  * Experimental support for the `FUSE_INTERRUPT` message.
 
 === Improvements and Feature Additions (User Space) ===
 
