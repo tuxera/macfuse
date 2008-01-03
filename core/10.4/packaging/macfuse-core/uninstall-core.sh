@@ -31,6 +31,8 @@ function is_safe_prefix() {
     "$INSTALL_VOLUME"/./Library/Extensions/fusefs.kext/*       |  \
     "$INSTALL_VOLUME"/./System/Library/Filesystems/fusefs.fs   |  \
     "$INSTALL_VOLUME"/./System/Library/Filesystems/fusefs.fs/* |  \
+    "$INSTALL_VOLUME"/./Library/Frameworks/MacFUSE.framework   |  \
+    "$INSTALL_VOLUME"/./Library/Frameworks/MacFUSE.framework/* |  \
     "$INSTALL_VOLUME"/Library/Receipts/MacFUSE\ Core.pkg       |  \
     "$INSTALL_VOLUME"/Library/Receipts/MacFUSE\ Core.pkg/*)
       # These are all ok to process.
