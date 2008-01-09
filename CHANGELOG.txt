@@ -1,5 +1,17 @@
 = Changes and Feature Additions in MacFUSE Core Binary Releases =
 
+== MacFUSE 1.3 (January 8, 2008) ==
+
+  * Includes the new `MacFUSE.framework` (installed in `/Library/Frameworks/`), a framework is designed to simplify file-system development for Objective-C programmers.
+  * [Leopard-only] Added new built-in stacking module `threadid` to the user-space library. It can be used when you want each file system request to come in to the user-space file system with the user/group IDs of the caller making the request.
+  * [Leopard-only] Now includes version 2.7.2 of the user-space FUSE library.
+  * Fixed an issue that caused sparse disk images on SSHFS fail to mount on Leopard.
+  * Fixed an issue with the handling of the `nosyncwrites` option.
+  * Fixed an issue with the handling of `.DS_Store` files when the `noappledouble` option was specified.
+  * Fixed an issue with the handling of extended attributes when a user-space file system returned ENOTSUP in `setxattr()`.
+  * Fixed an incorrect error message that users saw if they attempted to use a version of MacFUSE mismatched with their operating system version.
+  * User-space library now exports operating-system version-detection routines.
+
 == MacFUSE 1.1 (November 6, 2007) ==
 
 == Improvements (Kernel) ==
