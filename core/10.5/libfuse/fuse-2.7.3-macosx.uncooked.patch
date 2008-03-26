@@ -1,6 +1,6 @@
 diff -Naur old/README.MacFUSE new/README.MacFUSE
 --- old/README.MacFUSE	1969-12-31 16:00:00.000000000 -0800
-+++ new/README.MacFUSE	2008-02-21 14:16:57.000000000 -0800
++++ new/README.MacFUSE	2008-03-26 11:28:23.000000000 -0700
 @@ -0,0 +1,12 @@
 +MacFUSE Project Page:
 +
@@ -16,7 +16,7 @@ diff -Naur old/README.MacFUSE new/README.MacFUSE
 +aclocal -I . && autoheader && autoconf && automake -a
 diff -Naur old/configure.in new/configure.in
 --- old/configure.in	2008-02-19 11:51:21.000000000 -0800
-+++ new/configure.in	2008-02-21 14:16:57.000000000 -0800
++++ new/configure.in	2008-03-26 11:28:23.000000000 -0700
 @@ -16,6 +16,7 @@
  case $target_os in
       *linux*)	arch=linux;;
@@ -35,7 +35,7 @@ diff -Naur old/configure.in new/configure.in
  AC_OUTPUT
 diff -Naur old/darwin_configure.sh new/darwin_configure.sh
 --- old/darwin_configure.sh	1969-12-31 16:00:00.000000000 -0800
-+++ new/darwin_configure.sh	2008-02-21 14:16:57.000000000 -0800
++++ new/darwin_configure.sh	2008-03-26 11:28:23.000000000 -0700
 @@ -0,0 +1,6 @@
 +#! /bin/sh
 +
@@ -45,7 +45,7 @@ diff -Naur old/darwin_configure.sh new/darwin_configure.sh
 +CFLAGS="-D__FreeBSD__=10 -D_POSIX_C_SOURCE=200112L -I$MACFUSE_SRCROOT/common -O -g -arch i386 -arch ppc -isysroot /Developer/SDKs/MacOSX10.5.sdk" LDFLAGS="-arch i386 -arch ppc -framework CoreFoundation" ./configure --prefix=/usr/local --disable-dependency-tracking
 diff -Naur old/example/fusexmp.c new/example/fusexmp.c
 --- old/example/fusexmp.c	2008-02-19 11:51:22.000000000 -0800
-+++ new/example/fusexmp.c	2008-02-21 14:16:57.000000000 -0800
++++ new/example/fusexmp.c	2008-03-26 11:28:23.000000000 -0700
 @@ -182,7 +182,11 @@
  {
  	int res;
@@ -108,7 +108,7 @@ diff -Naur old/example/fusexmp.c new/example/fusexmp.c
  	return 0;
 diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
 --- old/example/fusexmp_fh.c	2008-02-19 11:51:22.000000000 -0800
-+++ new/example/fusexmp_fh.c	2008-02-21 14:16:57.000000000 -0800
++++ new/example/fusexmp_fh.c	2008-03-26 11:28:23.000000000 -0700
 @@ -29,6 +29,16 @@
  #include <sys/xattr.h>
  #endif
@@ -260,7 +260,7 @@ diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
  	.access		= xmp_access,
 diff -Naur old/fuse.pc.in new/fuse.pc.in
 --- old/fuse.pc.in	2008-02-19 11:51:21.000000000 -0800
-+++ new/fuse.pc.in	2008-02-21 14:16:57.000000000 -0800
++++ new/fuse.pc.in	2008-03-26 11:28:23.000000000 -0700
 @@ -4,7 +4,7 @@
  includedir=@includedir@
  
@@ -273,7 +273,7 @@ diff -Naur old/fuse.pc.in new/fuse.pc.in
 +Cflags: -I${includedir}/fuse -D__FreeBSD__=10 -D_FILE_OFFSET_BITS=64
 diff -Naur old/iconv.m4 new/iconv.m4
 --- old/iconv.m4	1969-12-31 16:00:00.000000000 -0800
-+++ new/iconv.m4	2008-02-21 14:16:57.000000000 -0800
++++ new/iconv.m4	2008-03-26 11:28:23.000000000 -0700
 @@ -0,0 +1,65 @@
 +AC_DEFUN([AM_ICONV],
 +[
@@ -342,7 +342,7 @@ diff -Naur old/iconv.m4 new/iconv.m4
 +])
 diff -Naur old/include/Makefile.am new/include/Makefile.am
 --- old/include/Makefile.am	2006-12-09 10:51:13.000000000 -0800
-+++ new/include/Makefile.am	2008-02-21 14:16:57.000000000 -0800
++++ new/include/Makefile.am	2008-03-26 11:28:23.000000000 -0700
 @@ -2,7 +2,14 @@
  
  fuseincludedir=$(includedir)/fuse
@@ -360,7 +360,7 @@ diff -Naur old/include/Makefile.am new/include/Makefile.am
  	fuse_common.h		\
 diff -Naur old/include/fuse_darwin.h new/include/fuse_darwin.h
 --- old/include/fuse_darwin.h	1969-12-31 16:00:00.000000000 -0800
-+++ new/include/fuse_darwin.h	2008-02-21 14:16:57.000000000 -0800
++++ new/include/fuse_darwin.h	2008-03-26 11:28:23.000000000 -0700
 @@ -0,0 +1,97 @@
 +/*
 + * Copyright (C) 2006,2007 Google. All Rights Reserved.
@@ -461,7 +461,7 @@ diff -Naur old/include/fuse_darwin.h new/include/fuse_darwin.h
 +#endif /* __FreeBSD__ >= 10 */
 diff -Naur old/lib/Makefile.am new/lib/Makefile.am
 --- old/lib/Makefile.am	2008-02-19 11:51:24.000000000 -0800
-+++ new/lib/Makefile.am	2008-02-21 14:20:15.000000000 -0800
++++ new/lib/Makefile.am	2008-03-26 11:28:23.000000000 -0700
 @@ -1,14 +1,29 @@
  ## Process this file with automake to produce Makefile.in
  
@@ -515,7 +515,7 @@ diff -Naur old/lib/Makefile.am new/lib/Makefile.am
  EXTRA_DIST = fuse_versionscript
 diff -Naur old/lib/fuse.c new/lib/fuse.c
 --- old/lib/fuse.c	2008-02-19 11:51:25.000000000 -0800
-+++ new/lib/fuse.c	2008-02-21 14:16:57.000000000 -0800
++++ new/lib/fuse.c	2008-03-26 11:28:23.000000000 -0700
 @@ -841,7 +841,7 @@
  {
  	fuse_get_context()->private_data = fs->user_data;
@@ -636,7 +636,7 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
 +#endif
 diff -Naur old/lib/fuse_darwin.c new/lib/fuse_darwin.c
 --- old/lib/fuse_darwin.c	1969-12-31 16:00:00.000000000 -0800
-+++ new/lib/fuse_darwin.c	2008-02-21 14:16:57.000000000 -0800
++++ new/lib/fuse_darwin.c	2008-03-26 11:28:23.000000000 -0700
 @@ -0,0 +1,279 @@
 +/*
 + * Copyright (C) 2006,2007 Google. All Rights Reserved.
@@ -919,7 +919,7 @@ diff -Naur old/lib/fuse_darwin.c new/lib/fuse_darwin.c
 +}
 diff -Naur old/lib/fuse_kern_chan.c new/lib/fuse_kern_chan.c
 --- old/lib/fuse_kern_chan.c	2008-02-19 11:51:25.000000000 -0800
-+++ new/lib/fuse_kern_chan.c	2008-02-21 14:16:57.000000000 -0800
++++ new/lib/fuse_kern_chan.c	2008-03-26 11:28:23.000000000 -0700
 @@ -75,12 +75,26 @@
  	return 0;
  }
@@ -949,7 +949,7 @@ diff -Naur old/lib/fuse_kern_chan.c new/lib/fuse_kern_chan.c
  {
 diff -Naur old/lib/fuse_loop_mt.c new/lib/fuse_loop_mt.c
 --- old/lib/fuse_loop_mt.c	2008-02-19 11:51:25.000000000 -0800
-+++ new/lib/fuse_loop_mt.c	2008-02-21 14:16:57.000000000 -0800
++++ new/lib/fuse_loop_mt.c	2008-03-26 11:28:23.000000000 -0700
 @@ -15,7 +15,12 @@
  #include <string.h>
  #include <unistd.h>
@@ -965,7 +965,7 @@ diff -Naur old/lib/fuse_loop_mt.c new/lib/fuse_loop_mt.c
  
 diff -Naur old/lib/fuse_lowlevel.c new/lib/fuse_lowlevel.c
 --- old/lib/fuse_lowlevel.c	2008-02-19 11:51:26.000000000 -0800
-+++ new/lib/fuse_lowlevel.c	2008-02-21 14:16:57.000000000 -0800
++++ new/lib/fuse_lowlevel.c	2008-03-26 11:28:23.000000000 -0700
 @@ -1206,8 +1206,13 @@
  
  static void fuse_ll_version(void)
@@ -1001,7 +1001,7 @@ diff -Naur old/lib/fuse_lowlevel.c new/lib/fuse_lowlevel.c
 +#endif
 diff -Naur old/lib/fuse_mt.c new/lib/fuse_mt.c
 --- old/lib/fuse_mt.c	2008-02-19 11:51:26.000000000 -0800
-+++ new/lib/fuse_mt.c	2008-02-21 14:16:57.000000000 -0800
++++ new/lib/fuse_mt.c	2008-03-26 11:28:23.000000000 -0700
 @@ -113,4 +113,6 @@
  	return fuse_session_loop_mt(fuse_get_session(f));
  }
@@ -1011,7 +1011,7 @@ diff -Naur old/lib/fuse_mt.c new/lib/fuse_mt.c
 +#endif
 diff -Naur old/lib/fuse_opt.c new/lib/fuse_opt.c
 --- old/lib/fuse_opt.c	2008-02-19 11:51:26.000000000 -0800
-+++ new/lib/fuse_opt.c	2008-02-21 14:16:57.000000000 -0800
++++ new/lib/fuse_opt.c	2008-03-26 11:28:23.000000000 -0700
 @@ -382,5 +382,7 @@
  	return res;
  }
@@ -1022,7 +1022,7 @@ diff -Naur old/lib/fuse_opt.c new/lib/fuse_opt.c
 +#endif
 diff -Naur old/lib/fuse_session.c new/lib/fuse_session.c
 --- old/lib/fuse_session.c	2008-02-19 11:51:26.000000000 -0800
-+++ new/lib/fuse_session.c	2008-02-21 14:16:57.000000000 -0800
++++ new/lib/fuse_session.c	2008-03-26 11:28:23.000000000 -0700
 @@ -16,6 +16,9 @@
  #include <string.h>
  #include <assert.h>
@@ -1077,7 +1077,7 @@ diff -Naur old/lib/fuse_session.c new/lib/fuse_session.c
  	struct fuse_session *se = (struct fuse_session *) malloc(sizeof(*se));
 diff -Naur old/lib/fuse_signals.c new/lib/fuse_signals.c
 --- old/lib/fuse_signals.c	2008-02-19 11:51:26.000000000 -0800
-+++ new/lib/fuse_signals.c	2008-02-21 14:16:57.000000000 -0800
++++ new/lib/fuse_signals.c	2008-03-26 11:28:23.000000000 -0700
 @@ -14,11 +14,46 @@
  
  static struct fuse_session *fuse_instance;
@@ -1127,7 +1127,7 @@ diff -Naur old/lib/fuse_signals.c new/lib/fuse_signals.c
  static int set_one_signal_handler(int sig, void (*handler)(int))
 diff -Naur old/lib/helper.c new/lib/helper.c
 --- old/lib/helper.c	2008-02-19 11:51:27.000000000 -0800
-+++ new/lib/helper.c	2008-02-21 14:16:57.000000000 -0800
++++ new/lib/helper.c	2008-03-26 11:28:23.000000000 -0700
 @@ -12,6 +12,9 @@
  #include "fuse_opt.h"
  #include "fuse_lowlevel.h"
@@ -1208,7 +1208,7 @@ diff -Naur old/lib/helper.c new/lib/helper.c
 +#endif
 diff -Naur old/lib/modules/threadid.c new/lib/modules/threadid.c
 --- old/lib/modules/threadid.c	1969-12-31 16:00:00.000000000 -0800
-+++ new/lib/modules/threadid.c	2008-02-21 14:16:57.000000000 -0800
++++ new/lib/modules/threadid.c	2008-03-26 11:28:23.000000000 -0700
 @@ -0,0 +1,530 @@
 +/*
 + * Per-thread override identity support for MacFUSE.
@@ -1742,7 +1742,7 @@ diff -Naur old/lib/modules/threadid.c new/lib/modules/threadid.c
 +FUSE_REGISTER_MODULE(threadid, threadid_new);
 diff -Naur old/lib/modules/volicon.c new/lib/modules/volicon.c
 --- old/lib/modules/volicon.c	1969-12-31 16:00:00.000000000 -0800
-+++ new/lib/modules/volicon.c	2008-02-21 14:16:57.000000000 -0800
++++ new/lib/modules/volicon.c	2008-03-26 11:28:23.000000000 -0700
 @@ -0,0 +1,723 @@
 +/*
 + *  Custom volume icon support for MacFUSE.
@@ -2469,8 +2469,8 @@ diff -Naur old/lib/modules/volicon.c new/lib/modules/volicon.c
 +FUSE_REGISTER_MODULE(volicon, volicon_new);
 diff -Naur old/lib/mount_darwin.c new/lib/mount_darwin.c
 --- old/lib/mount_darwin.c	1969-12-31 16:00:00.000000000 -0800
-+++ new/lib/mount_darwin.c	2008-02-21 14:16:57.000000000 -0800
-@@ -0,0 +1,629 @@
++++ new/lib/mount_darwin.c	2008-03-26 11:29:00.000000000 -0700
+@@ -0,0 +1,631 @@
 +/*
 + * Amit Singh <singh@>
 + * 
@@ -2920,6 +2920,8 @@ diff -Naur old/lib/mount_darwin.c new/lib/mount_darwin.c
 +        return -1;
 +    }
 +
++    signal(SIGCHLD, SIG_DFL); /* So that we can wait4() below. */
++
 +    result = loadkmod();
 +    if (result) {
 +        CFOptionFlags responseFlags;
@@ -3102,7 +3104,7 @@ diff -Naur old/lib/mount_darwin.c new/lib/mount_darwin.c
 +}
 diff -Naur old/lib/ulockmgr.c new/lib/ulockmgr.c
 --- old/lib/ulockmgr.c	2008-02-19 11:51:27.000000000 -0800
-+++ new/lib/ulockmgr.c	2008-02-21 14:16:57.000000000 -0800
++++ new/lib/ulockmgr.c	2008-03-26 11:28:23.000000000 -0700
 @@ -18,9 +18,19 @@
  #include <assert.h>
  #include <signal.h>
@@ -3139,7 +3141,7 @@ diff -Naur old/lib/ulockmgr.c new/lib/ulockmgr.c
  }
 diff -Naur old/ltmain.sh new/ltmain.sh
 --- old/ltmain.sh	2005-12-26 13:43:10.000000000 -0800
-+++ new/ltmain.sh	2008-02-21 14:16:57.000000000 -0800
++++ new/ltmain.sh	2008-03-26 11:28:23.000000000 -0700
 @@ -1,12 +1,10 @@
 -# Generated from ltmain.m4sh; do not edit by hand
 -
