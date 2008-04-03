@@ -41774,7 +41774,7 @@ diff -Naur old/lib/mount_darwin.c new/lib/mount_darwin.c
 +            exit(1);
 +        }
 +
-+        exit(0);
++        _exit(0);
 +    }
 +
 +out:
