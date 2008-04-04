@@ -6,7 +6,13 @@ UNAME=/usr/bin/uname
 
 os_name=`$UNAME -s`
 os_codename="Unknown"
+
 os_release=`$UNAME -r`
+if [ "$1" != "" ]
+then
+    os_release="$1"
+fi
+
 src_dir="/dev/null"
 
 if [ "$os_name" != "Darwin" ]
