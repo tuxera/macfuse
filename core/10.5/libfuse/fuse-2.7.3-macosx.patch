@@ -38809,7 +38809,7 @@ diff -Naur old/include/fuse_kernel.h new/include/fuse_kernel.h
  #define FATTR_MTIME	(1 << 5)
  #define FATTR_FH	(1 << 6)
 +#if (__FreeBSD__ >= 10)
-+#define FATTR_FLAGS	(1 << 7)
++#define FATTR_FLAGS	(1 << 31)
 +#endif /* __FreeBSD__ >= 10 */
  
  /**
@@ -38832,7 +38832,7 @@ diff -Naur old/include/fuse_lowlevel.h new/include/fuse_lowlevel.h
  #define FUSE_SET_ATTR_ATIME	(1 << 4)
  #define FUSE_SET_ATTR_MTIME	(1 << 5)
 +#if (__FreeBSD__ >= 10)
-+#define FUSE_SET_ATTR_FLAGS	(1 << 7)
++#define FUSE_SET_ATTR_FLAGS	(1 << 31)
 +#endif /* __FreeBSD__ >= 10 */
  
  /* ----------------------------------------------------------- *
@@ -38855,7 +38855,7 @@ diff -Naur old/kernel/fuse_kernel.h new/kernel/fuse_kernel.h
  #define FATTR_MTIME	(1 << 5)
  #define FATTR_FH	(1 << 6)
 +#if (__FreeBSD__ >= 10)
-+#define FATTR_FLAGS	(1 << 7)
++#define FATTR_FLAGS	(1 << 31)
 +#endif /* __FreeBSD__ >= 10 */
  
  /**
