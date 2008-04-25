@@ -1,5 +1,37 @@
 = Changes and Feature Additions in MacFUSE Core Binary Releases =
 
+== MacFUSE 1.5 (April 25, 2008) ==
+
+  * Bugfix: Fixed bug where the Finder would sometimes report zero KB free in a newly mounted MacFUSE volume.
+
+  * Bugfix: Fixed a signal-related bug that prevented a process from calling `fuse_main()` more than once (for example, if the process wanted to remount a volume after it had been unmounted.)
+
+  * Bugfix: Fixed an `exit(3)` call that should have been `_exit(3)`. Could cause tear-down issues for certain file systems.
+
+  * Feature: If a user file system becomes dead or unreachable (for example, if the daemon crashed), MacFUSE will report `-1` as the file system subtype (the `f_fssubtype` field of `struct statfs64` and the `f_reserved1` field of `struct statfs`.) The MacFUSE file system property list files now identify subtype `-1` as the "dead" file system.
+
+  * Feature: 10.5: Experimental support for `select(2)` on the user-kernel device. Must be explicitly enabled at kernel extension compile time through `M_MACFUSE_ENABLE_DSELECT`.
+
+  * Feature: 10.5: Added support for file flags (see `chflags(2)`). Currently, a user file system can only provide these flags for reading. Support for setting these flags is there, but not enabled because doing so will extend ("break") the existing FUSE API and is a more disruptive change--it will require all existing file systems to be recompiled. This change will be clubbed together with other disruptive changes at some point in the near future.
+
+  * Update: 10.5: User-space library now based on FUSE library version 2.7.3.
+
+  * Packaging: 10.5: MacFUSE for Tiger (the ready-to-install package) can now also be compiled on Leopard.
+
+  * MacFUSE.framework Changes
+     * 10.5: Support for garbage collection.
+     * 10.5: Includes !BridgeSupport data.
+     * Improved mount failure handling and notifications.
+     * Improved documentation in header file; explicitly called out the keys that are supported in various delegate methods that use `NSDictionary`.
+     * Support for `typeCode` and `creatorCode` in `GMFinderInfo` class.
+     * Explicit constants to use as keys for notification dictionary, etc.
+     * Added read support for the `st_flags` field of `struct stat`.
+     * Fixed bug where the `st_ctimespec` field of `struct stat` was being set to `NSFileCreationDate`. The framework now sets `st_ctimespec` to equal `st_mtimespec`; the `NSFileCreationDate` is not currently supported.
+     * Improved resolutions of times used by `AttributesOfItemAtPath:error` and `setAttributes:ofItemAtPath:error:`.
+     * Added code for calling `createSymbolicLinkAtPath:` and `linkItemAtPath:`.
+     * Added support for `mode_t` in `mkdir`. Tightened up `NSFilePosixPermissions` code in `mkdir`, `chmod`, and `create`.
+     * 10.4: Improved create support when using custom icons (synthesized !AppleDouble files) on 10.4.
+
 == MacFUSE 1.3 (January 8, 2008) ==
 
   * Includes the new `MacFUSE.framework` (installed in `/Library/Frameworks/`), a framework designed to simplify file-system development for Objective-C programmers.
