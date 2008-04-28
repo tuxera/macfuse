@@ -481,7 +481,7 @@ fuse_vnop_fsync(struct vnop_fsync_args *ap)
     struct fuse_filehandle *fufh;
     struct fuse_vnode_data *fvdat = VTOFUD(vp);
 
-    int type, err = ENOSYS, tmp_err = 0;
+    int type, err = 0, tmp_err = 0;
     (void)waitfor;
 
     fuse_trace_printf_vnop();
@@ -513,6 +513,7 @@ fuse_vnop_fsync(struct vnop_fsync_args *ap)
 
     if (!fuse_implemented(fuse_get_mpdata(mp), ((vnode_isdir(vp)) ?
                 FSESS_NOIMPLBIT(FSYNCDIR) : FSESS_NOIMPLBIT(FSYNC)))) {
+        err = ENOSYS;
         goto out;
     }
 
