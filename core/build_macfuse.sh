@@ -32,6 +32,12 @@ case "$os_release" in
           echo "$this_dir" is not a valid MacFUSE source directory
           exit 1
       fi
+      sudo true # Need root password to delete previous builds
+      if [ $? -ne 0 ]
+      then
+          echo "Administrator password is required to clean up MacFUSE builds."
+          exit 1
+      fi
       echo "Cleaning up any previous MacFUSE builds"
       sudo $RM -rf "$this_dir"/10.4/fusefs/build/
       sudo $RM -rf "$this_dir"/10.5/fusefs/build/
