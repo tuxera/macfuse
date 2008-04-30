@@ -39964,7 +39964,7 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
 +		if (!err && (valid & FUSE_SET_ATTR_FLAGS))
 +			err = fuse_fs_chflags(f->fs, path, attr->st_flags);
 +		/* XXX: don't complain if flags couldn't be written */
-+		if (err == -ENOSYS)
++		if (err == -ENOSYS) {
 +			err = 0;
 +		}
 +		if (!err && (valid & FUSE_SET_ATTR_BKUPTIME)) {
