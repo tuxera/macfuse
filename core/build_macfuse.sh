@@ -27,7 +27,6 @@ fi
 case "$os_release" in
   0)
       pushd . > /dev/null
-      cd "$this_dir"
       if [ $? -ne 0 ]
       then
           echo "$this_dir" is not a valid MacFUSE source directory
