@@ -38963,8 +38963,8 @@ diff -Naur old/include/fuse_common.h new/include/fuse_common.h
  
 diff -Naur old/include/fuse_darwin.h new/include/fuse_darwin.h
 --- old/include/fuse_darwin.h	1969-12-31 16:00:00.000000000 -0800
-+++ new/include/fuse_darwin.h	2008-05-01 02:24:26.000000000 -0700
-@@ -0,0 +1,98 @@
++++ new/include/fuse_darwin.h	2008-05-01 12:33:44.000000000 -0700
+@@ -0,0 +1,99 @@
 +/*
 + * Copyright (C) 2006,2007 Google. All Rights Reserved.
 + * Amit Singh <singh@>
@@ -39053,8 +39053,9 @@ diff -Naur old/include/fuse_darwin.h new/include/fuse_darwin.h
 +
 +/* Advanced */
 +
-+int fuse_knote_path_np(const char *path, uint32_t note);
-+int fuse_purge_path_np(const char *path, off_t *newsize);
++int fuse_device_fd_np(const char *mountpoint);
++int fuse_knote_np(const char *mountpoint, const char *path, uint32_t note);
++int fuse_purge_np(const char *mountpoint, const char *path, off_t *newsize);
 +
 +#ifdef __cplusplus
 +}
@@ -39065,8 +39066,8 @@ diff -Naur old/include/fuse_darwin.h new/include/fuse_darwin.h
 +#endif /* __FreeBSD__ >= 10 */
 diff -Naur old/include/fuse_darwin_private.h new/include/fuse_darwin_private.h
 --- old/include/fuse_darwin_private.h	1969-12-31 16:00:00.000000000 -0800
-+++ new/include/fuse_darwin_private.h	2008-05-01 02:10:44.000000000 -0700
-@@ -0,0 +1,31 @@
++++ new/include/fuse_darwin_private.h	2008-05-01 12:34:31.000000000 -0700
+@@ -0,0 +1,34 @@
 +/*
 + * Copyright (C) 2006-2008 Google. All Rights Reserved.
 + * Amit Singh <singh@>
@@ -39092,8 +39093,11 @@ diff -Naur old/include/fuse_darwin_private.h new/include/fuse_darwin_private.h
 +}
 +#endif
 +
-+fuse_ino_t fuse_lookup_inode_internal_np(const char *path);
-+int        fuse_resize_node_internal_np(const char *path, off_t newsize);
++fuse_ino_t fuse_lookup_inode_internal_np(const char *mountpoint,
++                                         const char *path);
++
++int fuse_resize_node_internal_np(const char *mountpoint, const char *path,
++                                 off_t newsize);
 +
 +#endif /* _FUSE_DARWIN_PRIVATE_H_ */
 +
@@ -39878,7 +39882,7 @@ diff -Naur old/lib/Makefile.in new/lib/Makefile.in
  # Otherwise a system limit (for SysV at least) may be exceeded.
 diff -Naur old/lib/fuse.c new/lib/fuse.c
 --- old/lib/fuse.c	2008-02-19 11:51:25.000000000 -0800
-+++ new/lib/fuse.c	2008-05-01 02:13:15.000000000 -0700
++++ new/lib/fuse.c	2008-05-01 12:40:17.000000000 -0700
 @@ -92,6 +92,10 @@
  	struct fuse_fs *fs;
  };
@@ -40227,18 +40231,20 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
  	fuse_delete_context_key();
  }
  
-@@ -3279,6 +3541,121 @@
+@@ -3279,6 +3541,126 @@
  	fuse_modules = mod;
  }
  
 +#if (__FreeBSD__ >= 10)
 +
 +fuse_ino_t
-+fuse_lookup_inode_internal_np(const char *path)
++fuse_lookup_inode_internal_np(const char *mountpoint, const char *path)
 +{
 +	fuse_ino_t ino = 0; /* invalid */
 +	fuse_ino_t parent_ino = FUSE_ROOT_ID;
 +	char scratch[MAXPATHLEN];
++
++	(void)mountpoint;
 +
 +	if (the_fuse == NULL) {
 +		return ino;
@@ -40289,11 +40295,14 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
 +
 +__private_extern__
 +int
-+fuse_resize_node_internal_np(const char *path, off_t newsize)
++fuse_resize_node_internal_np(const char *mountpoint, const char *path,
++			     off_t newsize)
 +{
 +	int ret = ENOENT;
 +	fuse_ino_t parent_ino = FUSE_ROOT_ID;
 +	char scratch[MAXPATHLEN];
++
++	(void)mountpoint;
 +
 +	if (the_fuse == NULL) {
 +		return EINVAL;
@@ -40349,7 +40358,7 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
  #ifndef __FreeBSD__
  
  static struct fuse *fuse_new_common_compat(int fd, const char *opts,
-@@ -3329,12 +3706,14 @@
+@@ -3329,12 +3711,14 @@
  				      11);
  }
  
@@ -40364,7 +40373,7 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
  
  #endif /* __FreeBSD__ */
  
-@@ -3346,4 +3725,6 @@
+@@ -3346,4 +3730,6 @@
  					op_size, 25);
  }
  
@@ -40373,7 +40382,7 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
 +#endif
 diff -Naur old/lib/fuse_darwin.c new/lib/fuse_darwin.c
 --- old/lib/fuse_darwin.c	1969-12-31 16:00:00.000000000 -0800
-+++ new/lib/fuse_darwin.c	2008-05-01 02:11:31.000000000 -0700
++++ new/lib/fuse_darwin.c	2008-05-01 12:38:44.000000000 -0700
 @@ -0,0 +1,316 @@
 +/*
 + * Copyright (C) 2006,2007 Google. All Rights Reserved.
@@ -40625,7 +40634,7 @@ diff -Naur old/lib/fuse_darwin.c new/lib/fuse_darwin.c
 +#define UBC_INVALIDATE 0x04
 +
 +int
-+fuse_purge_path_np(const char *path, off_t *newsize)
++fuse_purge_np(const char *mountpoint, const char *path, off_t *newsize)
 +{
 +    struct fuse_avfi_ioctl avfi;
 +    fuse_ino_t ino = 0;
@@ -40635,12 +40644,12 @@ diff -Naur old/lib/fuse_darwin.c new/lib/fuse_darwin.c
 +        return EINVAL;
 +    }
 +
-+    ino = fuse_lookup_inode_internal_np(path);
++    ino = fuse_lookup_inode_internal_np(mountpoint, path);
 +    if (ino == 0) { /* invalid */ 
 +        return ENOENT;
 +    }
 +
-+    fd = fuse_chan_fd_np();
++    fd = fuse_device_fd_np(mountpoint);
 +    if (fd < 0) { 
 +        return ENXIO;
 +    }
@@ -40656,14 +40665,14 @@ diff -Naur old/lib/fuse_darwin.c new/lib/fuse_darwin.c
 +
 +    int ret = ioctl(fd, FUSEDEVIOCALTERVNODEFORINODE, (void *)&avfi);
 +    if ((ret == 0) && newsize) {
-+        ret = fuse_resize_node_internal_np(path, *newsize);;
++        ret = fuse_resize_node_internal_np(mountpoint, path, *newsize);;
 +    }
 +
 +    return ret;
 +}
 +
 +int
-+fuse_knote_path_np(const char *path, uint32_t note)
++fuse_knote_np(const char *mountpoint, const char *path, uint32_t note)
 +{
 +    struct fuse_avfi_ioctl avfi;
 +    fuse_ino_t ino = 0;
@@ -40673,12 +40682,12 @@ diff -Naur old/lib/fuse_darwin.c new/lib/fuse_darwin.c
 +        return EINVAL;
 +    }
 +
-+    ino = fuse_lookup_inode_by_path_np(path);
++    ino = fuse_lookup_inode_internal_np(mountpoint, path);
 +    if (ino == 0) { /* invalid */ 
 +        return ENOENT;
 +    }
 +
-+    fd = fuse_chan_fd_np();
++    fd = fuse_device_fd_np(mountpoint);
 +    if (fd < 0) { 
 +        return ENXIO;
 +    }
@@ -40975,8 +40984,8 @@ diff -Naur old/lib/fuse_session.c new/lib/fuse_session.c
  	struct fuse_session *se = (struct fuse_session *) malloc(sizeof(*se));
 diff -Naur old/lib/fuse_signals.c new/lib/fuse_signals.c
 --- old/lib/fuse_signals.c	2008-02-19 11:51:26.000000000 -0800
-+++ new/lib/fuse_signals.c	2008-05-01 01:02:43.000000000 -0700
-@@ -14,11 +14,46 @@
++++ new/lib/fuse_signals.c	2008-05-01 12:38:40.000000000 -0700
+@@ -14,11 +14,47 @@
  
  static struct fuse_session *fuse_instance;
  
@@ -40986,11 +40995,12 @@ diff -Naur old/lib/fuse_signals.c new/lib/fuse_signals.c
 +#include <unistd.h>
 +
 +int
-+fuse_chan_fd_np(void)
++fuse_device_fd_np(const char *mountpoint)
 +{
++	(void)mountpoint;
 +	if (fuse_instance && !fuse_session_exited(fuse_instance)) {
 +		return fuse_chan_fd(fuse_session_next_chan(fuse_instance,
-+					NULL));
++					                   NULL));
 +	} else {
 +		return -1;
 +	}
