@@ -38963,8 +38963,8 @@ diff -Naur old/include/fuse_common.h new/include/fuse_common.h
  
 diff -Naur old/include/fuse_darwin.h new/include/fuse_darwin.h
 --- old/include/fuse_darwin.h	1969-12-31 16:00:00.000000000 -0800
-+++ new/include/fuse_darwin.h	2008-05-01 02:08:52.000000000 -0700
-@@ -0,0 +1,97 @@
++++ new/include/fuse_darwin.h	2008-05-01 02:24:26.000000000 -0700
+@@ -0,0 +1,98 @@
 +/*
 + * Copyright (C) 2006,2007 Google. All Rights Reserved.
 + * Amit Singh <singh@>
@@ -39049,6 +39049,7 @@ diff -Naur old/include/fuse_darwin.h new/include/fuse_darwin.h
 +/* Versioning */
 +
 +const char *macfuse_version(void);
++long        fuse_os_version_major(void);
 +
 +/* Advanced */
 +
@@ -42761,7 +42762,7 @@ diff -Naur old/lib/modules/volicon.c new/lib/modules/volicon.c
 +FUSE_REGISTER_MODULE(volicon, volicon_new);
 diff -Naur old/lib/mount_darwin.c new/lib/mount_darwin.c
 --- old/lib/mount_darwin.c	1969-12-31 16:00:00.000000000 -0800
-+++ new/lib/mount_darwin.c	2008-05-01 01:50:16.000000000 -0700
++++ new/lib/mount_darwin.c	2008-05-01 02:24:44.000000000 -0700
 @@ -0,0 +1,637 @@
 +/*
 + * Amit Singh <singh@>
@@ -42805,7 +42806,7 @@ diff -Naur old/lib/mount_darwin.c new/lib/mount_darwin.c
 +
 +static int quiet_mode = 0;
 +
-+static long
++long
 +fuse_os_version_major(void)
 +{
 +    int ret = 0;
