@@ -38963,7 +38963,7 @@ diff -Naur old/include/fuse_common.h new/include/fuse_common.h
  
 diff -Naur old/include/fuse_darwin.h new/include/fuse_darwin.h
 --- old/include/fuse_darwin.h	1969-12-31 16:00:00.000000000 -0800
-+++ new/include/fuse_darwin.h	2008-05-01 12:33:44.000000000 -0700
++++ new/include/fuse_darwin.h	2008-05-01 17:19:22.000000000 -0700
 @@ -0,0 +1,99 @@
 +/*
 + * Copyright (C) 2006,2007 Google. All Rights Reserved.
@@ -39049,7 +39049,7 @@ diff -Naur old/include/fuse_darwin.h new/include/fuse_darwin.h
 +/* Versioning */
 +
 +const char *macfuse_version(void);
-+long        fuse_os_version_major(void);
++long        fuse_os_version_major_np(void);
 +
 +/* Advanced */
 +
@@ -42772,7 +42772,7 @@ diff -Naur old/lib/modules/volicon.c new/lib/modules/volicon.c
 +FUSE_REGISTER_MODULE(volicon, volicon_new);
 diff -Naur old/lib/mount_darwin.c new/lib/mount_darwin.c
 --- old/lib/mount_darwin.c	1969-12-31 16:00:00.000000000 -0800
-+++ new/lib/mount_darwin.c	2008-05-01 02:24:44.000000000 -0700
++++ new/lib/mount_darwin.c	2008-05-01 17:19:39.000000000 -0700
 @@ -0,0 +1,637 @@
 +/*
 + * Amit Singh <singh@>
@@ -42817,7 +42817,7 @@ diff -Naur old/lib/mount_darwin.c new/lib/mount_darwin.c
 +static int quiet_mode = 0;
 +
 +long
-+fuse_os_version_major(void)
++fuse_os_version_major_np(void)
 +{
 +    int ret = 0;
 +    long major = 0;
@@ -42856,7 +42856,7 @@ diff -Naur old/lib/mount_darwin.c new/lib/mount_darwin.c
 +    union wait status;
 +    long major;
 +
-+    major = fuse_os_version_major();
++    major = fuse_os_version_major_np();
 +
 +    if (major < 9) { /* not Mac OS X 10.5+ */
 +        return EINVAL;
