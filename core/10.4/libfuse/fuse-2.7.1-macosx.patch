@@ -46815,8 +46815,8 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
 +#endif
 diff -Naur old/lib/fuse_darwin.c new/lib/fuse_darwin.c
 --- old/lib/fuse_darwin.c	1969-12-31 16:00:00.000000000 -0800
-+++ new/lib/fuse_darwin.c	2008-05-05 21:56:41.000000000 -0700
-@@ -0,0 +1,257 @@
++++ new/lib/fuse_darwin.c	2008-05-05 23:29:19.000000000 -0700
+@@ -0,0 +1,256 @@
 +/*
 + * Copyright (C) 2006,2007 Google. All Rights Reserved.
 + * Amit Singh <singh@>
@@ -47057,7 +47057,6 @@ diff -Naur old/lib/fuse_darwin.c new/lib/fuse_darwin.c
 +    return res;
 +}
 +
-+extern int fuse_device_fd_np(void);
 +extern fuse_ino_t fuse_lookup_inode_by_path_np(const char *path);
 +
 +/* XXX: <sys/ubc.h> */
@@ -47223,8 +47222,8 @@ diff -Naur old/lib/fuse_session.c new/lib/fuse_session.c
      struct fuse_session *se = (struct fuse_session *) malloc(sizeof(*se));
 diff -Naur old/lib/fuse_signals.c new/lib/fuse_signals.c
 --- old/lib/fuse_signals.c	2007-10-16 09:35:23.000000000 -0700
-+++ new/lib/fuse_signals.c	2008-05-05 21:55:27.000000000 -0700
-@@ -13,12 +13,45 @@
++++ new/lib/fuse_signals.c	2008-05-05 23:28:33.000000000 -0700
+@@ -13,12 +13,46 @@
  #include <signal.h>
  
  static struct fuse_session *fuse_instance;
@@ -47234,8 +47233,9 @@ diff -Naur old/lib/fuse_signals.c new/lib/fuse_signals.c
 +#include <unistd.h>
 +
 +int
-+fuse_device_fd_np(void)
++fuse_device_fd_np(const char *mountpoint)
 +{
++    (void)mountpoint;
 +    if (fuse_instance && !fuse_session_exited(fuse_instance)) {
 +        return fuse_chan_fd(fuse_session_next_chan(fuse_instance, NULL));
 +    } else {
@@ -48170,7 +48170,7 @@ diff -Naur old/lib/mount.c new/lib/mount.c
 +#endif
 diff -Naur old/lib/mount_darwin.c new/lib/mount_darwin.c
 --- old/lib/mount_darwin.c	1969-12-31 16:00:00.000000000 -0800
-+++ new/lib/mount_darwin.c	2008-05-05 21:55:12.000000000 -0700
++++ new/lib/mount_darwin.c	2008-05-05 23:28:47.000000000 -0700
 @@ -0,0 +1,704 @@
 +/*
 + * Amit Singh <singh@>
@@ -48677,7 +48677,7 @@ diff -Naur old/lib/mount_darwin.c new/lib/mount_darwin.c
 +void
 +fuse_unmount_compat22(const char *mountpoint)
 +{
-+    return fuse_kern_unmount(mountpoint, fuse_device_fd_np());
++    return fuse_kern_unmount(mountpoint, fuse_device_fd_np(mountpoint));
 +}
 +
 +static int
