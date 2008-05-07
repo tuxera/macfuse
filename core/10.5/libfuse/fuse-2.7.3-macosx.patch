@@ -37952,119 +37952,21 @@ diff -Naur old/example/Makefile.in new/example/Makefile.in
  # Otherwise a system limit (for SysV at least) may be exceeded.
 diff -Naur old/example/fusexmp.c new/example/fusexmp.c
 --- old/example/fusexmp.c	2008-02-19 11:51:22.000000000 -0800
-+++ new/example/fusexmp.c	2008-05-07 10:58:37.000000000 -0700
-@@ -167,6 +167,20 @@
- 	return 0;
++++ new/example/fusexmp.c	2008-05-07 16:03:02.000000000 -0700
+@@ -381,5 +381,10 @@
+ int main(int argc, char *argv[])
+ {
+ 	umask(0);
++#if (__FreeBSD__ >= 10)
++	fprintf(stderr, "Please use fusexmp_fh instead of fusexmp.\n");
++	return 1;
++#else
+ 	return fuse_main(argc, argv, &xmp_oper, NULL);
++#endif /* __FreeBSD__ >= 10 */
  }
- 
-+#if (__FreeBSD__ >= 10)
-+static int xmp_exchange(const char *path1, const char *path2,
-+			unsigned long options)
-+{
-+	int res;
-+
-+	res = exchangedata(path1, path2, options);
-+	if (res == -1)
-+		return -errno;
-+
-+	return 0;
-+}
-+#endif /* __FreeBSD__ >= 10 */
-+
- static int xmp_link(const char *from, const char *to)
- {
- 	int res;
-@@ -178,11 +192,29 @@
- 	return 0;
- }
- 
-+#if (__FreeBSD__ >= 10)
-+static int xmp_chflags(const char *path, uint32_t flags)
-+{
-+        int res;
-+
-+        res = chflags(path, flags);
-+
-+        if (res == -1)
-+                return -errno;
-+
-+        return 0;
-+}
-+#endif /* __FreeBSD__ >= 10 */
-+
- static int xmp_chmod(const char *path, mode_t mode)
- {
- 	int res;
- 
-+#if (__FreeBSD__ >= 10)
-+	res = lchmod(path, mode);
-+#else
- 	res = chmod(path, mode);
-+#endif
- 	if (res == -1)
- 		return -errno;
- 
-@@ -316,7 +348,11 @@
- static int xmp_setxattr(const char *path, const char *name, const char *value,
- 			size_t size, int flags)
- {
-+#if (__FreeBSD__ >= 10)
-+	int res = setxattr(path, name, value, size, 0, flags);
-+#else
- 	int res = lsetxattr(path, name, value, size, flags);
-+#endif
- 	if (res == -1)
- 		return -errno;
- 	return 0;
-@@ -325,7 +361,11 @@
- static int xmp_getxattr(const char *path, const char *name, char *value,
- 			size_t size)
- {
-+#if (__FreeBSD__ >= 10)
-+	int res = getxattr(path, name, value, size, 0, XATTR_NOFOLLOW);
-+#else
- 	int res = lgetxattr(path, name, value, size);
-+#endif
- 	if (res == -1)
- 		return -errno;
- 	return res;
-@@ -333,7 +373,11 @@
- 
- static int xmp_listxattr(const char *path, char *list, size_t size)
- {
-+#if (__FreeBSD__ >= 10)
-+	int res = listxattr(path, list, size, XATTR_NOFOLLOW);
-+#else
- 	int res = llistxattr(path, list, size);
-+#endif
- 	if (res == -1)
- 		return -errno;
- 	return res;
-@@ -341,7 +385,11 @@
- 
- static int xmp_removexattr(const char *path, const char *name)
- {
-+#if (__FreeBSD__ >= 10)
-+	int res = removexattr(path, name, XATTR_NOFOLLOW);
-+#else
- 	int res = lremovexattr(path, name);
-+#endif
- 	if (res == -1)
- 		return -errno;
- 	return 0;
-@@ -360,6 +408,9 @@
- 	.rmdir		= xmp_rmdir,
- 	.rename		= xmp_rename,
- 	.link		= xmp_link,
-+#if (__FreeBSD__ >= 10)
-+        .chflags        = xmp_chflags,
-+#endif /* __FreeBSD__ >= 10 */
- 	.chmod		= xmp_chmod,
- 	.chown		= xmp_chown,
- 	.truncate	= xmp_truncate,
 diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
 --- old/example/fusexmp_fh.c	2008-02-19 11:51:22.000000000 -0800
-+++ new/example/fusexmp_fh.c	2008-05-07 10:58:37.000000000 -0700
++++ new/example/fusexmp_fh.c	2008-05-07 16:05:24.000000000 -0700
 @@ -29,6 +29,26 @@
  #include <sys/xattr.h>
  #endif
@@ -38260,9 +38162,15 @@ diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
  	if (res == -1)
  		return -errno;
  
-@@ -375,7 +544,22 @@
+@@ -373,18 +542,53 @@
+ #ifdef HAVE_SETXATTR
+ /* xattr operations are optional and can safely be left unimplemented */
  static int xmp_setxattr(const char *path, const char *name, const char *value,
++#if (__FreeBSD__ >= 10)
++			size_t size, int flags, uint32_t position)
++#else
  			size_t size, int flags)
++#endif
  {
 +#if (__FreeBSD__ >= 10)
 +	int res;
@@ -38273,9 +38181,9 @@ diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
 +		char new_name[MAXPATHLEN];
 +		memcpy(new_name, A_KAUTH_FILESEC_XATTR, sizeof(A_KAUTH_FILESEC_XATTR));
 +		memcpy(new_name, G_PREFIX, sizeof(G_PREFIX) - 1);
-+		res = setxattr(path, new_name, value, size, 0, flags);
++		res = setxattr(path, new_name, value, size, position, flags);
 +	} else {
-+		res = setxattr(path, name, value, size, 0, flags);
++		res = setxattr(path, name, value, size, position, flags);
 +	}
 +#else
  	int res = lsetxattr(path, name, value, size, flags);
@@ -38283,9 +38191,14 @@ diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
  	if (res == -1)
  		return -errno;
  	return 0;
-@@ -384,7 +568,19 @@
+ }
+ 
  static int xmp_getxattr(const char *path, const char *name, char *value,
++#if (__FreeBSD__ >= 10)
++			size_t size, uint32_t position)
++#else
  			size_t size)
++#endif
  {
 +#if (__FreeBSD__ >= 10)
 +	int res;
@@ -38293,9 +38206,9 @@ diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
 +		char new_name[MAXPATHLEN];
 +		memcpy(new_name, A_KAUTH_FILESEC_XATTR, sizeof(A_KAUTH_FILESEC_XATTR));
 +		memcpy(new_name, G_PREFIX, sizeof(G_PREFIX) - 1);
-+		res = getxattr(path, new_name, value, size, 0, XATTR_NOFOLLOW);
++		res = getxattr(path, new_name, value, size, position, XATTR_NOFOLLOW);
 +	} else {
-+		res = getxattr(path, name, value, size, 0, XATTR_NOFOLLOW);
++		res = getxattr(path, name, value, size, position, XATTR_NOFOLLOW);
 +	}
 +#else
  	int res = lgetxattr(path, name, value, size);
@@ -38303,7 +38216,7 @@ diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
  	if (res == -1)
  		return -errno;
  	return res;
-@@ -392,7 +588,35 @@
+@@ -392,7 +596,35 @@
  
  static int xmp_listxattr(const char *path, char *list, size_t size)
  {
@@ -38339,7 +38252,7 @@ diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
  	if (res == -1)
  		return -errno;
  	return res;
-@@ -400,7 +624,19 @@
+@@ -400,7 +632,19 @@
  
  static int xmp_removexattr(const char *path, const char *name)
  {
@@ -38359,7 +38272,7 @@ diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
  	if (res == -1)
  		return -errno;
  	return 0;
-@@ -416,7 +652,24 @@
+@@ -416,7 +660,24 @@
  			   sizeof(fi->lock_owner));
  }
  
@@ -38384,7 +38297,7 @@ diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
  	.getattr	= xmp_getattr,
  	.fgetattr	= xmp_fgetattr,
  	.access		= xmp_access,
-@@ -451,6 +704,15 @@
+@@ -451,6 +712,15 @@
  	.removexattr	= xmp_removexattr,
  #endif
  	.lock		= xmp_lock,
@@ -38855,8 +38768,27 @@ diff -Naur old/include/config.h.in new/include/config.h.in
  
 diff -Naur old/include/fuse.h new/include/fuse.h
 --- old/include/fuse.h	2008-02-19 11:51:23.000000000 -0800
-+++ new/include/fuse.h	2008-05-07 10:58:37.000000000 -0700
-@@ -423,6 +423,47 @@
++++ new/include/fuse.h	2008-05-07 15:49:15.000000000 -0700
+@@ -236,10 +236,18 @@
+ 	int (*fsync) (const char *, int, struct fuse_file_info *);
+ 
+ 	/** Set extended attributes */
++#if (__FreeBSD__ >= 10)
++	int (*setxattr) (const char *, const char *, const char *, size_t, int, uint32_t);
++#else
+ 	int (*setxattr) (const char *, const char *, const char *, size_t, int);
++#endif /* __FreeBSD__ >= 10 */
+ 
+ 	/** Get extended attributes */
++#if (__FreeBSD__ >= 10)
++	int (*getxattr) (const char *, const char *, char *, size_t, uint32_t);
++#else
+ 	int (*getxattr) (const char *, const char *, char *, size_t);
++#endif /* __FreeBSD__ >= 10 */
+ 
+ 	/** List extended attributes */
+ 	int (*listxattr) (const char *, char *, size_t);
+@@ -423,6 +431,47 @@
  	 * Introduced in version 2.6
  	 */
  	int (*bmap) (const char *, size_t blocksize, uint64_t *idx);
@@ -38904,7 +38836,7 @@ diff -Naur old/include/fuse.h new/include/fuse.h
  };
  
  /** Extra context that may be needed by some filesystems
-@@ -601,6 +642,11 @@
+@@ -601,6 +650,11 @@
  		     struct fuse_file_info *fi);
  int fuse_fs_rename(struct fuse_fs *fs, const char *oldpath,
  		   const char *newpath);
@@ -38916,7 +38848,7 @@ diff -Naur old/include/fuse.h new/include/fuse.h
  int fuse_fs_unlink(struct fuse_fs *fs, const char *path);
  int fuse_fs_rmdir(struct fuse_fs *fs, const char *path);
  int fuse_fs_symlink(struct fuse_fs *fs, const char *linkname,
-@@ -632,6 +678,17 @@
+@@ -632,6 +686,17 @@
  		   struct fuse_file_info *fi);
  int fuse_fs_lock(struct fuse_fs *fs, const char *path,
  		 struct fuse_file_info *fi, int cmd, struct flock *lock);
@@ -38934,6 +38866,24 @@ diff -Naur old/include/fuse.h new/include/fuse.h
  int fuse_fs_chmod(struct fuse_fs *fs, const char *path, mode_t mode);
  int fuse_fs_chown(struct fuse_fs *fs, const char *path, uid_t uid, gid_t gid);
  int fuse_fs_truncate(struct fuse_fs *fs, const char *path, off_t size);
+@@ -645,10 +710,17 @@
+ int fuse_fs_mknod(struct fuse_fs *fs, const char *path, mode_t mode,
+ 		  dev_t rdev);
+ int fuse_fs_mkdir(struct fuse_fs *fs, const char *path, mode_t mode);
++#if (__FreeBSD__ >= 10)
++int fuse_fs_setxattr(struct fuse_fs *fs, const char *path, const char *name,
++		     const char *value, size_t size, int flags, uint32_t position);
++int fuse_fs_getxattr(struct fuse_fs *fs, const char *path, const char *name,
++		     char *value, size_t size, uint32_t position);
++#else
+ int fuse_fs_setxattr(struct fuse_fs *fs, const char *path, const char *name,
+ 		     const char *value, size_t size, int flags);
+ int fuse_fs_getxattr(struct fuse_fs *fs, const char *path, const char *name,
+ 		     char *value, size_t size);
++#endif /* __FreeBSD__ >= 10 */
+ int fuse_fs_listxattr(struct fuse_fs *fs, const char *path, char *list,
+ 		      size_t size);
+ int fuse_fs_removexattr(struct fuse_fs *fs, const char *path,
 diff -Naur old/include/fuse_common.h new/include/fuse_common.h
 --- old/include/fuse_common.h	2008-02-19 11:51:23.000000000 -0800
 +++ new/include/fuse_common.h	2008-05-07 10:58:37.000000000 -0700
@@ -39132,7 +39082,7 @@ diff -Naur old/include/fuse_darwin_private.h new/include/fuse_darwin_private.h
 +#endif /* __FreeBSD__ >= 10 */
 diff -Naur old/include/fuse_kernel.h new/include/fuse_kernel.h
 --- old/include/fuse_kernel.h	2008-02-19 11:51:24.000000000 -0800
-+++ new/include/fuse_kernel.h	2008-05-07 10:58:37.000000000 -0700
++++ new/include/fuse_kernel.h	2008-05-07 15:35:57.000000000 -0700
 @@ -75,6 +75,9 @@
  	__u32	uid;
  	__u32	gid;
@@ -39227,9 +39177,27 @@ diff -Naur old/include/fuse_kernel.h new/include/fuse_kernel.h
  };
  
  struct fuse_open_in {
+@@ -288,11 +333,17 @@
+ struct fuse_setxattr_in {
+ 	__u32	size;
+ 	__u32	flags;
++#if (__FreeBSD__ >= 10)
++	__u32	position;
++#endif /* __FreeBSD__ >= 10 */
+ };
+ 
+ struct fuse_getxattr_in {
+ 	__u32	size;
+ 	__u32	padding;
++#if (__FreeBSD__ >= 10)
++	__u32	position;
++#endif /* __FreeBSD__ >= 10 */
+ };
+ 
+ struct fuse_getxattr_out {
 diff -Naur old/include/fuse_lowlevel.h new/include/fuse_lowlevel.h
 --- old/include/fuse_lowlevel.h	2008-02-19 11:51:23.000000000 -0800
-+++ new/include/fuse_lowlevel.h	2008-05-07 10:58:37.000000000 -0700
++++ new/include/fuse_lowlevel.h	2008-05-07 15:48:53.000000000 -0700
 @@ -118,6 +118,12 @@
  #define FUSE_SET_ATTR_SIZE	(1 << 3)
  #define FUSE_SET_ATTR_ATIME	(1 << 4)
@@ -39243,7 +39211,35 @@ diff -Naur old/include/fuse_lowlevel.h new/include/fuse_lowlevel.h
  
  /* ----------------------------------------------------------- *
   * Request methods and replies				       *
-@@ -807,6 +813,44 @@
+@@ -623,8 +629,13 @@
+ 	 * Valid replies:
+ 	 *   fuse_reply_err
+ 	 */
++#if (__FreeBSD__ >= 10)
++	void (*setxattr) (fuse_req_t req, fuse_ino_t ino, const char *name,
++			  const char *value, size_t size, int flags, uint32_t position);
++#else
+ 	void (*setxattr) (fuse_req_t req, fuse_ino_t ino, const char *name,
+ 			  const char *value, size_t size, int flags);
++#endif /* __FreeBSD__ >= 10 */
+ 
+ 	/**
+ 	 * Get an extended attribute
+@@ -648,8 +659,13 @@
+ 	 * @param name of the extended attribute
+ 	 * @param size maximum size of the value to send
+ 	 */
++#if (__FreeBSD__ >= 10)
++	void (*getxattr) (fuse_req_t req, fuse_ino_t ino, const char *name,
++			  size_t size, uint32_t position);
++#else
+ 	void (*getxattr) (fuse_req_t req, fuse_ino_t ino, const char *name,
+ 			  size_t size);
++#endif /* __FreeBSD__ >= 10 */
+ 
+ 	/**
+ 	 * List extended attribute names
+@@ -807,6 +823,44 @@
  	 */
  	void (*bmap) (fuse_req_t req, fuse_ino_t ino, size_t blocksize,
  		      uint64_t idx);
@@ -39290,7 +39286,7 @@ diff -Naur old/include/fuse_lowlevel.h new/include/fuse_lowlevel.h
  /**
 diff -Naur old/kernel/fuse_kernel.h new/kernel/fuse_kernel.h
 --- old/kernel/fuse_kernel.h	2008-02-19 11:51:24.000000000 -0800
-+++ new/kernel/fuse_kernel.h	2008-05-07 10:58:37.000000000 -0700
++++ new/kernel/fuse_kernel.h	2008-05-07 15:36:01.000000000 -0700
 @@ -75,6 +75,9 @@
  	__u32	uid;
  	__u32	gid;
@@ -39385,6 +39381,24 @@ diff -Naur old/kernel/fuse_kernel.h new/kernel/fuse_kernel.h
  };
  
  struct fuse_open_in {
+@@ -288,11 +333,17 @@
+ struct fuse_setxattr_in {
+ 	__u32	size;
+ 	__u32	flags;
++#if (__FreeBSD__ >= 10)
++	__u32	position;
++#endif /* __FreeBSD__ >= 10 */
+ };
+ 
+ struct fuse_getxattr_in {
+ 	__u32	size;
+ 	__u32	padding;
++#if (__FreeBSD__ >= 10)
++	__u32	position;
++#endif /* __FreeBSD__ >= 10 */
+ };
+ 
+ struct fuse_getxattr_out {
 diff -Naur old/lib/Makefile.am new/lib/Makefile.am
 --- old/lib/Makefile.am	2008-02-19 11:51:24.000000000 -0800
 +++ new/lib/Makefile.am	2008-05-07 10:58:37.000000000 -0700
@@ -39910,7 +39924,7 @@ diff -Naur old/lib/Makefile.in new/lib/Makefile.in
  # Otherwise a system limit (for SysV at least) may be exceeded.
 diff -Naur old/lib/fuse.c new/lib/fuse.c
 --- old/lib/fuse.c	2008-02-19 11:51:25.000000000 -0800
-+++ new/lib/fuse.c	2008-05-07 13:44:33.000000000 -0700
++++ new/lib/fuse.c	2008-05-07 16:35:13.000000000 -0700
 @@ -16,6 +16,9 @@
  #include "fuse_misc.h"
  #include "fuse_common_compat.h"
@@ -40000,7 +40014,47 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
  	else
  		return 0;
  }
-@@ -1180,6 +1246,16 @@
+@@ -1052,21 +1118,37 @@
+ }
+ 
+ int fuse_fs_setxattr(struct fuse_fs *fs, const char *path, const char *name,
+-		     const char *value, size_t size, int flags)
++#if (__FreeBSD__ >= 10)
++  	             const char *value, size_t size, int flags, uint32_t position)
++#else
++  	             const char *value, size_t size, int flags);
++#endif /* __FreeBSD__ >= 10 */
+ {
+ 	fuse_get_context()->private_data = fs->user_data;
+ 	if (fs->op.setxattr)
++#if (__FreeBSD__ >= 10)
++		return fs->op.setxattr(path, name, value, size, flags, position);
++#else
+ 		return fs->op.setxattr(path, name, value, size, flags);
++#endif /* __FreeBSD__ >= 10 */
+ 	else
+ 		return -ENOSYS;
+ }
+ 
+ int fuse_fs_getxattr(struct fuse_fs *fs, const char *path, const char *name,
+-		     char *value, size_t size)
++#if (__FreeBSD__ >= 10)
++		     char *value, size_t size, uint32_t position)
++#else
++		     char *value, size_t size);
++#endif /* __FreeBSD__ >= 10 */
+ {
+ 	fuse_get_context()->private_data = fs->user_data;
+ 	if (fs->op.getxattr)
++#if (__FreeBSD__ >= 10)
++		return fs->op.getxattr(path, name, value, size, position);
++#else
+ 		return fs->op.getxattr(path, name, value, size);
++#endif /* __FreeBSD__ >= 10 */
+ 	else
+ 		return -ENOSYS;
+ }
+@@ -1180,6 +1262,16 @@
  
  static void curr_time(struct timespec *now)
  {
@@ -40017,7 +40071,7 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
  	static clockid_t clockid = CLOCK_MONOTONIC;
  	int res = clock_gettime(clockid, now);
  	if (res == -1 && errno == EINVAL) {
-@@ -1190,6 +1266,7 @@
+@@ -1190,6 +1282,7 @@
  		perror("fuse: clock_gettime");
  		abort();
  	}
@@ -40025,7 +40079,7 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
  }
  
  static void update_stat(struct node *node, const struct stat *stbuf)
-@@ -1444,6 +1521,19 @@
+@@ -1444,6 +1537,19 @@
  		return -ENOSYS;
  }
  
@@ -40045,7 +40099,7 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
  static void fuse_lib_setattr(fuse_req_t req, fuse_ino_t ino, struct stat *attr,
  			     int valid, struct fuse_file_info *fi)
  {
-@@ -1459,6 +1549,32 @@
+@@ -1459,6 +1565,32 @@
  		struct fuse_intr_data d;
  		fuse_prepare_interrupt(f, req, &d);
  		err = 0;
@@ -40078,7 +40132,7 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
  		if (!err && (valid & FUSE_SET_ATTR_MODE))
  			err = fuse_fs_chmod(f->fs, path, attr->st_mode);
  		if (!err && (valid & (FUSE_SET_ATTR_UID | FUSE_SET_ATTR_GID))) {
-@@ -1736,6 +1852,134 @@
+@@ -1736,6 +1868,134 @@
  	reply_err(req, err);
  }
  
@@ -40213,7 +40267,90 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
  static void fuse_lib_link(fuse_req_t req, fuse_ino_t ino, fuse_ino_t newparent,
  			  const char *newname)
  {
-@@ -2777,6 +3021,11 @@
+@@ -2320,7 +2580,11 @@
+ }
+ 
+ static void fuse_lib_setxattr(fuse_req_t req, fuse_ino_t ino, const char *name,
++#if (__FreeBSD__ >= 10)
++			      const char *value, size_t size, int flags, uint32_t position)
++#else
+ 			      const char *value, size_t size, int flags)
++#endif /* __FreeBSD__ >= 10 */
+ {
+ 	struct fuse *f = req_fuse_prepare(req);
+ 	char *path;
+@@ -2332,7 +2596,11 @@
+ 	if (path != NULL) {
+ 		struct fuse_intr_data d;
+ 		fuse_prepare_interrupt(f, req, &d);
++#if (__FreeBSD__ >= 10)
++		err = fuse_fs_setxattr(f->fs, path, name, value, size, flags, position);
++#else
+ 		err = fuse_fs_setxattr(f->fs, path, name, value, size, flags);
++#endif /* __FreeBSD__ >= 10 */
+ 		fuse_finish_interrupt(f, req, &d);
+ 		free(path);
+ 	}
+@@ -2341,7 +2609,11 @@
+ }
+ 
+ static int common_getxattr(struct fuse *f, fuse_req_t req, fuse_ino_t ino,
++#if (__FreeBSD__ >= 10)
++			   const char *name, char *value, size_t size, uint32_t position)
++#else
+ 			   const char *name, char *value, size_t size)
++#endif /* __FreeBSD__ >= 10 */
+ {
+ 	int err;
+ 	char *path;
+@@ -2352,7 +2624,11 @@
+ 	if (path != NULL) {
+ 		struct fuse_intr_data d;
+ 		fuse_prepare_interrupt(f, req, &d);
++#if (__FreeBSD__ >= 10)
++		err = fuse_fs_getxattr(f->fs, path, name, value, size, position);
++#else
+ 		err = fuse_fs_getxattr(f->fs, path, name, value, size);
++#endif /* __FreeBSD__ >= 10 */
+ 		fuse_finish_interrupt(f, req, &d);
+ 		free(path);
+ 	}
+@@ -2361,7 +2637,11 @@
+ }
+ 
+ static void fuse_lib_getxattr(fuse_req_t req, fuse_ino_t ino, const char *name,
++#if (__FreeBSD__ >= 10)
++			      size_t size, uint32_t position)
++#else
+ 			      size_t size)
++#endif /* __FreeBSD__ >= 10 */
+ {
+ 	struct fuse *f = req_fuse_prepare(req);
+ 	int res;
+@@ -2372,14 +2652,22 @@
+ 			reply_err(req, -ENOMEM);
+ 			return;
+ 		}
++#if (__FreeBSD__ >= 10)
++		res = common_getxattr(f, req, ino, name, value, size, position);
++#else
+ 		res = common_getxattr(f, req, ino, name, value, size);
++#endif /* __FreeBSD__ >= 10 */
+ 		if (res > 0)
+ 			fuse_reply_buf(req, value, res);
+ 		else
+ 			reply_err(req, res);
+ 		free(value);
+ 	} else {
++#if (__FreeBSD__ >= 10)
++		res = common_getxattr(f, req, ino, name, NULL, 0, position);
++#else
+ 		res = common_getxattr(f, req, ino, name, NULL, 0);
++#endif /* __FreeBSD__ >= 10 */
+ 		if (res >= 0)
+ 			fuse_reply_xattr(req, res);
+ 		else
+@@ -2777,6 +3065,11 @@
  	.getlk = fuse_lib_getlk,
  	.setlk = fuse_lib_setlk,
  	.bmap = fuse_lib_bmap,
@@ -40225,7 +40362,7 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
  };
  
  static void free_cmd(struct fuse_cmd *cmd)
-@@ -3174,6 +3423,10 @@
+@@ -3174,6 +3467,10 @@
  	root->nlookup = 1;
  	hash_id(f, root);
  
@@ -40236,7 +40373,7 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
  	return f;
  
  out_free_root_name:
-@@ -3211,6 +3464,10 @@
+@@ -3211,6 +3508,10 @@
  {
  	size_t i;
  
@@ -40247,7 +40384,7 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
  	if (f->conf.intr && f->intr_installed)
  		fuse_restore_intr_signal(f->conf.intr_signal);
  
-@@ -3279,6 +3536,149 @@
+@@ -3279,6 +3580,149 @@
  	fuse_modules = mod;
  }
  
@@ -40397,7 +40534,7 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
  #ifndef __FreeBSD__
  
  static struct fuse *fuse_new_common_compat(int fd, const char *opts,
-@@ -3329,12 +3729,14 @@
+@@ -3329,12 +3773,14 @@
  				      11);
  }
  
@@ -40412,7 +40549,7 @@ diff -Naur old/lib/fuse.c new/lib/fuse.c
  
  #endif /* __FreeBSD__ */
  
-@@ -3346,4 +3748,6 @@
+@@ -3346,4 +3792,6 @@
  					op_size, 25);
  }
  
@@ -40920,7 +41057,7 @@ diff -Naur old/lib/fuse_loop_mt.c new/lib/fuse_loop_mt.c
  
 diff -Naur old/lib/fuse_lowlevel.c new/lib/fuse_lowlevel.c
 --- old/lib/fuse_lowlevel.c	2008-02-19 11:51:26.000000000 -0800
-+++ new/lib/fuse_lowlevel.c	2008-05-07 10:58:37.000000000 -0700
++++ new/lib/fuse_lowlevel.c	2008-05-07 16:01:30.000000000 -0700
 @@ -78,6 +78,10 @@
  	attr->atimensec = ST_ATIM_NSEC(stbuf);
  	attr->mtimensec = ST_MTIM_NSEC(stbuf);
@@ -41019,7 +41156,31 @@ diff -Naur old/lib/fuse_lowlevel.c new/lib/fuse_lowlevel.c
  static void do_link(fuse_req_t req, fuse_ino_t nodeid, const void *inarg)
  {
  	struct fuse_link_in *arg = (struct fuse_link_in *) inarg;
-@@ -1019,6 +1089,13 @@
+@@ -779,7 +849,11 @@
+ 
+ 	if (req->f->op.setxattr)
+ 		req->f->op.setxattr(req, nodeid, name, value, arg->size,
++#if (__FreeBSD__ >= 10)
++				    arg->flags, arg->position);
++#else
+ 				    arg->flags);
++#endif /* __FreeBSD__ >= 10 */
+ 	else
+ 		fuse_reply_err(req, ENOSYS);
+ }
+@@ -789,7 +863,11 @@
+ 	struct fuse_getxattr_in *arg = (struct fuse_getxattr_in *) inarg;
+ 
+ 	if (req->f->op.getxattr)
++#if (__FreeBSD__ >= 10)
++		req->f->op.getxattr(req, nodeid, PARAM(arg), arg->size, arg->position);
++#else
+ 		req->f->op.getxattr(req, nodeid, PARAM(arg), arg->size);
++#endif /* __FreeBSD__ >= 10 */
+ 	else
+ 		fuse_reply_err(req, ENOSYS);
+ }
+@@ -1019,6 +1097,13 @@
  	outarg.max_readahead = f->conn.max_readahead;
  	outarg.max_write = f->conn.max_write;
  
@@ -41033,7 +41194,7 @@ diff -Naur old/lib/fuse_lowlevel.c new/lib/fuse_lowlevel.c
  	if (f->debug) {
  		fprintf(stderr, "   INIT: %u.%u\n", outarg.major, outarg.minor);
  		fprintf(stderr, "   flags=0x%08x\n", outarg.flags);
-@@ -1116,6 +1193,11 @@
+@@ -1116,6 +1201,11 @@
  	[FUSE_INTERRUPT]   = { do_interrupt,   "INTERRUPT"   },
  	[FUSE_BMAP]	   = { do_bmap,	       "BMAP"	     },
  	[FUSE_DESTROY]	   = { do_destroy,     "DESTROY"     },
@@ -41045,7 +41206,7 @@ diff -Naur old/lib/fuse_lowlevel.c new/lib/fuse_lowlevel.c
  };
  
  #define FUSE_MAXOP (sizeof(fuse_ll_ops) / sizeof(fuse_ll_ops[0]))
-@@ -1206,8 +1288,13 @@
+@@ -1206,8 +1296,13 @@
  
  static void fuse_ll_version(void)
  {
@@ -41059,7 +41220,7 @@ diff -Naur old/lib/fuse_lowlevel.c new/lib/fuse_lowlevel.c
  }
  
  static void fuse_ll_help(void)
-@@ -1419,9 +1506,11 @@
+@@ -1419,9 +1514,11 @@
  	return 0;
  }
  
@@ -41071,7 +41232,7 @@ diff -Naur old/lib/fuse_lowlevel.c new/lib/fuse_lowlevel.c
  
  #else /* __FreeBSD__ */
  
-@@ -1445,4 +1534,6 @@
+@@ -1445,4 +1542,6 @@
  					op_size, userdata);
  }
  
@@ -41242,7 +41403,7 @@ diff -Naur old/lib/helper.c new/lib/helper.c
 +#endif
 diff -Naur old/lib/modules/iconv.c new/lib/modules/iconv.c
 --- old/lib/modules/iconv.c	2007-12-12 06:25:40.000000000 -0800
-+++ new/lib/modules/iconv.c	2008-05-07 10:58:37.000000000 -0700
++++ new/lib/modules/iconv.c	2008-05-07 16:17:11.000000000 -0700
 @@ -267,6 +267,40 @@
  	return err;
  }
@@ -41355,7 +41516,51 @@ diff -Naur old/lib/modules/iconv.c new/lib/modules/iconv.c
  static int iconv_chmod(const char *path, mode_t mode)
  {
  	struct iconv *ic = iconv_get();
-@@ -607,6 +705,15 @@
+@@ -476,27 +574,43 @@
+ }
+ 
+ static int iconv_setxattr(const char *path, const char *name,
++#if (__FreeBSD__ >= 10)
++			  const char *value, size_t size, int flags, uint32_t position)
++#else
+ 			  const char *value, size_t size, int flags)
++#endif
+ {
+ 	struct iconv *ic = iconv_get();
+ 	char *newpath;
+ 	int err = iconv_convpath(ic, path, &newpath, 0);
+ 	if (!err) {
+ 		err = fuse_fs_setxattr(ic->next, newpath, name, value, size,
++#if (__FreeBSD__ >= 10)
++				       flags, position);
++#else
+ 				       flags);
++#endif
+ 		free(newpath);
+ 	}
+ 	return err;
+ }
+ 
+ static int iconv_getxattr(const char *path, const char *name, char *value,
++#if (__FreeBSD__ >= 10)
++			  size_t size, uint32_t position)
++#else
+ 			  size_t size)
++#endif
+ {
+ 	struct iconv *ic = iconv_get();
+ 	char *newpath;
+ 	int err = iconv_convpath(ic, path, &newpath, 0);
+ 	if (!err) {
++#if (__FreeBSD__ >= 10)
++		err = fuse_fs_getxattr(ic->next, newpath, name, value, size, position);
++#else
+ 		err = fuse_fs_getxattr(ic->next, newpath, name, value, size);
++#endif
+ 		free(newpath);
+ 	}
+ 	return err;
+@@ -607,6 +721,15 @@
  	.removexattr	= iconv_removexattr,
  	.lock		= iconv_lock,
  	.bmap		= iconv_bmap,
@@ -41373,7 +41578,7 @@ diff -Naur old/lib/modules/iconv.c new/lib/modules/iconv.c
  static struct fuse_opt iconv_opts[] = {
 diff -Naur old/lib/modules/subdir.c new/lib/modules/subdir.c
 --- old/lib/modules/subdir.c	2007-12-12 06:25:40.000000000 -0800
-+++ new/lib/modules/subdir.c	2008-05-07 10:58:37.000000000 -0700
++++ new/lib/modules/subdir.c	2008-05-07 16:19:38.000000000 -0700
 @@ -256,6 +256,29 @@
  	return err;
  }
@@ -41474,7 +41679,51 @@ diff -Naur old/lib/modules/subdir.c new/lib/modules/subdir.c
  static int subdir_chmod(const char *path, mode_t mode)
  {
  	struct subdir *d = subdir_get();
-@@ -584,6 +670,15 @@
+@@ -457,27 +543,43 @@
+ }
+ 
+ static int subdir_setxattr(const char *path, const char *name,
++#if (__FreeBSD__ >= 10)
++			   const char *value, size_t size, int flags, uint32_t position)
++#else
+ 			   const char *value, size_t size, int flags)
++#endif
+ {
+ 	struct subdir *d = subdir_get();
+ 	char *newpath = subdir_addpath(d, path);
+ 	int err = -ENOMEM;
+ 	if (newpath) {
+ 		err = fuse_fs_setxattr(d->next, newpath, name, value, size,
++#if (__FreeBSD__ >= 10)
++				       flags, position);
++#else
+ 				       flags);
++#endif
+ 		free(newpath);
+ 	}
+ 	return err;
+ }
+ 
+ static int subdir_getxattr(const char *path, const char *name, char *value,
++#if (__FreeBSD__ >= 10)
++			   size_t size, uint32_t position)
++#else
+ 			   size_t size)
++#endif
+ {
+ 	struct subdir *d = subdir_get();
+ 	char *newpath = subdir_addpath(d, path);
+ 	int err = -ENOMEM;
+ 	if (newpath) {
++#if (__FreeBSD__ >= 10)
++		err = fuse_fs_getxattr(d->next, newpath, name, value, size, position);
++#else
+ 		err = fuse_fs_getxattr(d->next, newpath, name, value, size);
++#endif
+ 		free(newpath);
+ 	}
+ 	return err;
+@@ -584,6 +686,15 @@
  	.removexattr	= subdir_removexattr,
  	.lock		= subdir_lock,
  	.bmap		= subdir_bmap,
@@ -41492,8 +41741,8 @@ diff -Naur old/lib/modules/subdir.c new/lib/modules/subdir.c
  static struct fuse_opt subdir_opts[] = {
 diff -Naur old/lib/modules/threadid.c new/lib/modules/threadid.c
 --- old/lib/modules/threadid.c	1969-12-31 16:00:00.000000000 -0800
-+++ new/lib/modules/threadid.c	2008-05-07 10:58:37.000000000 -0700
-@@ -0,0 +1,607 @@
++++ new/lib/modules/threadid.c	2008-05-07 16:20:07.000000000 -0700
+@@ -0,0 +1,609 @@
 +/*
 + * Per-thread override identity support for MacFUSE.
 + *
@@ -41811,21 +42060,23 @@ diff -Naur old/lib/modules/threadid.c new/lib/modules/threadid.c
 +
 +static int
 +threadid_setxattr(const char *path, const char *name, const char *value,
-+                 size_t size, int flags)
++                 size_t size, int flags, uint32_t position)
 +{
 +    THREADID_PRE()
 +    int res = fuse_fs_setxattr(threadid_get()->next, path, name, value, size,
-+                               flags);
++                               flags, position);
 +    THREADID_POST()
 +
 +    return res;
 +}
 +
 +static int
-+threadid_getxattr(const char *path, const char *name, char *value, size_t size)
++threadid_getxattr(const char *path, const char *name, char *value, size_t size,
++                  uint32_t position)
 +{
 +    THREADID_PRE()
-+    int res = fuse_fs_getxattr(threadid_get()->next, path, name, value, size);
++    int res = fuse_fs_getxattr(threadid_get()->next, path, name, value, size,
++                               position);
 +    THREADID_POST()
 +
 +    return res;
@@ -42103,8 +42354,8 @@ diff -Naur old/lib/modules/threadid.c new/lib/modules/threadid.c
 +FUSE_REGISTER_MODULE(threadid, threadid_new);
 diff -Naur old/lib/modules/volicon.c new/lib/modules/volicon.c
 --- old/lib/modules/volicon.c	1969-12-31 16:00:00.000000000 -0800
-+++ new/lib/modules/volicon.c	2008-05-07 10:58:37.000000000 -0700
-@@ -0,0 +1,791 @@
++++ new/lib/modules/volicon.c	2008-05-07 16:20:51.000000000 -0700
+@@ -0,0 +1,794 @@
 +/*
 + *  Custom volume icon support for MacFUSE.
 + *
@@ -42452,7 +42703,7 @@ diff -Naur old/lib/modules/volicon.c new/lib/modules/volicon.c
 +
 +static int
 +volicon_setxattr(const char *path, const char *name, const char *value,
-+                 size_t size, int flags)
++                 size_t size, int flags, uint32_t position)
 +{
 +    ERROR_IF_MAGIC_FILE(path, EPERM);
 +
@@ -42464,16 +42715,17 @@ diff -Naur old/lib/modules/volicon.c new/lib/modules/volicon.c
 +            ((struct FndrGenericInfo *)&finder_info)->flags |= ntohs(0x0400);
 +            //finder_info[8] |= 0x100;
 +            return fuse_fs_setxattr(volicon_get()->next, path, name,
-+                                    finder_info, size, flags);
++                                    finder_info, size, flags, position);
 +        }
 +    }
 +
 +    return fuse_fs_setxattr(volicon_get()->next, path, name, value, size,
-+                            flags);
++                            flags, position);
 +}
 +
 +static int
-+volicon_getxattr(const char *path, const char *name, char *value, size_t size)
++volicon_getxattr(const char *path, const char *name, char *value, size_t size,
++                 uint32_t position)
 +{
 +    ERROR_IF_MAGIC_FILE(path, EPERM);
 +
@@ -42490,7 +42742,8 @@ diff -Naur old/lib/modules/volicon.c new/lib/modules/volicon.c
 +            return -ERANGE;
 +        }
 +
-+        res = fuse_fs_getxattr(volicon_get()->next, path, name, value, size);
++        res = fuse_fs_getxattr(volicon_get()->next, path, name, value, size,
++                               position);
 +
 +        if (res != XATTR_FINDERINFO_SIZE) {
 +            memcpy(value, finder_info, XATTR_FINDERINFO_SIZE);
@@ -42501,7 +42754,8 @@ diff -Naur old/lib/modules/volicon.c new/lib/modules/volicon.c
 +        return XATTR_FINDERINFO_SIZE;
 +    }
 +
-+    res = fuse_fs_getxattr(volicon_get()->next, path, name, value, size);
++    res = fuse_fs_getxattr(volicon_get()->next, path, name, value, size,
++                           position);
 +
 +    if (res == -ENOSYS) {
 +        res = -ENOTSUP;
