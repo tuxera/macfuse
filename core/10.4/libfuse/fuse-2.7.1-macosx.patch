@@ -47061,7 +47061,7 @@ diff -Naur old/lib/fuse_darwin.c new/lib/fuse_darwin.c
 +#define UBC_INVALIDATE 0x04
 +
 +int
-+fuse_purge_path_np(const char *path)
++fuse_purge_np(const char *path)
 +{
 +    return ENOTSUP;
 +}
