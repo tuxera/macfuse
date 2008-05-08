@@ -37952,18 +37952,31 @@ diff -Naur old/example/Makefile.in new/example/Makefile.in
  # Otherwise a system limit (for SysV at least) may be exceeded.
 diff -Naur old/example/fusexmp.c new/example/fusexmp.c
 --- old/example/fusexmp.c	2008-02-19 11:51:22.000000000 -0800
-+++ new/example/fusexmp.c	2008-05-07 16:03:02.000000000 -0700
-@@ -381,5 +381,10 @@
- int main(int argc, char *argv[])
++++ new/example/fusexmp.c	2008-05-07 17:07:08.000000000 -0700
+@@ -31,6 +31,8 @@
+ #include <sys/xattr.h>
+ #endif
+ 
++#if !(__FreeBSD__ >= 10)
++
+ static int xmp_getattr(const char *path, struct stat *stbuf)
  {
+ 	int res;
+@@ -383,3 +385,14 @@
  	umask(0);
-+#if (__FreeBSD__ >= 10)
-+	fprintf(stderr, "Please use fusexmp_fh instead of fusexmp.\n");
-+	return 1;
-+#else
  	return fuse_main(argc, argv, &xmp_oper, NULL);
-+#endif /* __FreeBSD__ >= 10 */
  }
++
++#else
++
++int
++main(void)
++{
++    fprintf(stderr, "Please use fusexmp_fh instead of this program.\n");
++    return 1;
++}
++
++#endif
 diff -Naur old/example/fusexmp_fh.c new/example/fusexmp_fh.c
 --- old/example/fusexmp_fh.c	2008-02-19 11:51:22.000000000 -0800
 +++ new/example/fusexmp_fh.c	2008-05-07 16:05:24.000000000 -0700
