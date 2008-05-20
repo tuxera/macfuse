@@ -16,6 +16,8 @@
 #define M_MACFUSE_ENABLE_XATTR             1
 
 #if M_MACFUSE_ENABLE_UNSUPPORTED
+  #define M_MACFUSE_ENABLE_DSELECT         0
+  #define M_MACFUSE_ENABLE_EXCHANGE        1
   #define M_MACFUSE_ENABLE_KQUEUE          1
   #define M_MACFUSE_ENABLE_KUNC            1
   #define M_MACFUSE_ENABLE_LOCKLOCAL       1

@@ -18,6 +18,7 @@
 #include <sys/proc.h>
 #include <sys/vm.h>
 #include <sys/fcntl.h>
+#include <sys/select.h>
 #include <kern/assert.h>
 #include <libkern/libkern.h>
 #include <libkern/OSMalloc.h>
@@ -25,6 +26,7 @@
 
 #include "fuse.h"
 #include "fuse_device.h"
+#include "fuse_kludges.h"
 #include "fuse_locking.h"
 
 /* 16 bytes */
@@ -65,7 +67,7 @@ struct fuse_ticket {
     uint64_t                     tk_unique;
     struct fuse_data            *tk_data;
     int                          tk_flag;
-    unsigned int                 tk_age;
+    uint32_t                     tk_age;
 
     STAILQ_ENTRY(fuse_ticket)    tk_freetickets_link;
     TAILQ_ENTRY(fuse_ticket)     tk_alltickets_link;
@@ -139,7 +141,12 @@ int fticket_pull(struct fuse_ticket *ftick, uio_t uio);
 
 enum mount_state { FM_NOTMOUNTED, FM_MOUNTED };
 
+#if M_MACFUSE_ENABLE_DSELECT
+/* 1220 bytes */
+#else
 /* 1188 bytes */
+#endif /* M_MACFUSE_ENABLE_DSELECT */
+
 struct fuse_data {
     fuse_device_t              fdev;
     mount_t                    mp;
@@ -151,6 +158,10 @@ struct fuse_data {
     uint64_t                   mountaltflags; /* as-is copy of altflags    */
     uint64_t                   noimplflags;   /* not-implemented flags     */
 
+#if M_MACFUSE_ENABLE_DSELECT
+    struct fuse_selinfo        d_rsel;
+#endif /* M_MACFUSE_ENABLE_DSELECT */
+ 
     lck_rw_t                  *rwlock;
 
     lck_mtx_t                 *ms_mtx;
@@ -162,12 +173,13 @@ struct fuse_data {
     lck_mtx_t                 *ticket_mtx;
     STAILQ_HEAD(, fuse_ticket) freetickets_head;
     TAILQ_HEAD(, fuse_ticket)  alltickets_head;
-    unsigned                   freeticket_counter;
+    uint32_t                   freeticket_counter;
+    uint32_t                   deadticket_counter;
     uint64_t                   ticketer;
 
 #if M_MACFUSE_EXPLICIT_RENAME_LOCK
     lck_rw_t                  *rename_lock;
-#endif
+#endif /* M_MACFUSE_EXPLICIT_RENAME_LOCK */
 
     uint32_t                   fuse_libabi_major;
     uint32_t                   fuse_libabi_minor;
@@ -194,7 +206,7 @@ enum {
 };
 
 /* Not-Implemented Bits */
-#define FSESS_NOIMPLBIT(MSG)      (1LL << FUSE_##MSG)
+#define FSESS_NOIMPLBIT(MSG)      (1ULL << FUSE_##MSG)
 
 #define FSESS_DEAD                0x00000001 // session is to be closed
 #define FSESS_OPENED              0x00000002 // session device has been opened
@@ -221,8 +233,9 @@ enum {
 #define FSESS_NO_SYNCWRITES       0x00200000
 #define FSESS_NO_UBC              0x00400000
 #define FSESS_NO_VNCACHE          0x00800000
-#define FSESS_VOL_RENAME          0x01000000
-#define FSESS_CASE_INSENSITIVE    0x02000000
+#define FSESS_CASE_INSENSITIVE    0x01000000
+#define FSESS_VOL_RENAME          0x02000000
+#define FSESS_XTIMES              0x04000000
 
 static __inline__
 struct fuse_data *

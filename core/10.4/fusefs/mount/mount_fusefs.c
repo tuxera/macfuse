@@ -55,7 +55,6 @@ struct mntopt mopts[] = {
     { "allow_root",          0, FUSE_MOPT_ALLOW_ROOT,             1 }, // kused
     { "auto_xattr",          0, FUSE_MOPT_AUTO_XATTR,             1 }, // kused
     { "blocksize=",          0, FUSE_MOPT_BLOCKSIZE,              1 }, // kused
-    { "case_insensitive",    0, FUSE_MOPT_CASE_INSENSITIVE,       1 }, // kused
     { "daemon_timeout=",     0, FUSE_MOPT_DAEMON_TIMEOUT,         1 }, // kused
     { "debug",               0, FUSE_MOPT_DEBUG,                  1 }, // kused
     { "default_permissions", 0, FUSE_MOPT_DEFAULT_PERMISSIONS,    1 }, // kused
@@ -502,7 +501,7 @@ post_notification(char   *name,
     CFMutableDictionaryRef nf_udata  = NULL;
 
     CFNotificationCenterRef distributedCenter;
-    CFStringEncoding encoding = kCFStringEncodingASCII;
+    CFStringEncoding encoding = kCFStringEncodingUTF8;
 
     distributedCenter = CFNotificationCenterGetDistributedCenter();
 
@@ -528,10 +527,10 @@ post_notification(char   *name,
     for (i = 0; i < nf_num; i++) {
         CFStringRef a_key = CFStringCreateWithCString(kCFAllocatorDefault,
                                                       udata_keys[i],
-                                                      kCFStringEncodingASCII);
+                                                      kCFStringEncodingUTF8);
         CFStringRef a_value = CFStringCreateWithCString(kCFAllocatorDefault,
                                                         udata_values[i],
-                                                        kCFStringEncodingASCII);
+                                                        kCFStringEncodingUTF8);
         CFDictionarySetValue(nf_udata, a_key, a_value);
         CFRelease(a_key);
         CFRelease(a_value);
@@ -977,7 +976,6 @@ showhelp()
       "    -o allow_root          allow access to root (can't be used with allow_other)\n"
       "    -o auto_xattr          handle extended attributes entirely through ._ files\n"
       "    -o blocksize=<size>    specify block size in bytes of \"storage\"\n"
-      "    -o case_insensitive    enable case-insensitive mode\n"
       "    -o daemon_timeout=<s>  timeout in seconds for kernel calls to daemon\n"
       "    -o debug               turn on debug information printing\n"
       "    -o default_permissions let the kernel handle permission checks locally\n"
