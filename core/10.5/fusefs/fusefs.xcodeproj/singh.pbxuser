@@ -4,7 +4,7 @@
 		activeArchitecture = i386;
 		activeBuildConfigurationName = Release;
 		activeExecutable = 540966F60C33BEC900F5E227 /* load_fusefs */;
-		activeTarget = 32A4FEB80562C75700D090E7 /* fusefs */;
+		activeTarget = 54D47B7F0B4F610000A8FE1C /* load_fusefs */;
 		addToTargets = (
 			54C6DD290B5EE606002D9FD9 /* All */,
 			32A4FEB80562C75700D090E7 /* fusefs */,
@@ -159,8 +159,8 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 231121955;
-			PBXWorkspaceStateSaveDate = 231121955;
+			PBXPerProjectTemplateStateSaveDate = 234862523;
+			PBXWorkspaceStateSaveDate = 234862523;
 		};
 		sourceControlManager = 5494A9280ACA12160020068B /* Source Control */;
 		userBuildSettings = {
@@ -183,6 +183,13 @@
 			540966F30C33BEC900F5E227 /* mount_fusefs */,
 		);
 	};
+	540966530C33B5F500F5E227 /* fuse_mount.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {849, 1750}}";
+			sepNavSelRange = "{400, 61}";
+			sepNavVisRange = "{244, 777}";
+		};
+	};
 	5409665F0C33B60B00F5E227 /* getmntopts.c */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {849, 2702}}";
@@ -192,9 +199,9 @@
 	};
 	540966620C33B60B00F5E227 /* mount_fusefs.c */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {849, 11606}}";
-			sepNavSelRange = "{24685, 0}";
-			sepNavVisRange = "{18311, 600}";
+			sepNavIntBoundsRect = "{{0, 0}, {849, 13706}}";
+			sepNavSelRange = "{28855, 0}";
+			sepNavVisRange = "{19022, 459}";
 		};
 	};
 	540966F30C33BEC900F5E227 /* mount_fusefs */ = {
