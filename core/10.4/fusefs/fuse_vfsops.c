@@ -250,10 +250,10 @@ fuse_vfsop_mount(mount_t mp, __unused vnode_t devvp, user_addr_t udata,
     }
 
     if (fusefs_args.altflags & FUSE_MOPT_NO_LOCALCACHES) {
-        mntopts |= FUSE_MOPT_NO_ATTRCACHE;
-        mntopts |= FUSE_MOPT_NO_READAHEAD;
-        mntopts |= FUSE_MOPT_NO_UBC;
-        mntopts |= FUSE_MOPT_NO_VNCACHE;
+        mntopts |= FSESS_NO_ATTRCACHE;
+        mntopts |= FSESS_NO_READAHEAD;
+        mntopts |= FSESS_NO_UBC;
+        mntopts |= FSESS_NO_VNCACHE;
     }
 
     if (fusefs_args.altflags & FUSE_MOPT_NO_ATTRCACHE) {
