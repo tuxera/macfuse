@@ -9,7 +9,7 @@ MACFUSE_VERSION=$2
 
 BUILD_DIR="/tmp/macfuse-core-$OS_VERSION-$MACFUSE_VERSION"
 
-PATH=/Developer/usr/bin:/Developer/Tools:$PATH
+PATH=/Developer/usr/bin:/Developer/Tools:/sbin:/usr/sbin:/bin:/usr/bin:$PATH
 PACKAGEMAKER=packagemaker
 
 OUTPUT_PACKAGE="$BUILD_DIR/MacFUSE Core.pkg"
