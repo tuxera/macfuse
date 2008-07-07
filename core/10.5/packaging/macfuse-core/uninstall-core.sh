@@ -4,6 +4,14 @@
 #
 # Uninstalls the "MacFUSE Core.pkg".
 
+# Make sure this script runs as root
+if [ "$EUID" -ne 0 ]
+then
+  echo $0: Sudoing...
+  sudo $0 "$@"
+  exit $?
+fi
+
 INSTALL_VOLUME="/"
 PACKAGE_RECEIPT="$INSTALL_VOLUME/Library/Receipts/MacFUSE Core.pkg"
 BOMFILE="$PACKAGE_RECEIPT/Contents/Archive.bom"
