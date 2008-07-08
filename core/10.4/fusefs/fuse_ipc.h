@@ -29,12 +29,11 @@
 #include "fuse_kludges.h"
 #include "fuse_locking.h"
 
-/* 16 bytes */
 struct fuse_iov {
     void   *base;
     size_t  len;
     size_t  allocated_size;
-    int     credit;
+    ssize_t credit;
 };
 
 #define FUSE_DATA_LOCK_SHARED(d)      fuse_lck_rw_lock_shared((d)->rwlock)
@@ -55,14 +54,13 @@ do {                                                   \
     (spc2) = (char *)(fiov)->base + (sizeof(*(spc1))); \
 } while (0)
 
-#define FU_AT_LEAST(siz) max((siz), 160)
+#define FU_AT_LEAST(siz) max((size_t)(siz), (size_t)160)
 
 struct fuse_ticket;
 struct fuse_data;
 
 typedef int fuse_handler_t(struct fuse_ticket *ftick, uio_t uio);
 
-/* 128 bytes */
 struct fuse_ticket {
     uint64_t                     tk_unique;
     struct fuse_data            *tk_data;
@@ -74,13 +72,13 @@ struct fuse_ticket {
 
     struct fuse_iov              tk_ms_fiov;
     void                        *tk_ms_bufdata;
-    unsigned long                tk_ms_bufsize;
+    size_t                       tk_ms_bufsize;
     enum { FT_M_FIOV, FT_M_BUF } tk_ms_type;
     STAILQ_ENTRY(fuse_ticket)    tk_ms_link;
 
     struct fuse_iov              tk_aw_fiov;
     void                        *tk_aw_bufdata;
-    unsigned long                tk_aw_bufsize;
+    size_t                       tk_aw_bufsize;
     enum { FT_A_FIOV, FT_A_BUF } tk_aw_type;
 
     struct fuse_out_header       tk_aw_ohead;
@@ -140,12 +138,6 @@ fticket_invalidate(struct fuse_ticket *ftick)
 int fticket_pull(struct fuse_ticket *ftick, uio_t uio);
 
 enum mount_state { FM_NOTMOUNTED, FM_MOUNTED };
-
-#if M_MACFUSE_ENABLE_DSELECT
-/* 1220 bytes */
-#else
-/* 1188 bytes */
-#endif /* M_MACFUSE_ENABLE_DSELECT */
 
 struct fuse_data {
     fuse_device_t              fdev;
@@ -236,6 +228,7 @@ enum {
 #define FSESS_CASE_INSENSITIVE    0x01000000
 #define FSESS_VOL_RENAME          0x02000000
 #define FSESS_XTIMES              0x04000000
+#define FSESS_AUTO_CACHE          0x08000000
 
 static __inline__
 struct fuse_data *

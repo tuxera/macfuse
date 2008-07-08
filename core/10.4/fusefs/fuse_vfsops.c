@@ -80,8 +80,8 @@ struct vfs_fsentry fuse_vfs_entry = {
     &fuse_vfs_ops,
 
     // Number of vnodeopv_desc being registered
-    (sizeof(fuse_vnode_operation_vector_desc_list) /\
-        sizeof(*fuse_vnode_operation_vector_desc_list)),
+    (int)(sizeof(fuse_vnode_operation_vector_desc_list) /\
+          sizeof(*fuse_vnode_operation_vector_desc_list)),
 
     // The vnodeopv_desc's
     fuse_vnode_operation_vector_desc_list,
@@ -174,6 +174,10 @@ fuse_vfsop_mount(mount_t mp, __unused vnode_t devvp, user_addr_t udata,
 
     if (fusefs_args.altflags & FUSE_MOPT_NO_ALERTS) {
         mntopts |= FSESS_NO_ALERTS;
+    }
+
+    if (fusefs_args.altflags & FUSE_MOPT_AUTO_CACHE) {
+        mntopts |= FSESS_AUTO_CACHE;
     }
 
     if (fusefs_args.altflags & FUSE_MOPT_AUTO_XATTR) {
@@ -997,7 +1001,7 @@ dostatfs:
     VFSATTR_RETURN(attr, f_backup_time, kZeroTime);
 
     if (deading) {
-        VFSATTR_RETURN(attr, f_fssubtype, (uint32_t)-1);
+        VFSATTR_RETURN(attr, f_fssubtype, (uint32_t)FUSE_FSSUBTYPE_INVALID);
     } else {
         VFSATTR_RETURN(attr, f_fssubtype, data->fssubtype);
     }

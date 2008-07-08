@@ -53,7 +53,6 @@ enum {
 #define C_TOUCH_MODTIME      0x000040000
 #define C_XTIMES_VALID       0x000080000
 
-/* 408 bytes */
 struct fuse_vnode_data {
 
     /** check **/
@@ -77,6 +76,7 @@ struct fuse_vnode_data {
     uint32_t   c_flag;
 
     /** meta **/
+    struct timespec   modify_time;
     struct timespec   entry_valid;
     struct timespec   attr_valid;
     struct vnode_attr cached_attr;
@@ -117,7 +117,7 @@ typedef struct fuse_vnode_data * fusenode_t;
     ((struct fuse_vnode_data *)FSNodeGenericFromHNode(vnode_fsnode(vp)))
 #define VTOI(vp)    (VTOFUD(vp)->nodeid)
 #define VTOVA(vp)   (&(VTOFUD(vp)->cached_attr))
-#define VTOILLU(vp) ((unsigned long long)(VTOFUD(vp) ? VTOI(vp) : 0))
+#define VTOILLU(vp) ((uint64_t)(VTOFUD(vp) ? VTOI(vp) : 0))
 
 #define FUSE_NULL_ID 0
 

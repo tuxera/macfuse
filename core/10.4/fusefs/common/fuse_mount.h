@@ -39,7 +39,7 @@ typedef struct fuse_mount_args fuse_mount_args;
 /* file system subtype */
 enum {
     FUSE_FSSUBTYPE_UNKNOWN = 0,
-    FUSE_FSSUBTYPE_INVALID = 0xFFFFFFFF,
+    FUSE_FSSUBTYPE_INVALID = -1,
 };
 
 /* File system type name. */
@@ -88,6 +88,7 @@ enum {
 #define FUSE_MOPT_USE_INO                0x0000000100000000ULL
 #define FUSE_MOPT_VOLNAME                0x0000000200000000ULL
 #define FUSE_MOPT_PING_DISKARB           0x0000000400000000ULL
+#define FUSE_MOPT_AUTO_CACHE             0x0000000800000000ULL
 
 #define FUSE_MAKEDEV(x, y)              ((dev_t)(((x) << 24) | (y)))
 #define FUSE_MINOR_MASK                 0x00FFFFFFUL

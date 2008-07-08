@@ -53,6 +53,7 @@ struct mntopt mopts[] = {
     { "allow_other",         0, FUSE_MOPT_ALLOW_OTHER,            1 }, // kused
     { "allow_recursion",     0, FUSE_MOPT_ALLOW_RECURSION,        1 }, // uused
     { "allow_root",          0, FUSE_MOPT_ALLOW_ROOT,             1 }, // kused
+    { "auto_cache",          0, FUSE_MOPT_AUTO_CACHE,             1 }, // kused
     { "auto_xattr",          0, FUSE_MOPT_AUTO_XATTR,             1 }, // kused
     { "blocksize=",          0, FUSE_MOPT_BLOCKSIZE,              1 }, // kused
     { "daemon_timeout=",     0, FUSE_MOPT_DAEMON_TIMEOUT,         1 }, // kused
@@ -231,13 +232,13 @@ fsbundle_find_fssubtype(const char *bundle_path_C,
                                  (const void **)keys,
                                  (const void **)subdicts);
 
-    if (claimed_fssubtype == FUSE_FSSUBTYPE_INVALID) {
+    if (claimed_fssubtype == (uint32_t)FUSE_FSSUBTYPE_INVALID) {
         goto lookupbyfsname;
     }
 
     for (idx = 0; idx < count; idx++) {
         CFNumberRef n = NULL;
-        uint32_t candidate_fssubtype = FUSE_FSSUBTYPE_INVALID;
+        uint32_t candidate_fssubtype = (uint32_t)FUSE_FSSUBTYPE_INVALID;
         if (CFDictionaryGetValueIfPresent(subdicts[idx],
                                           (const void *)CFSTR(kFSSubTypeKey),
                                           (const void **)&n)) {
@@ -272,7 +273,7 @@ lookupbyfsname:
         }
         if (found) {
             CFNumberRef n = NULL;
-            uint32_t candidate_fssubtype = FUSE_FSSUBTYPE_INVALID;
+            uint32_t candidate_fssubtype = (uint32_t)FUSE_FSSUBTYPE_INVALID;
             if (CFDictionaryGetValueIfPresent(
                     subdicts[idx], (const void *)CFSTR(kFSSubTypeKey),
                     (const void **)&n)) {
@@ -318,12 +319,12 @@ fuse_to_fssubtype(void **target, void *value, void *fallback)
 {
     char *name = getenv("MOUNT_FUSEFS_DAEMON_PATH");
 
-    *(uint32_t *)target = FUSE_FSSUBTYPE_INVALID;
+    *(uint32_t *)target = (uint32_t)FUSE_FSSUBTYPE_INVALID;
 
     if (value) {
         int ret = fuse_to_uint32(target, value, fallback);
         if (ret) {
-            *(uint32_t *)target = FUSE_FSSUBTYPE_INVALID;
+            *(uint32_t *)target = (uint32_t)FUSE_FSSUBTYPE_INVALID;
         }
     }
 
@@ -730,7 +731,7 @@ main(int argc, char **argv)
     }
 
     errno = 0;
-    fd = strtol(fdnam, NULL, 10);
+    fd = (int)strtol(fdnam, NULL, 10);
     if ((errno == EINVAL) || (errno == ERANGE)) {
         errx(EX_USAGE,
              "invalid name (%s) for MacFUSE device file descriptor", fdnam);
@@ -747,10 +748,10 @@ main(int argc, char **argv)
             err(EX_OSERR, "fstat failed for MacFUSE device file descriptor");
         }
         args.rdev = sb.st_rdev;
-        strlcpy(ndev, _PATH_DEV, sizeof(ndev));
+        (void)strlcpy(ndev, _PATH_DEV, sizeof(ndev));
         ndevbas = ndev + strlen(_PATH_DEV);
         devname_r(sb.st_rdev, S_IFCHR, ndevbas,
-                  sizeof(ndev) - strlen(_PATH_DEV));
+                  (int)(sizeof(ndev) - strlen(_PATH_DEV)));
 
         if (strncmp(ndevbas, MACFUSE_DEVICE_BASENAME,
                     strlen(MACFUSE_DEVICE_BASENAME))) {
@@ -758,7 +759,8 @@ main(int argc, char **argv)
         }
 
         errno = 0;
-        dindex = strtol(ndevbas + strlen(MACFUSE_DEVICE_BASENAME), NULL, 10);
+        dindex = (int)strtol(ndevbas + strlen(MACFUSE_DEVICE_BASENAME),
+                             NULL, 10);
         if ((errno == EINVAL) || (errno == ERANGE) ||
             (dindex < 0) || (dindex > MACFUSE_NDEVICES)) {
             errx(EX_USAGE, "invalid MacFUSE device unit (#%d)\n", dindex);

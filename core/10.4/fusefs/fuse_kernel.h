@@ -77,6 +77,7 @@ struct fuse_attr {
 	__u32	rdev;
 #if (__FreeBSD__ >= 10)
 	__u32	flags; /* file flags; see chflags(2) */
+	__u32	padding;
 #endif /* __FreeBSD__ >= 10 */
 };
 
@@ -125,6 +126,10 @@ struct fuse_file_lock {
  */
 #define FOPEN_DIRECT_IO		(1 << 0)
 #define FOPEN_KEEP_CACHE	(1 << 1)
+#if (__FreeBSD__ >= 10)
+#define FOPEN_PURGE_ATTR	(1 << 30)
+#define FOPEN_PURGE_UBC		(1 << 31)
+#endif
 
 /**
  * INIT request/reply flags
@@ -264,13 +269,13 @@ struct fuse_setattr_in {
 	__u32	gid;
 	__u32	unused5;
 #if (__FreeBSD__ >= 10)
-	__u32	flags; /* file flags; see chflags(2) */
 	__u64	bkuptime;
 	__u64	chgtime;
 	__u64	crtime;
 	__u32	bkuptimensec;
 	__u32	chgtimensec;
 	__u32	crtimensec;
+	__u32	flags; /* file flags; see chflags(2) */
 #endif /* __FreeBSD__ >= 10 */
 };
 
@@ -335,6 +340,7 @@ struct fuse_setxattr_in {
 	__u32	flags;
 #if (__FreeBSD__ >= 10)
 	__u32	position;
+	__u32	padding;
 #endif /* __FreeBSD__ >= 10 */
 };
 
@@ -343,6 +349,7 @@ struct fuse_getxattr_in {
 	__u32	padding;
 #if (__FreeBSD__ >= 10)
 	__u32	position;
+	__u32	padding2;
 #endif /* __FreeBSD__ >= 10 */
 };
 
