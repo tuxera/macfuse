@@ -13,7 +13,7 @@
 	<key>IFMinorVersion</key>
 	<integer>1</integer>
 	<key>IFPkgFlagAllowBackRev</key>
-	<true/>
+	<false/>
 	<key>IFPkgFlagAuthorizationAction</key>
 	<string>AdminAuthorization</string>
 	<key>IFPkgFlagBackgroundAlignment</key>
