@@ -57,7 +57,7 @@ then
 fi
 if [ ! -f "$UNINSTALL_SCRIPT" ]
 then
-  echo "Unable to find Description.plist: '$UNINSTALL_SCRIPT'"
+  echo "Unable to find uninstall script: '$UNINSTALL_SCRIPT'"
   exit 1
 fi
 

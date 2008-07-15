@@ -1,19 +1,24 @@
-#!/bin/sh
+#!/bin/bash
 #
-# Copyright (C) 2006 Google. All Rights Reserved.
+# Copyright (C) 2008 Google. All Rights Reserved.
 #
-# Creates the "MacFUSE Core.pkg"  
+# Creates the "MacFUSE.pkg".
 
-OS_VERSION=$1
-MACFUSE_VERSION=$2
+# TODO: 
+#  - Changelog.rtf
+#  - Fill in the pkg size with the size from one our our .pkgs  
+#  - postflight script
 
-BUILD_DIR="/tmp/macfuse-core-$OS_VERSION-$MACFUSE_VERSION"
+MACFUSE_VERSION=$1
+MACFUSE_UPDATER=$2
+MACFUSE_PLATFORMS=$3
 
-PATH=/Developer/usr/bin:/Developer/Tools:/sbin:/usr/sbin:/bin:/usr/bin:$PATH
+BUILD_DIR="/tmp/macfuse-$MACFUSE_VERSION"
+
+PATH=/Developer/usr/bin:/Developer/Tools:$PATH
 PACKAGEMAKER=packagemaker
 
-OUTPUT_PACKAGE="$BUILD_DIR/MacFUSE Core.pkg"
-SRC_TARBALL="$BUILD_DIR/macfuse-core-$OS_VERSION-$MACFUSE_VERSION.tar.bz2"
+OUTPUT_PACKAGE="$BUILD_DIR/MacFUSE.pkg"
 
 DISTRIBUTION_FOLDER="$BUILD_DIR/Distribution_folder"
 INSTALL_RESOURCES_NAME="Install_resources"
@@ -22,25 +27,20 @@ INSTALL_RESOURCES="$BUILD_DIR/$INSTALL_RESOURCES_NAME"
 INFO_PLIST_IN="Info.plist.in"
 INFO_PLIST_OUT="${BUILD_DIR}/Info.plist"
 DESCRIPTION_PLIST="./Description.plist"
-UNINSTALL_SCRIPT="./uninstall-core.sh"
 
-# Make sure they gave a version!
-if [ x"$MACFUSE_VERSION" = x"" ]
+# Make sure they gave proper args.
+if [ x"$MACFUSE_VERSION" = x"" -o x"MACFUSE_UPDATER" = x"" -o x"$MACFUSE_PLATFORMS" = x"" ]
 then
-  echo "Usage: make-pkg.sh <version>"
+  echo -n "Usage: make-pkg.sh <version> <updater_bundle_path>"
+  echo "<osver=pkgpath,osver=pkgpath,..>"
   exit 1
 fi
 
 # Check input sources
 if [ ! -d "$BUILD_DIR" ]
 then
-  echo "Build dir '$BUILD_DIR' does not exist."
-  exit 1
-fi
-if [ ! -f "$SRC_TARBALL" ]
-then
-  echo "Unable to find src tar: '$SRC_TARBALL'"
-  exit 1
+  echo "Warning: Build dir '$BUILD_DIR' does not exist; creating."
+  mkdir -p "$BUILD_DIR"
 fi
 if [ ! -d "$INSTALL_RESOURCES_SRC" ]
 then
@@ -57,47 +57,69 @@ then
   echo "Unable to find Description.plist: '$DESCRIPTION_PLIST'"
   exit 1
 fi
-if [ ! -f "$UNINSTALL_SCRIPT" ]
-then
-  echo "Unable to find uninstall script: '$UNINSTALL_SCRIPT'"
-  exit 1
-fi
 
-SCRATCH_DMG="$BUILD_DIR/scratch.dmg"
-FINAL_DMG="$BUILD_DIR/MacFUSE-Core-$OS_VERSION-$MACFUSE_VERSION.dmg"
-VOLUME_NAME="MacFUSE Core $OS_VERSION-$MACFUSE_VERSION"
+SCRATCH_DMG="$BUILD_DIR/macfuse-scratch.dmg"
+FINAL_DMG="$BUILD_DIR/MacFUSE-$MACFUSE_VERSION.dmg"
+VOLUME_NAME="MacFUSE $MACFUSE_VERSION"
 
 # Remove any previous runs
 sudo rm -rf "$DISTRIBUTION_FOLDER"
+sudo rm -rf "$INSTALL_RESOURCES"
 sudo rm -rf "$OUTPUT_PACKAGE"
 sudo rm -f "$INFO_PLIST_OUT"
 sudo rm -f "$SCRATCH_DMG"
 sudo rm -f "$FINAL_DMG"
 
-# Create the distribution folder
+# Create the distribution folder (empty for this package)
 mkdir $DISTRIBUTION_FOLDER
-sudo tar -C $DISTRIBUTION_FOLDER -jxvpf $SRC_TARBALL 
-if [ $? -ne 0 ]
-then
-  echo "Unable to untar!"
-  exit 1
-fi
-
-# Fix symlinks
-sudo chmod -h 755 `find $DISTRIBUTION_FOLDER/usr/local/lib -type l`
-
-# Copy the uninstall script
-UNINSTALL_DST="$DISTRIBUTION_FOLDER/Library/Filesystems/fusefs.fs/Support/uninstall-macfuse-core.sh"
-sudo cp "$UNINSTALL_SCRIPT" "$UNINSTALL_DST"
-sudo chmod 755 "$UNINSTALL_DST"
-sudo chown root:wheel "$UNINSTALL_DST"
 
 # Copy package resources to build directory while stripping out .svn etc.
 sudo tar --exclude '.svn' -cpvf - "$INSTALL_RESOURCES_SRC" | sudo tar -C "$BUILD_DIR" -xpvf -
 
-# Fix up the Info.plist
-sed -e "s/MACFUSE_VERSION_LITERAL/$MACFUSE_VERSION/g" < "$INFO_PLIST_IN" > "$INFO_PLIST_OUT"
+# Copy all of the MacFUSE Core.pkg's in their platform directories under Resources
+SAVED_IFS="$IFS"
+IFS=","
+for i in $MACFUSE_PLATFORMS
+do
+  if [ x"$i" = x"" ]
+  then
+    continue;  # Skip empty/bogus comma-item
+  fi
 
+  OS_VERSION=${i%%=*}
+  CORE_PKG=${i##*=}
+  CORE_PKG_DIR=$(dirname "$CORE_PKG")
+  CORE_PKG_NAME=$(basename "$CORE_PKG")
+  PKG_DST="${INSTALL_RESOURCES}/${OS_VERSION}"
+
+  echo "Adding package for OS X Version=$OS_VERSION, Pkg=$CORE_PKG"
+  mkdir "$PKG_DST"
+  sudo tar -C "$CORE_PKG_DIR" -cpvf - "$CORE_PKG_NAME" | \
+    sudo tar -C "$PKG_DST" -xpvf -
+  if [ $? -ne 0 ]
+    then
+    echo "Failed to add package."
+    exit 1
+  fi
+done
+IFS="$SAVED_IFS"
+
+# Copy the MacFUSE Updater under Resources.
+MACFUSE_UPDATER_DIR=$(dirname "$MACFUSE_UPDATER")
+MACFUSE_UPDATER_BUNDLE=$(basename "$MACFUSE_UPDATER")
+echo "Adding MacFUSEUpdater: ${MACFUSE_UPDATER_DIR}/${MACFUSE_UPDATER_BUNDLE}"
+sudo tar -C "$MACFUSE_UPDATER_DIR" -cpvf - "$MACFUSE_UPDATER_BUNDLE" | \
+  sudo tar -C "$INSTALL_RESOURCES" -xpvf -
+if [ $? -ne 0 ]
+then
+  echo "Failed to copy MacFUSE Updater."
+  exit 1
+fi
+
+# Fix up the Info.plist
+sed -e "s/MACFUSE_PKG_VERSION_LITERAL/$MACFUSE_VERSION/g" < "$INFO_PLIST_IN" > "$INFO_PLIST_OUT"
+
+# Build the package
 sudo $PACKAGEMAKER -build -p "$OUTPUT_PACKAGE" -f "$DISTRIBUTION_FOLDER" -b /tmp -ds -v \
                    -r "$INSTALL_RESOURCES" -i "$INFO_PLIST_OUT" -d "$DESCRIPTION_PLIST"
 if [ $? -eq 0 ]
@@ -110,7 +132,6 @@ then
   echo "Failed to change ownership of $OUTPUT_PACKAGE"
   exit 1
 fi
-
 
 # Create the volume.
 sudo hdiutil create -layout NONE -megabytes 10 -fs HFS+ -volname "$VOLUME_NAME" "$SCRATCH_DMG"
