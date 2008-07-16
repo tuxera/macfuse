@@ -16,22 +16,17 @@ SYSTEM_ROOT=$4
 
 # Binaries we use
 AUTOINSTALLER="${PACKAGE_PATH}/Contents/Resources/MacFUSEAutoinstaller.bundle/Contents/MacOS/autoinstaller"
-AWK=/usr/bin/awk
-CAT=/bin/cat
-DATE=/bin/date
-DEFAULTS=/usr/bin/defaults
-GREP=/usr/bin/grep
-INSTALLER=/usr/sbin/installer
+PATH="/bin:/usr/bin:/usr/sbin"; export PATH
 
 # Header
 echo ""
 echo -n "Running postflight: "
-$DATE
+date
 echo ""
 
 # Determine this .pkg's receipt location.
 PACKAGE_NAME=$(basename "$PACKAGE_PATH")
-if [ x"$PACKAGE_NAME" = x"" ]
+if [ -z "$PACKAGE_NAME" ]
 then
   echo "Empty PACKAGE_NAME."
   exit 1
@@ -40,15 +35,15 @@ FINAL_RECEIPT="${INSTALL_VOLUME}/Library/Receipts/${PACKAGE_NAME}"
 
 # Determine OS version MAJOR-MINOR that we are running on.
 OS_VERSION_PATH="${INSTALL_VOLUME}/System/Library/CoreServices/SystemVersion"
-OS_VERSION=`/usr/bin/defaults read "$OS_VERSION_PATH" ProductVersion`
-if [ x"$OS_VERSION" = x"" ]
+OS_VERSION=$(/usr/bin/defaults read "$OS_VERSION_PATH" ProductVersion)
+if [ -z "$OS_VERSION" ]
 then
   # Unable to get OS X version from volume.
   exit 1
 fi
-OS_MAJOR=`echo "$OS_VERSION" | $AWK -F. '{ print $1 }'`
-OS_MINOR=`echo "$OS_VERSION" | $AWK -F. '{ print $2 }'`
-if [ \( x"$OS_MAJOR" = x"" \) -o \( x"$OS_MINOR" = x"" \) ]
+OS_MAJOR=$(echo "$OS_VERSION" | awk -F. '{ print $1 }')
+OS_MINOR=$(echo "$OS_VERSION" | awk -F. '{ print $2 }')
+if [ \( -z "$OS_MAJOR" \) -o \( -z "$OS_MINOR" \) ]
 then
   # Unable to parse OS X version obtained from volume.
   exit 1
@@ -62,8 +57,8 @@ if [ -d "$CORE_RECEIPT" ]
 then
   CORE_RECEIPT="${INSTALL_VOLUME}/Library/Receipts/${CORE_NAME}"
   CORE_RECEIPT_INFO="${CORE_RECEIPT}/Contents/Info"
-  MACFUSE_BUNDLE_ID=`$DEFAULTS read "$CORE_RECEIPT_INFO" CFBundleIdentifier`
-  if [ x"$MACFUSE_BUNDLE_ID" != x"com.google.macfuse.core" ]
+  MACFUSE_BUNDLE_ID=$(defaults read "$CORE_RECEIPT_INFO" CFBundleIdentifier)
+  if [ "$MACFUSE_BUNDLE_ID" != "com.google.macfuse.core" ]
   then
      echo "Removing broken MacFUSE Core receipt: $CORE_RECEIPT"
      # TODO: Should we also uninstall macfuse core?
@@ -79,12 +74,12 @@ echo "Potential embedded package path: ${EMBEDDED_PKG}"
 
 # Use autoinstaller to see if there is a newer MacFUSE Core.
 NEW_VERSION=
-$AUTOINSTALLER --list > "$AUTOINSTALLER_LOG"
+"$AUTOINSTALLER" --list > "$AUTOINSTALLER_LOG"
 AUTOINSTALLER_RC=$?
-$CAT "$AUTOINSTALLER_LOG"  # So that we can see in postflight log
+cat "$AUTOINSTALLER_LOG"  # So that we can see in postflight log
 if [ $AUTOINSTALLER_RC -eq 0 ]
 then
-  NEW_VERSION_LINE=`$GREP "Version =" "$AUTOINSTALLER_LOG"`
+  NEW_VERSION_LINE=$(grep "Version =" "$AUTOINSTALLER_LOG")
   NEW_VERSION=${NEW_VERSION_LINE#*= }  # Version = "1.6.2"; -> "1.6.2";
   NEW_VERSION=${NEW_VERSION%;}         # Remove trailing ';'
   NEW_VERSION=${NEW_VERSION//\"/}      # Remove quotes
@@ -96,15 +91,15 @@ fi
 
 # If there is a newer version, we check if it is newer than what we have embedded
 # in this .pkg. If so, we run autoinstaller to start install of the new one.
-if [ x"$NEW_VERSION" != x"" ]
+if [ "$NEW_VERSION" != "" ]
 then
   # Check to see if the new version is embedded in this .pkg
   EMBEDDED_INFO="${EMBEDDED_PKG}/Contents/Info"
-  EMBEDDED_VERSION=`$DEFAULTS read "$EMBEDDED_INFO" CFBundleShortVersionString`
-  if [ x"$EMBEDDED_VERSION" != x"$NEW_VERSION" ]
+  EMBEDDED_VERSION=$(defaults read "$EMBEDDED_INFO" CFBundleShortVersionString)
+  if [ "$EMBEDDED_VERSION" != "$NEW_VERSION" ]
   then
     echo "Attempting to download and install version ${NEW_VERSION}."
-    $AUTOINSTALLER --install -v
+    "$AUTOINSTALLER" --install -v
     if [ $? -eq 0 ]
     then
       echo "Successfully downloaded and installed updated version."
@@ -126,14 +121,14 @@ then
     echo "Missing embedded pkg: ${EMBEDDED_PKG}"
     exit 1
   fi
-  $INSTALLER -pkg "$EMBEDDED_PKG" -target "$INSTALL_VOLUME" > "$INSTALLER_LOG"
+  installer -pkg "$EMBEDDED_PKG" -target "$INSTALL_VOLUME" > "$INSTALLER_LOG"
   INSTALLER_RC=$?
-  $CAT "$INSTALLER_LOG"  # So that we see it in our postflight log
+  cat "$INSTALLER_LOG"  # So that we see it in our postflight log
   if [ $INSTALLER_RC -ne 0 ]
   then
     # If the install failed due to an existing newer version then it is OK.
     # TODO: This grep is sort of lame and dependent on installer (and lang?)
-    $GREP "newer version of this software already exists" "$INSTALLER_LOG"
+    grep "newer version of this software already exists" "$INSTALLER_LOG"
     if [ $? -ne 0 ]
     then
       echo "Failed to install $EMBEDDED_PKG"

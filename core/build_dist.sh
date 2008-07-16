@@ -9,6 +9,10 @@ TRUE=/usr/bin/true
 
 # Set of platforms to build for. We start with '0' to clean things up.
 PLATFORMS=${PLATFORMS:-"0 8 9"}
+if [ "$SKIP_PLATFORMS" = "1" ]
+then
+  PLATFORMS=""
+fi
 
 # TODO: Remove this when updater is in tree!
 MACFUSE_UPDATER="$1"
@@ -52,7 +56,7 @@ done
 # that is found.
 PLATFORM_ARG=""
 PLATFORM_DIRS=`ls -d /tmp/macfuse-core-*`
-echo "PLATFORMS: ${PLATFORM_DIRES}"
+echo "PLATFORMS: ${PLATFORM_DIRS}"
 for i in $PLATFORM_DIRS 
 do
   # The platform dirs look like: /tmp/macfuse-core-10.5-1.6.1

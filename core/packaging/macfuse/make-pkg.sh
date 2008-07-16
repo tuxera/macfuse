@@ -17,7 +17,8 @@ BUILD_DIR="/tmp/macfuse-$MACFUSE_VERSION"
 PATH=/Developer/usr/bin:/Developer/Tools:$PATH
 PACKAGEMAKER=packagemaker
 
-OUTPUT_PACKAGE="$BUILD_DIR/MacFUSE.pkg"
+OUTPUT_PACKAGE_NAME="MacFUSE.pkg"
+OUTPUT_PACKAGE="${BUILD_DIR}/${OUTPUT_PACKAGE_NAME}"
 
 DISTRIBUTION_FOLDER="$BUILD_DIR/Distribution_folder"
 INSTALL_RESOURCES_NAME="Install_resources"
@@ -149,6 +150,14 @@ then
 fi
 
 VOLUME_PATH="/Volumes/$VOLUME_NAME"
+
+# Create the .keystone_install file.
+KEYSTONE_INSTALL_DST="${VOLUME_PATH}/.keystone_install"
+cat >  "$KEYSTONE_INSTALL_DST" <<EOF
+#!/bin/sh
+/usr/sbin/installer -pkg "\$1/${OUTPUT_PACKAGE_NAME}" -target /
+EOF
+chmod +x "$KEYSTONE_INSTALL_DST"
 
 # Copy over the package.
 sudo cp -pRX "$OUTPUT_PACKAGE" "$VOLUME_PATH"
