@@ -6,6 +6,7 @@
 POSTFLIGHT_LOG="/tmp/macfuse-postflight.log"
 INSTALLER_LOG="/tmp/macfuse-installer.log"
 AUTOINSTALLER_LOG="/tmp/macfuse-autoinstaller.log"
+DEBUG_ARGUMENTS="--url file:///private/tmp/CurrentRelease.plist"
 
 exec >> "$POSTFLIGHT_LOG" 2>&1
 
@@ -74,7 +75,7 @@ echo "Potential embedded package path: ${EMBEDDED_PKG}"
 
 # Use autoinstaller to see if there is a newer MacFUSE Core.
 NEW_VERSION=
-"$AUTOINSTALLER" --list > "$AUTOINSTALLER_LOG"
+"$AUTOINSTALLER" --list $DEBUG_ARGUMENTS > "$AUTOINSTALLER_LOG"
 AUTOINSTALLER_RC=$?
 cat "$AUTOINSTALLER_LOG"  # So that we can see in postflight log
 if [ $AUTOINSTALLER_RC -eq 0 ]
@@ -99,7 +100,7 @@ then
   if [ "$EMBEDDED_VERSION" != "$NEW_VERSION" ]
   then
     echo "Attempting to download and install version ${NEW_VERSION}."
-    "$AUTOINSTALLER" --install -v
+    "$AUTOINSTALLER" --install -v $DEBUG_ARGUMENTS
     if [ $? -eq 0 ]
     then
       echo "Successfully downloaded and installed updated version."
