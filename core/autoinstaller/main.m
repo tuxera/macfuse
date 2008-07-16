@@ -67,7 +67,8 @@ static NSString *GetMacFUSEVersion(void) {
   
   NSString *cmd = [NSString stringWithFormat:
                    @"MOUNT_FUSEFS_CALL_BY_LIB=1 "
-                   @"%@ --version 2>&1 | /usr/bin/awk '{print $NF}'",
+                   @"%@ --version 2>&1 | /usr/bin/grep -i version |"
+                   @"/usr/bin/awk '{print $NF}'",
                    mountFusePath];
   
   GTMScriptRunner *runner = [GTMScriptRunner runnerWithBash];
