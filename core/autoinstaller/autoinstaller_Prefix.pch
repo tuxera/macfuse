@@ -1,0 +1,9 @@
+//
+// Prefix header for all source files of the 'autoinstaller' target in the 'autoinstaller' project.
+//
+
+#ifdef __OBJC__
+  #import <Foundation/Foundation.h>
+  #import "GMLogRemap.h"
+  #import "GMLog.h"
+#endif
