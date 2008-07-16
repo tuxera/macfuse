@@ -3,6 +3,8 @@
 #
 # Creates MacFUSE.pkg with all supported platforms.
 
+PATH="/bin:/usr/bin:/usr/sbin"; export PATH
+
 CUT=/usr/bin/cut
 DIRNAME=/usr/bin/dirname
 TRUE=/usr/bin/true
@@ -52,6 +54,12 @@ then
 fi
 done
 
+TIGER_VERSION=33
+LEOPARD_VERSION=44
+DMG_SIZE=
+DMG_HASH=
+DMG_NAME=
+
 # We construct the os_version=platform_pkg argument string for each platform
 # that is found.
 PLATFORM_ARG=""
@@ -64,6 +72,14 @@ do
   RELEASE_VERSION=${VERSIONS#*-}  # Save example release version (i.e. 1.6.1)
   OS_VERSION=${VERSIONS%-*}       # Grab os version (i.e. 10.5)
   PLATFORM_ARG="${PLATFORM_ARG},${OS_VERSION}=${i}/MacFUSE Core.pkg"
+  case "$OS_VERSION" in
+    10.5)
+      LEOPARD_VERSION=$RELEASE_VERSION
+      ;;
+    10.4)
+      TIGER_VERSION=$RELEASE_VERSION
+      ;;
+  esac
   echo "OS_VERSION: $OS_VERSION"
   echo "RELEASE_VERSION: $RELEASE_VERSION"
 done
@@ -84,5 +100,54 @@ then
   exit 1
 fi
 popd
+
+# Make CurrentRelease.plist
+
+OUTPUT_DIR="/tmp/macfuse-$MAJOR_RELEASE_VERSION"
+
+DMG_NAME="MacFUSE-$MAJOR_RELEASE_VERSION.dmg"
+DMG_PATH="$OUTPUT_DIR/$DMG_NAME"
+DMG_HASH=$(openssl sha1 -binary "$DMG_PATH" | openssl base64)
+DMG_SIZE=$(stat -f%z "$DMG_PATH")
+
+cat > "$OUTPUT_DIR/CurrentRelease.plist" <<__END_CONFIG
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "https://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Rules</key>
+  <array>
+    <dict>
+      <key>ProductID</key>
+      <string>com.google.filesystems.fusefs</string>
+      <key>Predicate</key>
+      <string>SystemVersion.ProductVersion beginswith "10.5" AND Ticket.version != "$LEOPARD_VERSION"</string>
+      <key>Version</key>
+      <string>$LEOPARD_VERSION</string>
+      <key>Codebase</key>
+      <string>http://macfuse.googlecode.com/files/$DMG_NAME</string>
+      <key>Hash</key>
+      <string>$DMG_HASH</string>
+      <key>Size</key>
+      <string>$DMG_SIZE</string>
+    </dict>
+    <dict>
+      <key>ProductID</key>
+      <string>com.google.filesystems.fusefs</string>
+      <key>Predicate</key>
+      <string>SystemVersion.ProductVersion beginswith "10.4" AND Ticket.version != "$TIGER_VERSION"</string>
+      <key>Version</key>
+      <string>$TIGER_VERSION</string>
+      <key>Codebase</key>
+      <string>http://macfuse.googlecode.com/files/$DMG_NAME</string>
+      <key>Hash</key>
+      <string>$DMG_HASH</string>
+      <key>Size</key>
+      <string>$DMG_SIZE</string>
+    </dict>
+  </array>
+</dict>
+</plist>
+__END_CONFIG
 
 exit 0
