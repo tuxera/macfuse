@@ -60,10 +60,24 @@ DMG_SIZE=
 DMG_HASH=
 DMG_NAME=
 
+# Our MacFUSE.pkg will have only the major version (i.e. 1.6)
+source "${macfuse_dir}/core/10.5/fusefs/MacFUSE.xcconfig"
+if [ -z "$MACFUSE_VERSION" ]
+then
+  echo "Unable to get macfuse version."
+  exit 1
+fi
+MAJOR_RELEASE_VERSION=${MACFUSE_VERSION%.*}  # Strip off final version part
+OUTPUT_DIR="/tmp/macfuse-$MAJOR_RELEASE_VERSION"
+echo "Building dist at: ${OUTPUT_DIR}"
+
+# Clean up any previous iteration.
+rm -rf "$OUTPUT_DIR"
+
 # We construct the os_version=platform_pkg argument string for each platform
 # that is found.
 PLATFORM_ARG=""
-PLATFORM_DIRS=`ls -d /tmp/macfuse-core-*`
+PLATFORM_DIRS=`ls -d /tmp/macfuse-core-*-${MAJOR_RELEASE_VERSION}.*`
 echo "PLATFORMS: ${PLATFORM_DIRS}"
 for i in $PLATFORM_DIRS 
 do
@@ -83,13 +97,6 @@ do
   echo "OS_VERSION: $OS_VERSION"
   echo "RELEASE_VERSION: $RELEASE_VERSION"
 done
-
-# Our MacFUSE.pkg will have only the major version (i.e. 1.6)
-MAJOR_RELEASE_VERSION=${RELEASE_VERSION%.*}  # Strip off final version part
-OUTPUT_DIR="/tmp/macfuse-$MAJOR_RELEASE_VERSION"
-
-# Clean up any previous iteration.
-rm -rf "$OUTPUT_DIR"
 
 echo "-Building MacFUSE.pkg-"
 echo "RELEASE_ARG=$MAJOR_RELEASE_VERSION"
