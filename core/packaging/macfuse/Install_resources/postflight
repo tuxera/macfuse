@@ -3,12 +3,10 @@
 # Copyright (C) 2008 Google. All Rights Reserved.
 #
 
-POSTFLIGHT_LOG="/tmp/macfuse-postflight.log"
-INSTALLER_LOG="/tmp/macfuse-installer.log"
-AUTOINSTALLER_LOG="/tmp/macfuse-autoinstaller.log"
+INSTALL_LOG="/tmp/.macfuse-install.log"
 DEBUG_ARGUMENTS="--url file:///private/tmp/CurrentRelease.plist"
 
-exec >> "$POSTFLIGHT_LOG" 2>&1
+exec >> "$INSTALL_LOG" 2>&1
 
 PACKAGE_PATH=$1
 INSTALL_PATH=$2
@@ -72,21 +70,26 @@ fi
 # Determine the appropriate embedded pkg for this platform.
 OS_MAJOR_MINOR="${OS_MAJOR}.${OS_MINOR}"
 EMBEDDED_PKG="${PACKAGE_PATH}/Contents/Resources/${OS_MAJOR_MINOR}/${CORE_NAME}"
-INSTALL_EMBEDDED_PKG=1   # Default to installing the embedded .pkg?
+INSTALL_EMBEDDED_PKG=1          # Default to installing the embedded .pkg
+FAIL_IF_MISSING_EMBEDDED_PKG=1  # Default to fail if no embedded .pkg
 echo "Potential embedded package path: ${EMBEDDED_PKG}"
 
 # Use autoinstaller to see if there is a newer MacFUSE Core.
 NEW_VERSION=
-"$AUTOINSTALLER" --list $DEBUG_ARGUMENTS > "$AUTOINSTALLER_LOG"
+AUTOINSTALLER_OUTPUT=$("$AUTOINSTALLER" --list $DEBUG_ARGUMENTS)
 AUTOINSTALLER_RC=$?
-cat "$AUTOINSTALLER_LOG"  # So that we can see in postflight log
+echo "$AUTOINSTALLER_OUTPUT"  # So that we can see in postflight log
 if [ $AUTOINSTALLER_RC -eq 0 ]
 then
-  NEW_VERSION_LINE=$(grep "Version =" "$AUTOINSTALLER_LOG")
+  NEW_VERSION_LINE=$(echo "$AUTOINSTALLER_OUTPUT" | grep "Version =")
   NEW_VERSION=${NEW_VERSION_LINE#*= }  # Version = "1.6.2"; -> "1.6.2";
   NEW_VERSION=${NEW_VERSION%;}         # Remove trailing ';'
   NEW_VERSION=${NEW_VERSION//\"/}      # Remove quotes
   NEW_VERSION_STRING=${NEW_VERSION:-"None"}
+  if [ "$NEW_VERSION_STRING" = "None" ]
+  then
+    FAIL_IF_MISSING_EMBEDDED_PKG=0
+  fi
   echo "New version available: $NEW_VERSION_STRING"
 else
   echo "Unable to get data from autoinstaller about new versions."
@@ -115,15 +118,24 @@ then
   fi
 fi
 
+# If we need to install the embedded package then see if it actually exists.
+if [ $INSTALL_EMBEDDED_PKG -eq 1 ]
+  if [ ! -d "$EMBEDDED_PKG" ]
+  then
+    echo "Missing embedded pkg: ${EMBEDDED_PKG}"
+    INSTALL_EMBEDDED_PKG=0
+    if [ $FAIL_IF_MISSING_EMBEDDED_PKG -eq 1 ]
+    then
+      echo "Failure due to missing embedded pkg: ${EMBEDDED_PKG}"
+      exit 1
+    fi
+  fi
+fi
+
 # Maybe try to install our embedded MacFUSE Core.pkg.
 if [ $INSTALL_EMBEDDED_PKG -eq 1 ]
 then
   echo "Attempting to install embedded package: ${EMBEDDED_PKG}"
-  if [ ! -d "$EMBEDDED_PKG" ]
-  then
-    echo "Missing embedded pkg: ${EMBEDDED_PKG}"
-    exit 1
-  fi
   INSTALLER_OUTPUT=$(installer -pkg "$EMBEDDED_PKG" -target "$INSTALL_VOLUME")
   INSTALLER_RC=$?
   echo "$INSTALLER_OUTPUT"  # So that we see it in our postflight log
