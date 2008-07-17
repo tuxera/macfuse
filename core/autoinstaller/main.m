@@ -31,7 +31,7 @@ static NSString* const kDefaultRulesURL =
 // Prints usage information about this command line program.
 //
 static void Usage(void) {
-  printf("Usage: macfuse_autoinstaller -[plLiv]\n"
+  printf("Usage: autoinstaller -[plLiv]\n"
          "  --print,-p    Print info about the currently installed MacFUSE\n"
          "  --list,-l     List MacFUSE update, if one is available\n"
          "  --plist,-L    List MacFUSE update in plist XML format\n"
