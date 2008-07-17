@@ -86,6 +86,10 @@ done
 
 # Our MacFUSE.pkg will have only the major version (i.e. 1.6)
 MAJOR_RELEASE_VERSION=${RELEASE_VERSION%.*}  # Strip off final version part
+OUTPUT_DIR="/tmp/macfuse-$MAJOR_RELEASE_VERSION"
+
+# Clean up any previous iteration.
+rm -rf "$OUTPUT_DIR"
 
 echo "-Building MacFUSE.pkg-"
 echo "RELEASE_ARG=$MAJOR_RELEASE_VERSION"
@@ -102,8 +106,6 @@ fi
 popd
 
 # Make CurrentRelease.plist
-
-OUTPUT_DIR="/tmp/macfuse-$MAJOR_RELEASE_VERSION"
 
 DMG_NAME="MacFUSE-$MAJOR_RELEASE_VERSION.dmg"
 DMG_PATH="$OUTPUT_DIR/$DMG_NAME"
