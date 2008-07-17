@@ -8,23 +8,28 @@
 
 #import <Foundation/Foundation.h>
 
+@class UpdatePrinter;
 
 // KeystoneDelegate
 //
 // The MacFUSE autoinstaller's delegate object for a KSKeystone instance.
-// This object is created with two BOOLs indicating whether the available
-// updates should be installed, or simply listed. If both |install| and |list|
-// are YES, then |list| is used.
+// This object is created with with an optional UpdatePrinter object, that will
+// print the available updates (if any). A BOOL that specifies whether to
+// actually install the updates is also given. If doInstall is YES, then the 
+// updates will be installed. If doInstall is NO, then updates will not be 
+// installed. Typically, if updates are not being installed, then an
+// UpdatePrinter should be specified so that the updates are printed, otherwise
+// this instance is almost pointless.
 //
 @interface KeystoneDelegate : NSObject {
  @private
-  BOOL list_;
-  BOOL install_;
+  UpdatePrinter *printer_;
+  BOOL doInstall_;
   BOOL wasSuccess_;
 }
 
 // Designated initializer.
-- (id)initWithList:(BOOL)list install:(BOOL)install;
+- (id)initWithPrinter:(UpdatePrinter *)printer doInstall:(BOOL)doInstall;
 
 // Returns whether the MacFUSE update was successful.
 - (BOOL)wasSuccess;

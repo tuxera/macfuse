@@ -16,6 +16,39 @@
 		F9217E540E258D7C007CB1A3 /* Keystone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9217A910E258B72007CB1A3 /* Keystone.framework */; };
 		F9217E6D0E258F14007CB1A3 /* ksurl in Resources */ = {isa = PBXBuildFile; fileRef = F9217E650E258EDE007CB1A3 /* ksurl */; };
 		F9217E720E258F46007CB1A3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
+		F92F430F0E2E8DAE0049713E /* KSDiskImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42C90E2E8DAE0049713E /* KSDiskImage.m */; };
+		F92F43100E2E8DAE0049713E /* KSStatsCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42CB0E2E8DAE0049713E /* KSStatsCollection.m */; };
+		F92F43110E2E8DAE0049713E /* KSUUID.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42CD0E2E8DAE0049713E /* KSUUID.m */; };
+		F92F43120E2E8DAE0049713E /* NSData+Hash.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42CF0E2E8DAE0049713E /* NSData+Hash.m */; };
+		F92F43130E2E8DAE0049713E /* KSAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42D20E2E8DAE0049713E /* KSAction.m */; };
+		F92F43140E2E8DAE0049713E /* KSActionPipe.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42D40E2E8DAE0049713E /* KSActionPipe.m */; };
+		F92F43150E2E8DAE0049713E /* KSActionProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42D60E2E8DAE0049713E /* KSActionProcessor.m */; };
+		F92F43160E2E8DAE0049713E /* KSCheckAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42D80E2E8DAE0049713E /* KSCheckAction.m */; };
+		F92F43170E2E8DAE0049713E /* KSCommandRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42DA0E2E8DAE0049713E /* KSCommandRunner.m */; };
+		F92F43180E2E8DAE0049713E /* KSCompositeAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42DC0E2E8DAE0049713E /* KSCompositeAction.m */; };
+		F92F43190E2E8DAE0049713E /* KSDownloadAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42DE0E2E8DAE0049713E /* KSDownloadAction.m */; };
+		F92F431A0E2E8DAE0049713E /* KSExistenceChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42E00E2E8DAE0049713E /* KSExistenceChecker.m */; };
+		F92F431B0E2E8DAE0049713E /* KSFetcherFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42E20E2E8DAE0049713E /* KSFetcherFactory.m */; };
+		F92F431C0E2E8DAE0049713E /* KSFrameworkStats.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42E40E2E8DAE0049713E /* KSFrameworkStats.m */; };
+		F92F431D0E2E8DAE0049713E /* KSInstallAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42E60E2E8DAE0049713E /* KSInstallAction.m */; };
+		F92F431E0E2E8DAE0049713E /* KSKeystone.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42E80E2E8DAE0049713E /* KSKeystone.m */; };
+		F92F431F0E2E8DAE0049713E /* KSKeystoneBroker.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42EA0E2E8DAE0049713E /* KSKeystoneBroker.m */; };
+		F92F43200E2E8DAE0049713E /* KSKeystoneVendor.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42ED0E2E8DAE0049713E /* KSKeystoneVendor.m */; };
+		F92F43210E2E8DAE0049713E /* KSMemoryTicketStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42EF0E2E8DAE0049713E /* KSMemoryTicketStore.m */; };
+		F92F43220E2E8DAE0049713E /* KSMockFetcherFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42F10E2E8DAE0049713E /* KSMockFetcherFactory.m */; };
+		F92F43230E2E8DAE0049713E /* KSMultiAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42F30E2E8DAE0049713E /* KSMultiAction.m */; };
+		F92F43240E2E8DAE0049713E /* KSMultiUpdateAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42F50E2E8DAE0049713E /* KSMultiUpdateAction.m */; };
+		F92F43250E2E8DAE0049713E /* KSPlistServer.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42F70E2E8DAE0049713E /* KSPlistServer.m */; };
+		F92F43260E2E8DAE0049713E /* KSPrefetchAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42F90E2E8DAE0049713E /* KSPrefetchAction.m */; };
+		F92F43270E2E8DAE0049713E /* KSPromptAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42FB0E2E8DAE0049713E /* KSPromptAction.m */; };
+		F92F43280E2E8DAE0049713E /* KSServer.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42FD0E2E8DAE0049713E /* KSServer.m */; };
+		F92F43290E2E8DAE0049713E /* KSSilentUpdateAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42FF0E2E8DAE0049713E /* KSSilentUpdateAction.m */; };
+		F92F432A0E2E8DAE0049713E /* KSTicket.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F43010E2E8DAE0049713E /* KSTicket.m */; };
+		F92F432B0E2E8DAE0049713E /* KSTicketStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F43030E2E8DAE0049713E /* KSTicketStore.m */; };
+		F92F432C0E2E8DAE0049713E /* KSUpdateAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F43050E2E8DAE0049713E /* KSUpdateAction.m */; };
+		F92F432D0E2E8DAE0049713E /* KSUpdateCheckAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F43070E2E8DAE0049713E /* KSUpdateCheckAction.m */; };
+		F92F432E0E2E8DAE0049713E /* KSUpdateInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F43090E2E8DAE0049713E /* KSUpdateInfo.m */; };
+		F92F432F0E2E8DAE0049713E /* GMLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F430D0E2E8DAE0049713E /* GMLogger.m */; };
 		F954BEE80E2D525000E776EB /* GTMMethodCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = F954BEC60E2D525000E776EB /* GTMMethodCheck.m */; };
 		F954BF0E0E2D52AE00E776EB /* GTMBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = F954BF060E2D52AE00E776EB /* GTMBase64.m */; };
 		F954BF0F0E2D52AE00E776EB /* GTMHTTPFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = F954BF090E2D52AE00E776EB /* GTMHTTPFetcher.m */; };
@@ -28,38 +61,8 @@
 		F954C0D40E2D6C7C00E776EB /* ksurl-main.m in Sources */ = {isa = PBXBuildFile; fileRef = F954C0CE0E2D6C6400E776EB /* ksurl-main.m */; };
 		F96C9D890E26AAFA00BE4C10 /* Keystone.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F9217A910E258B72007CB1A3 /* Keystone.framework */; };
 		F96C9D920E26AB1D00BE4C10 /* autoinstaller in Copy Executables */ = {isa = PBXBuildFile; fileRef = 8DD76FA10486AA7600D96B5E /* autoinstaller */; };
-		F9F4E6690E2E86A20001FBE3 /* KSDiskImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6230E2E86A10001FBE3 /* KSDiskImage.m */; };
-		F9F4E66A0E2E86A20001FBE3 /* KSStatsCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6250E2E86A10001FBE3 /* KSStatsCollection.m */; };
-		F9F4E66B0E2E86A20001FBE3 /* KSUUID.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6270E2E86A10001FBE3 /* KSUUID.m */; };
-		F9F4E66C0E2E86A20001FBE3 /* NSData+Hash.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6290E2E86A10001FBE3 /* NSData+Hash.m */; };
-		F9F4E66D0E2E86A20001FBE3 /* KSAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E62C0E2E86A10001FBE3 /* KSAction.m */; };
-		F9F4E66E0E2E86A20001FBE3 /* KSActionPipe.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E62E0E2E86A10001FBE3 /* KSActionPipe.m */; };
-		F9F4E66F0E2E86A20001FBE3 /* KSActionProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6300E2E86A10001FBE3 /* KSActionProcessor.m */; };
-		F9F4E6700E2E86A20001FBE3 /* KSCheckAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6320E2E86A10001FBE3 /* KSCheckAction.m */; };
-		F9F4E6710E2E86A20001FBE3 /* KSCommandRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6340E2E86A10001FBE3 /* KSCommandRunner.m */; };
-		F9F4E6720E2E86A20001FBE3 /* KSCompositeAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6360E2E86A10001FBE3 /* KSCompositeAction.m */; };
-		F9F4E6730E2E86A20001FBE3 /* KSDownloadAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6380E2E86A10001FBE3 /* KSDownloadAction.m */; };
-		F9F4E6740E2E86A20001FBE3 /* KSExistenceChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E63A0E2E86A10001FBE3 /* KSExistenceChecker.m */; };
-		F9F4E6750E2E86A20001FBE3 /* KSFetcherFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E63C0E2E86A10001FBE3 /* KSFetcherFactory.m */; };
-		F9F4E6760E2E86A20001FBE3 /* KSFrameworkStats.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E63E0E2E86A10001FBE3 /* KSFrameworkStats.m */; };
-		F9F4E6770E2E86A20001FBE3 /* KSInstallAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6400E2E86A10001FBE3 /* KSInstallAction.m */; };
-		F9F4E6780E2E86A20001FBE3 /* KSKeystone.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6420E2E86A10001FBE3 /* KSKeystone.m */; };
-		F9F4E6790E2E86A20001FBE3 /* KSKeystoneBroker.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6440E2E86A10001FBE3 /* KSKeystoneBroker.m */; };
-		F9F4E67A0E2E86A20001FBE3 /* KSKeystoneVendor.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6470E2E86A10001FBE3 /* KSKeystoneVendor.m */; };
-		F9F4E67B0E2E86A20001FBE3 /* KSMemoryTicketStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6490E2E86A10001FBE3 /* KSMemoryTicketStore.m */; };
-		F9F4E67C0E2E86A20001FBE3 /* KSMockFetcherFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E64B0E2E86A10001FBE3 /* KSMockFetcherFactory.m */; };
-		F9F4E67D0E2E86A20001FBE3 /* KSMultiAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E64D0E2E86A10001FBE3 /* KSMultiAction.m */; };
-		F9F4E67E0E2E86A20001FBE3 /* KSMultiUpdateAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E64F0E2E86A10001FBE3 /* KSMultiUpdateAction.m */; };
-		F9F4E67F0E2E86A20001FBE3 /* KSPlistServer.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6510E2E86A10001FBE3 /* KSPlistServer.m */; };
-		F9F4E6800E2E86A20001FBE3 /* KSPrefetchAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6530E2E86A10001FBE3 /* KSPrefetchAction.m */; };
-		F9F4E6810E2E86A20001FBE3 /* KSPromptAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6550E2E86A10001FBE3 /* KSPromptAction.m */; };
-		F9F4E6820E2E86A20001FBE3 /* KSServer.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6570E2E86A10001FBE3 /* KSServer.m */; };
-		F9F4E6830E2E86A20001FBE3 /* KSSilentUpdateAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6590E2E86A10001FBE3 /* KSSilentUpdateAction.m */; };
-		F9F4E6840E2E86A20001FBE3 /* KSTicket.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E65B0E2E86A10001FBE3 /* KSTicket.m */; };
-		F9F4E6850E2E86A20001FBE3 /* KSTicketStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E65D0E2E86A10001FBE3 /* KSTicketStore.m */; };
-		F9F4E6860E2E86A20001FBE3 /* KSUpdateAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E65F0E2E86A10001FBE3 /* KSUpdateAction.m */; };
-		F9F4E6870E2E86A20001FBE3 /* KSUpdateCheckAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6610E2E86A10001FBE3 /* KSUpdateCheckAction.m */; };
-		F9F4E6880E2E86A20001FBE3 /* KSUpdateInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = F9F4E6630E2E86A20001FBE3 /* KSUpdateInfo.m */; };
+		F9DEA5C40E2F04FC00060106 /* UpdatePrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = F9DEA5960E2F02E200060106 /* UpdatePrinter.m */; };
+		F9DEA5EE0E2F069000060106 /* GTMObjC2Runtime.m in Sources */ = {isa = PBXBuildFile; fileRef = F9DEA5ED0E2F069000060106 /* GTMObjC2Runtime.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -137,6 +140,75 @@
 		F91662210E26B54400E2806B /* MacFUSEAutoinstaller-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MacFUSEAutoinstaller-Info.plist"; sourceTree = "<group>"; };
 		F9217A910E258B72007CB1A3 /* Keystone.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Keystone.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F9217E650E258EDE007CB1A3 /* ksurl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ksurl; sourceTree = BUILT_PRODUCTS_DIR; };
+		F92F42C80E2E8DAE0049713E /* KSDiskImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSDiskImage.h; sourceTree = "<group>"; };
+		F92F42C90E2E8DAE0049713E /* KSDiskImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSDiskImage.m; sourceTree = "<group>"; };
+		F92F42CA0E2E8DAE0049713E /* KSStatsCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSStatsCollection.h; sourceTree = "<group>"; };
+		F92F42CB0E2E8DAE0049713E /* KSStatsCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSStatsCollection.m; sourceTree = "<group>"; };
+		F92F42CC0E2E8DAE0049713E /* KSUUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSUUID.h; sourceTree = "<group>"; };
+		F92F42CD0E2E8DAE0049713E /* KSUUID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSUUID.m; sourceTree = "<group>"; };
+		F92F42CE0E2E8DAE0049713E /* NSData+Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Hash.h"; sourceTree = "<group>"; };
+		F92F42CF0E2E8DAE0049713E /* NSData+Hash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Hash.m"; sourceTree = "<group>"; };
+		F92F42D10E2E8DAE0049713E /* KSAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSAction.h; sourceTree = "<group>"; };
+		F92F42D20E2E8DAE0049713E /* KSAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSAction.m; sourceTree = "<group>"; };
+		F92F42D30E2E8DAE0049713E /* KSActionPipe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSActionPipe.h; sourceTree = "<group>"; };
+		F92F42D40E2E8DAE0049713E /* KSActionPipe.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSActionPipe.m; sourceTree = "<group>"; };
+		F92F42D50E2E8DAE0049713E /* KSActionProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSActionProcessor.h; sourceTree = "<group>"; };
+		F92F42D60E2E8DAE0049713E /* KSActionProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSActionProcessor.m; sourceTree = "<group>"; };
+		F92F42D70E2E8DAE0049713E /* KSCheckAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSCheckAction.h; sourceTree = "<group>"; };
+		F92F42D80E2E8DAE0049713E /* KSCheckAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSCheckAction.m; sourceTree = "<group>"; };
+		F92F42D90E2E8DAE0049713E /* KSCommandRunner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSCommandRunner.h; sourceTree = "<group>"; };
+		F92F42DA0E2E8DAE0049713E /* KSCommandRunner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSCommandRunner.m; sourceTree = "<group>"; };
+		F92F42DB0E2E8DAE0049713E /* KSCompositeAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSCompositeAction.h; sourceTree = "<group>"; };
+		F92F42DC0E2E8DAE0049713E /* KSCompositeAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSCompositeAction.m; sourceTree = "<group>"; };
+		F92F42DD0E2E8DAE0049713E /* KSDownloadAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSDownloadAction.h; sourceTree = "<group>"; };
+		F92F42DE0E2E8DAE0049713E /* KSDownloadAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSDownloadAction.m; sourceTree = "<group>"; };
+		F92F42DF0E2E8DAE0049713E /* KSExistenceChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSExistenceChecker.h; sourceTree = "<group>"; };
+		F92F42E00E2E8DAE0049713E /* KSExistenceChecker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSExistenceChecker.m; sourceTree = "<group>"; };
+		F92F42E10E2E8DAE0049713E /* KSFetcherFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSFetcherFactory.h; sourceTree = "<group>"; };
+		F92F42E20E2E8DAE0049713E /* KSFetcherFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSFetcherFactory.m; sourceTree = "<group>"; };
+		F92F42E30E2E8DAE0049713E /* KSFrameworkStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSFrameworkStats.h; sourceTree = "<group>"; };
+		F92F42E40E2E8DAE0049713E /* KSFrameworkStats.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSFrameworkStats.m; sourceTree = "<group>"; };
+		F92F42E50E2E8DAE0049713E /* KSInstallAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSInstallAction.h; sourceTree = "<group>"; };
+		F92F42E60E2E8DAE0049713E /* KSInstallAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSInstallAction.m; sourceTree = "<group>"; };
+		F92F42E70E2E8DAE0049713E /* KSKeystone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSKeystone.h; sourceTree = "<group>"; };
+		F92F42E80E2E8DAE0049713E /* KSKeystone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSKeystone.m; sourceTree = "<group>"; };
+		F92F42E90E2E8DAE0049713E /* KSKeystoneBroker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSKeystoneBroker.h; sourceTree = "<group>"; };
+		F92F42EA0E2E8DAE0049713E /* KSKeystoneBroker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSKeystoneBroker.m; sourceTree = "<group>"; };
+		F92F42EB0E2E8DAE0049713E /* KSKeystoneParameters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSKeystoneParameters.h; sourceTree = "<group>"; };
+		F92F42EC0E2E8DAE0049713E /* KSKeystoneVendor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSKeystoneVendor.h; sourceTree = "<group>"; };
+		F92F42ED0E2E8DAE0049713E /* KSKeystoneVendor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSKeystoneVendor.m; sourceTree = "<group>"; };
+		F92F42EE0E2E8DAE0049713E /* KSMemoryTicketStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMemoryTicketStore.h; sourceTree = "<group>"; };
+		F92F42EF0E2E8DAE0049713E /* KSMemoryTicketStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSMemoryTicketStore.m; sourceTree = "<group>"; };
+		F92F42F00E2E8DAE0049713E /* KSMockFetcherFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMockFetcherFactory.h; sourceTree = "<group>"; };
+		F92F42F10E2E8DAE0049713E /* KSMockFetcherFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSMockFetcherFactory.m; sourceTree = "<group>"; };
+		F92F42F20E2E8DAE0049713E /* KSMultiAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMultiAction.h; sourceTree = "<group>"; };
+		F92F42F30E2E8DAE0049713E /* KSMultiAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSMultiAction.m; sourceTree = "<group>"; };
+		F92F42F40E2E8DAE0049713E /* KSMultiUpdateAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMultiUpdateAction.h; sourceTree = "<group>"; };
+		F92F42F50E2E8DAE0049713E /* KSMultiUpdateAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSMultiUpdateAction.m; sourceTree = "<group>"; };
+		F92F42F60E2E8DAE0049713E /* KSPlistServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSPlistServer.h; sourceTree = "<group>"; };
+		F92F42F70E2E8DAE0049713E /* KSPlistServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSPlistServer.m; sourceTree = "<group>"; };
+		F92F42F80E2E8DAE0049713E /* KSPrefetchAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSPrefetchAction.h; sourceTree = "<group>"; };
+		F92F42F90E2E8DAE0049713E /* KSPrefetchAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSPrefetchAction.m; sourceTree = "<group>"; };
+		F92F42FA0E2E8DAE0049713E /* KSPromptAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSPromptAction.h; sourceTree = "<group>"; };
+		F92F42FB0E2E8DAE0049713E /* KSPromptAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSPromptAction.m; sourceTree = "<group>"; };
+		F92F42FC0E2E8DAE0049713E /* KSServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSServer.h; sourceTree = "<group>"; };
+		F92F42FD0E2E8DAE0049713E /* KSServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSServer.m; sourceTree = "<group>"; };
+		F92F42FE0E2E8DAE0049713E /* KSSilentUpdateAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSSilentUpdateAction.h; sourceTree = "<group>"; };
+		F92F42FF0E2E8DAE0049713E /* KSSilentUpdateAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSSilentUpdateAction.m; sourceTree = "<group>"; };
+		F92F43000E2E8DAE0049713E /* KSTicket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSTicket.h; sourceTree = "<group>"; };
+		F92F43010E2E8DAE0049713E /* KSTicket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSTicket.m; sourceTree = "<group>"; };
+		F92F43020E2E8DAE0049713E /* KSTicketStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSTicketStore.h; sourceTree = "<group>"; };
+		F92F43030E2E8DAE0049713E /* KSTicketStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSTicketStore.m; sourceTree = "<group>"; };
+		F92F43040E2E8DAE0049713E /* KSUpdateAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSUpdateAction.h; sourceTree = "<group>"; };
+		F92F43050E2E8DAE0049713E /* KSUpdateAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSUpdateAction.m; sourceTree = "<group>"; };
+		F92F43060E2E8DAE0049713E /* KSUpdateCheckAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSUpdateCheckAction.h; sourceTree = "<group>"; };
+		F92F43070E2E8DAE0049713E /* KSUpdateCheckAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSUpdateCheckAction.m; sourceTree = "<group>"; };
+		F92F43080E2E8DAE0049713E /* KSUpdateInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSUpdateInfo.h; sourceTree = "<group>"; };
+		F92F43090E2E8DAE0049713E /* KSUpdateInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSUpdateInfo.m; sourceTree = "<group>"; };
+		F92F430B0E2E8DAE0049713E /* GMLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GMLog.h; sourceTree = "<group>"; };
+		F92F430C0E2E8DAE0049713E /* GMLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GMLogger.h; sourceTree = "<group>"; };
+		F92F430D0E2E8DAE0049713E /* GMLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GMLogger.m; sourceTree = "<group>"; };
+		F92F430E0E2E8DAE0049713E /* GMLogRemap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GMLogRemap.h; sourceTree = "<group>"; };
 		F954BEC30E2D525000E776EB /* GTMDebugSelectorValidation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMDebugSelectorValidation.h; sourceTree = "<group>"; };
 		F954BEC50E2D525000E776EB /* GTMMethodCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMMethodCheck.h; sourceTree = "<group>"; };
 		F954BEC60E2D525000E776EB /* GTMMethodCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTMMethodCheck.m; sourceTree = "<group>"; };
@@ -187,71 +259,10 @@
 		F95A05210E25327300A22FA6 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		F95A05260E25328100A22FA6 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = /System/Library/Frameworks/CoreServices.framework; sourceTree = "<absolute>"; };
 		F96C9D800E26AA9100BE4C10 /* MacFUSEAutoinstaller.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MacFUSEAutoinstaller.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
-		F9F4E6220E2E86A10001FBE3 /* KSDiskImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSDiskImage.h; sourceTree = "<group>"; };
-		F9F4E6230E2E86A10001FBE3 /* KSDiskImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSDiskImage.m; sourceTree = "<group>"; };
-		F9F4E6240E2E86A10001FBE3 /* KSStatsCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSStatsCollection.h; sourceTree = "<group>"; };
-		F9F4E6250E2E86A10001FBE3 /* KSStatsCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSStatsCollection.m; sourceTree = "<group>"; };
-		F9F4E6260E2E86A10001FBE3 /* KSUUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSUUID.h; sourceTree = "<group>"; };
-		F9F4E6270E2E86A10001FBE3 /* KSUUID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSUUID.m; sourceTree = "<group>"; };
-		F9F4E6280E2E86A10001FBE3 /* NSData+Hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Hash.h"; sourceTree = "<group>"; };
-		F9F4E6290E2E86A10001FBE3 /* NSData+Hash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Hash.m"; sourceTree = "<group>"; };
-		F9F4E62B0E2E86A10001FBE3 /* KSAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSAction.h; sourceTree = "<group>"; };
-		F9F4E62C0E2E86A10001FBE3 /* KSAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSAction.m; sourceTree = "<group>"; };
-		F9F4E62D0E2E86A10001FBE3 /* KSActionPipe.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSActionPipe.h; sourceTree = "<group>"; };
-		F9F4E62E0E2E86A10001FBE3 /* KSActionPipe.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSActionPipe.m; sourceTree = "<group>"; };
-		F9F4E62F0E2E86A10001FBE3 /* KSActionProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSActionProcessor.h; sourceTree = "<group>"; };
-		F9F4E6300E2E86A10001FBE3 /* KSActionProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSActionProcessor.m; sourceTree = "<group>"; };
-		F9F4E6310E2E86A10001FBE3 /* KSCheckAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSCheckAction.h; sourceTree = "<group>"; };
-		F9F4E6320E2E86A10001FBE3 /* KSCheckAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSCheckAction.m; sourceTree = "<group>"; };
-		F9F4E6330E2E86A10001FBE3 /* KSCommandRunner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSCommandRunner.h; sourceTree = "<group>"; };
-		F9F4E6340E2E86A10001FBE3 /* KSCommandRunner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSCommandRunner.m; sourceTree = "<group>"; };
-		F9F4E6350E2E86A10001FBE3 /* KSCompositeAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSCompositeAction.h; sourceTree = "<group>"; };
-		F9F4E6360E2E86A10001FBE3 /* KSCompositeAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSCompositeAction.m; sourceTree = "<group>"; };
-		F9F4E6370E2E86A10001FBE3 /* KSDownloadAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSDownloadAction.h; sourceTree = "<group>"; };
-		F9F4E6380E2E86A10001FBE3 /* KSDownloadAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSDownloadAction.m; sourceTree = "<group>"; };
-		F9F4E6390E2E86A10001FBE3 /* KSExistenceChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSExistenceChecker.h; sourceTree = "<group>"; };
-		F9F4E63A0E2E86A10001FBE3 /* KSExistenceChecker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSExistenceChecker.m; sourceTree = "<group>"; };
-		F9F4E63B0E2E86A10001FBE3 /* KSFetcherFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSFetcherFactory.h; sourceTree = "<group>"; };
-		F9F4E63C0E2E86A10001FBE3 /* KSFetcherFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSFetcherFactory.m; sourceTree = "<group>"; };
-		F9F4E63D0E2E86A10001FBE3 /* KSFrameworkStats.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSFrameworkStats.h; sourceTree = "<group>"; };
-		F9F4E63E0E2E86A10001FBE3 /* KSFrameworkStats.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSFrameworkStats.m; sourceTree = "<group>"; };
-		F9F4E63F0E2E86A10001FBE3 /* KSInstallAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSInstallAction.h; sourceTree = "<group>"; };
-		F9F4E6400E2E86A10001FBE3 /* KSInstallAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSInstallAction.m; sourceTree = "<group>"; };
-		F9F4E6410E2E86A10001FBE3 /* KSKeystone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSKeystone.h; sourceTree = "<group>"; };
-		F9F4E6420E2E86A10001FBE3 /* KSKeystone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSKeystone.m; sourceTree = "<group>"; };
-		F9F4E6430E2E86A10001FBE3 /* KSKeystoneBroker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSKeystoneBroker.h; sourceTree = "<group>"; };
-		F9F4E6440E2E86A10001FBE3 /* KSKeystoneBroker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSKeystoneBroker.m; sourceTree = "<group>"; };
-		F9F4E6450E2E86A10001FBE3 /* KSKeystoneParameters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSKeystoneParameters.h; sourceTree = "<group>"; };
-		F9F4E6460E2E86A10001FBE3 /* KSKeystoneVendor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSKeystoneVendor.h; sourceTree = "<group>"; };
-		F9F4E6470E2E86A10001FBE3 /* KSKeystoneVendor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSKeystoneVendor.m; sourceTree = "<group>"; };
-		F9F4E6480E2E86A10001FBE3 /* KSMemoryTicketStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMemoryTicketStore.h; sourceTree = "<group>"; };
-		F9F4E6490E2E86A10001FBE3 /* KSMemoryTicketStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSMemoryTicketStore.m; sourceTree = "<group>"; };
-		F9F4E64A0E2E86A10001FBE3 /* KSMockFetcherFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMockFetcherFactory.h; sourceTree = "<group>"; };
-		F9F4E64B0E2E86A10001FBE3 /* KSMockFetcherFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSMockFetcherFactory.m; sourceTree = "<group>"; };
-		F9F4E64C0E2E86A10001FBE3 /* KSMultiAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMultiAction.h; sourceTree = "<group>"; };
-		F9F4E64D0E2E86A10001FBE3 /* KSMultiAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSMultiAction.m; sourceTree = "<group>"; };
-		F9F4E64E0E2E86A10001FBE3 /* KSMultiUpdateAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMultiUpdateAction.h; sourceTree = "<group>"; };
-		F9F4E64F0E2E86A10001FBE3 /* KSMultiUpdateAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSMultiUpdateAction.m; sourceTree = "<group>"; };
-		F9F4E6500E2E86A10001FBE3 /* KSPlistServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSPlistServer.h; sourceTree = "<group>"; };
-		F9F4E6510E2E86A10001FBE3 /* KSPlistServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSPlistServer.m; sourceTree = "<group>"; };
-		F9F4E6520E2E86A10001FBE3 /* KSPrefetchAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSPrefetchAction.h; sourceTree = "<group>"; };
-		F9F4E6530E2E86A10001FBE3 /* KSPrefetchAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSPrefetchAction.m; sourceTree = "<group>"; };
-		F9F4E6540E2E86A10001FBE3 /* KSPromptAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSPromptAction.h; sourceTree = "<group>"; };
-		F9F4E6550E2E86A10001FBE3 /* KSPromptAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSPromptAction.m; sourceTree = "<group>"; };
-		F9F4E6560E2E86A10001FBE3 /* KSServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSServer.h; sourceTree = "<group>"; };
-		F9F4E6570E2E86A10001FBE3 /* KSServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSServer.m; sourceTree = "<group>"; };
-		F9F4E6580E2E86A10001FBE3 /* KSSilentUpdateAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSSilentUpdateAction.h; sourceTree = "<group>"; };
-		F9F4E6590E2E86A10001FBE3 /* KSSilentUpdateAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSSilentUpdateAction.m; sourceTree = "<group>"; };
-		F9F4E65A0E2E86A10001FBE3 /* KSTicket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSTicket.h; sourceTree = "<group>"; };
-		F9F4E65B0E2E86A10001FBE3 /* KSTicket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSTicket.m; sourceTree = "<group>"; };
-		F9F4E65C0E2E86A10001FBE3 /* KSTicketStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSTicketStore.h; sourceTree = "<group>"; };
-		F9F4E65D0E2E86A10001FBE3 /* KSTicketStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSTicketStore.m; sourceTree = "<group>"; };
-		F9F4E65E0E2E86A10001FBE3 /* KSUpdateAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSUpdateAction.h; sourceTree = "<group>"; };
-		F9F4E65F0E2E86A10001FBE3 /* KSUpdateAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSUpdateAction.m; sourceTree = "<group>"; };
-		F9F4E6600E2E86A10001FBE3 /* KSUpdateCheckAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSUpdateCheckAction.h; sourceTree = "<group>"; };
-		F9F4E6610E2E86A10001FBE3 /* KSUpdateCheckAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSUpdateCheckAction.m; sourceTree = "<group>"; };
-		F9F4E6620E2E86A10001FBE3 /* KSUpdateInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSUpdateInfo.h; sourceTree = "<group>"; };
-		F9F4E6630E2E86A20001FBE3 /* KSUpdateInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSUpdateInfo.m; sourceTree = "<group>"; };
+		F9DEA5950E2F02E200060106 /* UpdatePrinter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpdatePrinter.h; sourceTree = "<group>"; };
+		F9DEA5960E2F02E200060106 /* UpdatePrinter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdatePrinter.m; sourceTree = "<group>"; };
+		F9DEA5EC0E2F069000060106 /* GTMObjC2Runtime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMObjC2Runtime.h; sourceTree = "<group>"; };
+		F9DEA5ED0E2F069000060106 /* GTMObjC2Runtime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTMObjC2Runtime.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -297,7 +308,7 @@
 		08FB7794FE84155DC02AAC07 /* autoinstaller */ = {
 			isa = PBXGroup;
 			children = (
-				F9F4E6200E2E86A10001FBE3 /* Keystone */,
+				F92F42C60E2E8DAE0049713E /* Keystone */,
 				F954BEC10E2D51FD00E776EB /* GTM */,
 				F954C0C90E2D6C6400E776EB /* KeystoneExtensions */,
 				08FB7795FE84155DC02AAC07 /* Source */,
@@ -347,6 +358,106 @@
 				F91662210E26B54400E2806B /* MacFUSEAutoinstaller-Info.plist */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		F92F42C60E2E8DAE0049713E /* Keystone */ = {
+			isa = PBXGroup;
+			children = (
+				F92F42C70E2E8DAE0049713E /* Common */,
+				F92F42D00E2E8DAE0049713E /* Framework */,
+				F92F430A0E2E8DAE0049713E /* Shared */,
+			);
+			path = Keystone;
+			sourceTree = "<group>";
+		};
+		F92F42C70E2E8DAE0049713E /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				F92F42C80E2E8DAE0049713E /* KSDiskImage.h */,
+				F92F42C90E2E8DAE0049713E /* KSDiskImage.m */,
+				F92F42CA0E2E8DAE0049713E /* KSStatsCollection.h */,
+				F92F42CB0E2E8DAE0049713E /* KSStatsCollection.m */,
+				F92F42CC0E2E8DAE0049713E /* KSUUID.h */,
+				F92F42CD0E2E8DAE0049713E /* KSUUID.m */,
+				F92F42CE0E2E8DAE0049713E /* NSData+Hash.h */,
+				F92F42CF0E2E8DAE0049713E /* NSData+Hash.m */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		F92F42D00E2E8DAE0049713E /* Framework */ = {
+			isa = PBXGroup;
+			children = (
+				F92F42D10E2E8DAE0049713E /* KSAction.h */,
+				F92F42D20E2E8DAE0049713E /* KSAction.m */,
+				F92F42D30E2E8DAE0049713E /* KSActionPipe.h */,
+				F92F42D40E2E8DAE0049713E /* KSActionPipe.m */,
+				F92F42D50E2E8DAE0049713E /* KSActionProcessor.h */,
+				F92F42D60E2E8DAE0049713E /* KSActionProcessor.m */,
+				F92F42D70E2E8DAE0049713E /* KSCheckAction.h */,
+				F92F42D80E2E8DAE0049713E /* KSCheckAction.m */,
+				F92F42D90E2E8DAE0049713E /* KSCommandRunner.h */,
+				F92F42DA0E2E8DAE0049713E /* KSCommandRunner.m */,
+				F92F42DB0E2E8DAE0049713E /* KSCompositeAction.h */,
+				F92F42DC0E2E8DAE0049713E /* KSCompositeAction.m */,
+				F92F42DD0E2E8DAE0049713E /* KSDownloadAction.h */,
+				F92F42DE0E2E8DAE0049713E /* KSDownloadAction.m */,
+				F92F42DF0E2E8DAE0049713E /* KSExistenceChecker.h */,
+				F92F42E00E2E8DAE0049713E /* KSExistenceChecker.m */,
+				F92F42E10E2E8DAE0049713E /* KSFetcherFactory.h */,
+				F92F42E20E2E8DAE0049713E /* KSFetcherFactory.m */,
+				F92F42E30E2E8DAE0049713E /* KSFrameworkStats.h */,
+				F92F42E40E2E8DAE0049713E /* KSFrameworkStats.m */,
+				F92F42E50E2E8DAE0049713E /* KSInstallAction.h */,
+				F92F42E60E2E8DAE0049713E /* KSInstallAction.m */,
+				F92F42E70E2E8DAE0049713E /* KSKeystone.h */,
+				F92F42E80E2E8DAE0049713E /* KSKeystone.m */,
+				F92F42E90E2E8DAE0049713E /* KSKeystoneBroker.h */,
+				F92F42EA0E2E8DAE0049713E /* KSKeystoneBroker.m */,
+				F92F42EB0E2E8DAE0049713E /* KSKeystoneParameters.h */,
+				F92F42EC0E2E8DAE0049713E /* KSKeystoneVendor.h */,
+				F92F42ED0E2E8DAE0049713E /* KSKeystoneVendor.m */,
+				F92F42EE0E2E8DAE0049713E /* KSMemoryTicketStore.h */,
+				F92F42EF0E2E8DAE0049713E /* KSMemoryTicketStore.m */,
+				F92F42F00E2E8DAE0049713E /* KSMockFetcherFactory.h */,
+				F92F42F10E2E8DAE0049713E /* KSMockFetcherFactory.m */,
+				F92F42F20E2E8DAE0049713E /* KSMultiAction.h */,
+				F92F42F30E2E8DAE0049713E /* KSMultiAction.m */,
+				F92F42F40E2E8DAE0049713E /* KSMultiUpdateAction.h */,
+				F92F42F50E2E8DAE0049713E /* KSMultiUpdateAction.m */,
+				F92F42F60E2E8DAE0049713E /* KSPlistServer.h */,
+				F92F42F70E2E8DAE0049713E /* KSPlistServer.m */,
+				F92F42F80E2E8DAE0049713E /* KSPrefetchAction.h */,
+				F92F42F90E2E8DAE0049713E /* KSPrefetchAction.m */,
+				F92F42FA0E2E8DAE0049713E /* KSPromptAction.h */,
+				F92F42FB0E2E8DAE0049713E /* KSPromptAction.m */,
+				F92F42FC0E2E8DAE0049713E /* KSServer.h */,
+				F92F42FD0E2E8DAE0049713E /* KSServer.m */,
+				F92F42FE0E2E8DAE0049713E /* KSSilentUpdateAction.h */,
+				F92F42FF0E2E8DAE0049713E /* KSSilentUpdateAction.m */,
+				F92F43000E2E8DAE0049713E /* KSTicket.h */,
+				F92F43010E2E8DAE0049713E /* KSTicket.m */,
+				F92F43020E2E8DAE0049713E /* KSTicketStore.h */,
+				F92F43030E2E8DAE0049713E /* KSTicketStore.m */,
+				F92F43040E2E8DAE0049713E /* KSUpdateAction.h */,
+				F92F43050E2E8DAE0049713E /* KSUpdateAction.m */,
+				F92F43060E2E8DAE0049713E /* KSUpdateCheckAction.h */,
+				F92F43070E2E8DAE0049713E /* KSUpdateCheckAction.m */,
+				F92F43080E2E8DAE0049713E /* KSUpdateInfo.h */,
+				F92F43090E2E8DAE0049713E /* KSUpdateInfo.m */,
+			);
+			path = Framework;
+			sourceTree = "<group>";
+		};
+		F92F430A0E2E8DAE0049713E /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				F92F430B0E2E8DAE0049713E /* GMLog.h */,
+				F92F430C0E2E8DAE0049713E /* GMLogger.h */,
+				F92F430D0E2E8DAE0049713E /* GMLogger.m */,
+				F92F430E0E2E8DAE0049713E /* GMLogRemap.h */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		F954BEC10E2D51FD00E776EB /* GTM */ = {
@@ -432,6 +543,8 @@
 		F954BF040E2D525800E776EB /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
+				F9DEA5EC0E2F069000060106 /* GTMObjC2Runtime.h */,
+				F9DEA5ED0E2F069000060106 /* GTMObjC2Runtime.m */,
 				F954BF050E2D52AE00E776EB /* GTMBase64.h */,
 				F954BF060E2D52AE00E776EB /* GTMBase64.m */,
 				F954BF070E2D52AE00E776EB /* GTMGarbageCollection.h */,
@@ -455,97 +568,11 @@
 				F954C0CB0E2D6C6400E776EB /* EncryptedPlistServer.m */,
 				F954C0CC0E2D6C6400E776EB /* KeystoneDelegate.h */,
 				F954C0CD0E2D6C6400E776EB /* KeystoneDelegate.m */,
+				F9DEA5950E2F02E200060106 /* UpdatePrinter.h */,
+				F9DEA5960E2F02E200060106 /* UpdatePrinter.m */,
 				F954C0CE0E2D6C6400E776EB /* ksurl-main.m */,
 			);
 			path = KeystoneExtensions;
-			sourceTree = "<group>";
-		};
-		F9F4E6200E2E86A10001FBE3 /* Keystone */ = {
-			isa = PBXGroup;
-			children = (
-				F9F4E6210E2E86A10001FBE3 /* Common */,
-				F9F4E62A0E2E86A10001FBE3 /* Framework */,
-			);
-			path = Keystone;
-			sourceTree = "<group>";
-		};
-		F9F4E6210E2E86A10001FBE3 /* Common */ = {
-			isa = PBXGroup;
-			children = (
-				F9F4E6220E2E86A10001FBE3 /* KSDiskImage.h */,
-				F9F4E6230E2E86A10001FBE3 /* KSDiskImage.m */,
-				F9F4E6240E2E86A10001FBE3 /* KSStatsCollection.h */,
-				F9F4E6250E2E86A10001FBE3 /* KSStatsCollection.m */,
-				F9F4E6260E2E86A10001FBE3 /* KSUUID.h */,
-				F9F4E6270E2E86A10001FBE3 /* KSUUID.m */,
-				F9F4E6280E2E86A10001FBE3 /* NSData+Hash.h */,
-				F9F4E6290E2E86A10001FBE3 /* NSData+Hash.m */,
-			);
-			path = Common;
-			sourceTree = "<group>";
-		};
-		F9F4E62A0E2E86A10001FBE3 /* Framework */ = {
-			isa = PBXGroup;
-			children = (
-				F9F4E62B0E2E86A10001FBE3 /* KSAction.h */,
-				F9F4E62C0E2E86A10001FBE3 /* KSAction.m */,
-				F9F4E62D0E2E86A10001FBE3 /* KSActionPipe.h */,
-				F9F4E62E0E2E86A10001FBE3 /* KSActionPipe.m */,
-				F9F4E62F0E2E86A10001FBE3 /* KSActionProcessor.h */,
-				F9F4E6300E2E86A10001FBE3 /* KSActionProcessor.m */,
-				F9F4E6310E2E86A10001FBE3 /* KSCheckAction.h */,
-				F9F4E6320E2E86A10001FBE3 /* KSCheckAction.m */,
-				F9F4E6330E2E86A10001FBE3 /* KSCommandRunner.h */,
-				F9F4E6340E2E86A10001FBE3 /* KSCommandRunner.m */,
-				F9F4E6350E2E86A10001FBE3 /* KSCompositeAction.h */,
-				F9F4E6360E2E86A10001FBE3 /* KSCompositeAction.m */,
-				F9F4E6370E2E86A10001FBE3 /* KSDownloadAction.h */,
-				F9F4E6380E2E86A10001FBE3 /* KSDownloadAction.m */,
-				F9F4E6390E2E86A10001FBE3 /* KSExistenceChecker.h */,
-				F9F4E63A0E2E86A10001FBE3 /* KSExistenceChecker.m */,
-				F9F4E63B0E2E86A10001FBE3 /* KSFetcherFactory.h */,
-				F9F4E63C0E2E86A10001FBE3 /* KSFetcherFactory.m */,
-				F9F4E63D0E2E86A10001FBE3 /* KSFrameworkStats.h */,
-				F9F4E63E0E2E86A10001FBE3 /* KSFrameworkStats.m */,
-				F9F4E63F0E2E86A10001FBE3 /* KSInstallAction.h */,
-				F9F4E6400E2E86A10001FBE3 /* KSInstallAction.m */,
-				F9F4E6410E2E86A10001FBE3 /* KSKeystone.h */,
-				F9F4E6420E2E86A10001FBE3 /* KSKeystone.m */,
-				F9F4E6430E2E86A10001FBE3 /* KSKeystoneBroker.h */,
-				F9F4E6440E2E86A10001FBE3 /* KSKeystoneBroker.m */,
-				F9F4E6450E2E86A10001FBE3 /* KSKeystoneParameters.h */,
-				F9F4E6460E2E86A10001FBE3 /* KSKeystoneVendor.h */,
-				F9F4E6470E2E86A10001FBE3 /* KSKeystoneVendor.m */,
-				F9F4E6480E2E86A10001FBE3 /* KSMemoryTicketStore.h */,
-				F9F4E6490E2E86A10001FBE3 /* KSMemoryTicketStore.m */,
-				F9F4E64A0E2E86A10001FBE3 /* KSMockFetcherFactory.h */,
-				F9F4E64B0E2E86A10001FBE3 /* KSMockFetcherFactory.m */,
-				F9F4E64C0E2E86A10001FBE3 /* KSMultiAction.h */,
-				F9F4E64D0E2E86A10001FBE3 /* KSMultiAction.m */,
-				F9F4E64E0E2E86A10001FBE3 /* KSMultiUpdateAction.h */,
-				F9F4E64F0E2E86A10001FBE3 /* KSMultiUpdateAction.m */,
-				F9F4E6500E2E86A10001FBE3 /* KSPlistServer.h */,
-				F9F4E6510E2E86A10001FBE3 /* KSPlistServer.m */,
-				F9F4E6520E2E86A10001FBE3 /* KSPrefetchAction.h */,
-				F9F4E6530E2E86A10001FBE3 /* KSPrefetchAction.m */,
-				F9F4E6540E2E86A10001FBE3 /* KSPromptAction.h */,
-				F9F4E6550E2E86A10001FBE3 /* KSPromptAction.m */,
-				F9F4E6560E2E86A10001FBE3 /* KSServer.h */,
-				F9F4E6570E2E86A10001FBE3 /* KSServer.m */,
-				F9F4E6580E2E86A10001FBE3 /* KSSilentUpdateAction.h */,
-				F9F4E6590E2E86A10001FBE3 /* KSSilentUpdateAction.m */,
-				F9F4E65A0E2E86A10001FBE3 /* KSTicket.h */,
-				F9F4E65B0E2E86A10001FBE3 /* KSTicket.m */,
-				F9F4E65C0E2E86A10001FBE3 /* KSTicketStore.h */,
-				F9F4E65D0E2E86A10001FBE3 /* KSTicketStore.m */,
-				F9F4E65E0E2E86A10001FBE3 /* KSUpdateAction.h */,
-				F9F4E65F0E2E86A10001FBE3 /* KSUpdateAction.m */,
-				F9F4E6600E2E86A10001FBE3 /* KSUpdateCheckAction.h */,
-				F9F4E6610E2E86A10001FBE3 /* KSUpdateCheckAction.m */,
-				F9F4E6620E2E86A10001FBE3 /* KSUpdateInfo.h */,
-				F9F4E6630E2E86A20001FBE3 /* KSUpdateInfo.m */,
-			);
-			path = Framework;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -684,38 +711,41 @@
 				F954BFAC0E2D570E00E776EB /* GTMScriptRunner.m in Sources */,
 				F954C0D20E2D6C7200E776EB /* EncryptedPlistServer.m in Sources */,
 				F954C0D30E2D6C7700E776EB /* KeystoneDelegate.m in Sources */,
-				F9F4E6690E2E86A20001FBE3 /* KSDiskImage.m in Sources */,
-				F9F4E66A0E2E86A20001FBE3 /* KSStatsCollection.m in Sources */,
-				F9F4E66B0E2E86A20001FBE3 /* KSUUID.m in Sources */,
-				F9F4E66C0E2E86A20001FBE3 /* NSData+Hash.m in Sources */,
-				F9F4E66D0E2E86A20001FBE3 /* KSAction.m in Sources */,
-				F9F4E66E0E2E86A20001FBE3 /* KSActionPipe.m in Sources */,
-				F9F4E66F0E2E86A20001FBE3 /* KSActionProcessor.m in Sources */,
-				F9F4E6700E2E86A20001FBE3 /* KSCheckAction.m in Sources */,
-				F9F4E6710E2E86A20001FBE3 /* KSCommandRunner.m in Sources */,
-				F9F4E6720E2E86A20001FBE3 /* KSCompositeAction.m in Sources */,
-				F9F4E6730E2E86A20001FBE3 /* KSDownloadAction.m in Sources */,
-				F9F4E6740E2E86A20001FBE3 /* KSExistenceChecker.m in Sources */,
-				F9F4E6750E2E86A20001FBE3 /* KSFetcherFactory.m in Sources */,
-				F9F4E6760E2E86A20001FBE3 /* KSFrameworkStats.m in Sources */,
-				F9F4E6770E2E86A20001FBE3 /* KSInstallAction.m in Sources */,
-				F9F4E6780E2E86A20001FBE3 /* KSKeystone.m in Sources */,
-				F9F4E6790E2E86A20001FBE3 /* KSKeystoneBroker.m in Sources */,
-				F9F4E67A0E2E86A20001FBE3 /* KSKeystoneVendor.m in Sources */,
-				F9F4E67B0E2E86A20001FBE3 /* KSMemoryTicketStore.m in Sources */,
-				F9F4E67C0E2E86A20001FBE3 /* KSMockFetcherFactory.m in Sources */,
-				F9F4E67D0E2E86A20001FBE3 /* KSMultiAction.m in Sources */,
-				F9F4E67E0E2E86A20001FBE3 /* KSMultiUpdateAction.m in Sources */,
-				F9F4E67F0E2E86A20001FBE3 /* KSPlistServer.m in Sources */,
-				F9F4E6800E2E86A20001FBE3 /* KSPrefetchAction.m in Sources */,
-				F9F4E6810E2E86A20001FBE3 /* KSPromptAction.m in Sources */,
-				F9F4E6820E2E86A20001FBE3 /* KSServer.m in Sources */,
-				F9F4E6830E2E86A20001FBE3 /* KSSilentUpdateAction.m in Sources */,
-				F9F4E6840E2E86A20001FBE3 /* KSTicket.m in Sources */,
-				F9F4E6850E2E86A20001FBE3 /* KSTicketStore.m in Sources */,
-				F9F4E6860E2E86A20001FBE3 /* KSUpdateAction.m in Sources */,
-				F9F4E6870E2E86A20001FBE3 /* KSUpdateCheckAction.m in Sources */,
-				F9F4E6880E2E86A20001FBE3 /* KSUpdateInfo.m in Sources */,
+				F92F430F0E2E8DAE0049713E /* KSDiskImage.m in Sources */,
+				F92F43100E2E8DAE0049713E /* KSStatsCollection.m in Sources */,
+				F92F43110E2E8DAE0049713E /* KSUUID.m in Sources */,
+				F92F43120E2E8DAE0049713E /* NSData+Hash.m in Sources */,
+				F92F43130E2E8DAE0049713E /* KSAction.m in Sources */,
+				F92F43140E2E8DAE0049713E /* KSActionPipe.m in Sources */,
+				F92F43150E2E8DAE0049713E /* KSActionProcessor.m in Sources */,
+				F92F43160E2E8DAE0049713E /* KSCheckAction.m in Sources */,
+				F92F43170E2E8DAE0049713E /* KSCommandRunner.m in Sources */,
+				F92F43180E2E8DAE0049713E /* KSCompositeAction.m in Sources */,
+				F92F43190E2E8DAE0049713E /* KSDownloadAction.m in Sources */,
+				F92F431A0E2E8DAE0049713E /* KSExistenceChecker.m in Sources */,
+				F92F431B0E2E8DAE0049713E /* KSFetcherFactory.m in Sources */,
+				F92F431C0E2E8DAE0049713E /* KSFrameworkStats.m in Sources */,
+				F92F431D0E2E8DAE0049713E /* KSInstallAction.m in Sources */,
+				F92F431E0E2E8DAE0049713E /* KSKeystone.m in Sources */,
+				F92F431F0E2E8DAE0049713E /* KSKeystoneBroker.m in Sources */,
+				F92F43200E2E8DAE0049713E /* KSKeystoneVendor.m in Sources */,
+				F92F43210E2E8DAE0049713E /* KSMemoryTicketStore.m in Sources */,
+				F92F43220E2E8DAE0049713E /* KSMockFetcherFactory.m in Sources */,
+				F92F43230E2E8DAE0049713E /* KSMultiAction.m in Sources */,
+				F92F43240E2E8DAE0049713E /* KSMultiUpdateAction.m in Sources */,
+				F92F43250E2E8DAE0049713E /* KSPlistServer.m in Sources */,
+				F92F43260E2E8DAE0049713E /* KSPrefetchAction.m in Sources */,
+				F92F43270E2E8DAE0049713E /* KSPromptAction.m in Sources */,
+				F92F43280E2E8DAE0049713E /* KSServer.m in Sources */,
+				F92F43290E2E8DAE0049713E /* KSSilentUpdateAction.m in Sources */,
+				F92F432A0E2E8DAE0049713E /* KSTicket.m in Sources */,
+				F92F432B0E2E8DAE0049713E /* KSTicketStore.m in Sources */,
+				F92F432C0E2E8DAE0049713E /* KSUpdateAction.m in Sources */,
+				F92F432D0E2E8DAE0049713E /* KSUpdateCheckAction.m in Sources */,
+				F92F432E0E2E8DAE0049713E /* KSUpdateInfo.m in Sources */,
+				F92F432F0E2E8DAE0049713E /* GMLogger.m in Sources */,
+				F9DEA5C40E2F04FC00060106 /* UpdatePrinter.m in Sources */,
+				F9DEA5EE0E2F069000060106 /* GTMObjC2Runtime.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -831,6 +861,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F954BECD0E2D525000E776EB /* DebugTigerOrLater.xcconfig */;
 			buildSettings = {
+				COPY_PHASE_STRIP = NO;
 			};
 			name = Debug;
 		};

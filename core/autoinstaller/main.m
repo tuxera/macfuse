@@ -8,12 +8,14 @@
 
 #import <Foundation/Foundation.h>
 #import "KeystoneDelegate.h"
+#import "UpdatePrinter.h"
 #import "KSKeystone.h"
 #import "KSExistenceChecker.h"
 #import "KSTicket.h"
 #import "KSMemoryTicketStore.h"
 #import "GMLogger.h"
 #import "GTMScriptRunner.h"
+#import "GTMPath.h"
 #import <getopt.h>
 #import <stdio.h>
 #import <unistd.h>
@@ -29,9 +31,10 @@ static NSString* const kDefaultRulesURL =
 // Prints usage information about this command line program.
 //
 static void Usage(void) {
-  printf("Usage: macfuse_autoinstaller -[pliv]\n"
+  printf("Usage: macfuse_autoinstaller -[plLiv]\n"
          "  --print,-p    Print info about the currently installed MacFUSE\n"
          "  --list,-l     List MacFUSE update, if one is available\n"
+         "  --plist,-L    List MacFUSE update in plist XML format\n"
          "  --install,-i  Download and install MacFUSE update, if available\n"
          "  --verbose,-v  Print VERY verbose output\n"
   );
@@ -98,6 +101,34 @@ static KSTicket *GetMacFUSETicket(NSString *ticketUrl) {
                              serverURL:url];
 }
 
+
+// GetPreferences
+//
+// Checks the security of the MacFUSE preferences file, and if everything looks
+// good, returns a dictionary with the contents of prefs plist.
+//
+static NSDictionary *GetPreferences(void) {
+  NSDictionary *prefs = nil;
+  
+  GTMPath *path = [GTMPath pathWithFullPath:
+                   @"/Library/Preferences/com.google.macfuse.plist"];
+  if (path == nil)
+    return nil;
+  
+  NSDictionary *attr = [path attributes];
+  int owner = [[attr fileOwnerAccountID] intValue];
+  mode_t mode = [attr filePosixPermissions];
+  
+  if (owner == 0 && (mode & S_IWGRP) == 0 && (mode & S_IWOTH) == 0) {
+    prefs = [NSDictionary dictionaryWithContentsOfFile:[path fullPath]];
+  } else {
+    GMLoggerError(@"Bad attributes on %@", path);
+  }
+  
+  return prefs;
+}
+
+
 // main
 //
 // Parses command-line options, gets the ticket for the currently-installed
@@ -112,16 +143,17 @@ int main(int argc, char **argv) {
   static struct option kLongOpts[] = {
     { "print",         no_argument,       NULL, 'p' },
     { "list",          no_argument,       NULL, 'l' },
+    { "plist",         no_argument,       NULL, 'L' },
     { "install",       no_argument,       NULL, 'i' },
     { "verbose",       no_argument,       NULL, 'v' },
     { "url",           required_argument, NULL, 'u' },
     {  NULL,           0,                 NULL,  0  },
   };
   
-  BOOL print = NO, list = NO, install = NO, verbose = NO;
+  BOOL print = NO, list = NO, listPlist = NO, install = NO, verbose = NO;
   const char *url = NULL;
   int ch = 0;
-  while ((ch = getopt_long(argc, argv, "pliv", kLongOpts, NULL)) != -1) {
+  while ((ch = getopt_long(argc, argv, "plivL", kLongOpts, NULL)) != -1) {
     switch (ch) {
       case 'p':
         print = YES;
@@ -138,6 +170,10 @@ int main(int argc, char **argv) {
       case 'u':
         url = optarg;
         break;
+      case 'L':
+        listPlist = YES;
+        list = YES;
+        break;
       default:
         Usage();
         goto done;
@@ -148,9 +184,17 @@ int main(int argc, char **argv) {
     [[GMLogger sharedLogger] setFilter:nil];  // Remove log filtering
   }
   
-  NSString *rulesUrl = url
-    ? [NSString stringWithUTF8String:url] 
-    : kDefaultRulesURL;
+  NSDictionary *prefs = GetPreferences();
+  NSString *rulesUrl = nil;  
+  
+  if (url != NULL) {
+    rulesUrl = [NSString stringWithUTF8String:url];
+  } else if ([prefs objectForKey:@"URL"]) {
+    rulesUrl = [prefs objectForKey:@"URL"];
+  } else {
+    rulesUrl = kDefaultRulesURL;
+  }
+
   KSTicket *macfuseTicket = GetMacFUSETicket(rulesUrl);
   if (print) {
     printf("%s\n", [[macfuseTicket description] UTF8String]);
@@ -177,9 +221,16 @@ int main(int argc, char **argv) {
     goto done;
   }
   
+  UpdatePrinter *printer = nil;
+  if (list) {
+    printer = listPlist
+              ? [[[PlistUpdatePrinter alloc] init] autorelease]
+              : [[[UpdatePrinter alloc] init] autorelease];
+  }
+  
   KeystoneDelegate *delegate = [[[KeystoneDelegate alloc]
-                                 initWithList:list
-                                      install:install] autorelease];
+                                 initWithPrinter:printer
+                                       doInstall:install] autorelease];
   
   // Create a KSKeystone instance with our ticket store that only contains one
   // ticket (for MacFUSE itself), and our custom delegate that knows how to
@@ -196,7 +247,7 @@ int main(int argc, char **argv) {
   }
   
   if (![delegate wasSuccess]) {
-    printf("  *** Updated failed. Rerun with -v for details.\n");
+    fprintf(stderr, "  *** Updated failed. Rerun with -v for details.\n");
     rc = 1;
   }
     

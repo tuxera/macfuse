@@ -9,21 +9,28 @@
 #import "KeystoneDelegate.h"
 #import "KSCommandRunner.h"
 #import "KSKeystone.h"
+#import "UpdatePrinter.h"
 
 
 @implementation KeystoneDelegate
 
 - (id)init {
-  return [self initWithList:YES install:NO];
+  return [self initWithPrinter:nil doInstall:NO];
 }
 
-- (id)initWithList:(BOOL)list install:(BOOL)install {
+- (id)initWithPrinter:(UpdatePrinter *)printer doInstall:(BOOL)doInstall {
   if ((self = [super init])) {
-    list_ = list;
-    install_ = install;
+    printer_ = [printer retain];
+    doInstall_ = doInstall;
+
     wasSuccess_ = YES;
   }
   return self;
+}
+
+- (void)dealloc {
+  [printer_ release];
+  [super dealloc];
 }
 
 - (BOOL)wasSuccess {
@@ -32,28 +39,15 @@
 
 - (NSArray *)keystone:(KSKeystone *)keystone
 shouldPrefetchProducts:(NSArray *)products {
-  if (list_) {
-    if ([products count] == 0) {
-      printf("No updates available.\n");
-    } else {
-      printf("Available updates: %s\n", [[products description] UTF8String]);
-    }
+  
+  [printer_ printUpdates:products];
+  
+  if (!doInstall_) {
     [keystone stopAndReset];
     return nil;
-  } else if (install_) {
-    return products;
   }
   
-  return nil;
-}
-
-- (NSArray *)keystone:(KSKeystone *)keystone
- shouldUpdateProducts:(NSArray *)products {
-  if (install_) {
-    return products;
-  }
-  
-  return nil;
+  return products;
 }
 
 - (void)keystone:(KSKeystone *)keystone
