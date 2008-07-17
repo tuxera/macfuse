@@ -120,6 +120,7 @@ fi
 
 # If we need to install the embedded package then see if it actually exists.
 if [ $INSTALL_EMBEDDED_PKG -eq 1 ]
+then
   if [ ! -d "$EMBEDDED_PKG" ]
   then
     echo "Missing embedded pkg: ${EMBEDDED_PKG}"
