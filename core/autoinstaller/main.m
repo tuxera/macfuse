@@ -180,6 +180,9 @@ int main(int argc, char **argv) {
     }
   }
   
+  // Setup our output logging
+  [[GMLogger sharedLogger] setWriter:
+   [NSFileHandle fileHandleWithStandardError]];
   if (verbose) {
     [[GMLogger sharedLogger] setFilter:nil];  // Remove log filtering
   }
