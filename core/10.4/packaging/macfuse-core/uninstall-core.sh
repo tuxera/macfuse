@@ -172,7 +172,11 @@ do
   fi
 done
 
-# 2. Remove the directories
+# 2. Remove autoinstaller
+remove_file "$INSTALL_VOLUME/./System/Library/Filesystems/fusefs.fs/Support/autoinstall-macfuse-core"
+remove_tree "$INSTALL_VOLUME/./System/Library/Filesystems/fusefs.fs/Support/MacFUSEAutoInstaller.bundle"
+
+# 3. Remove the directories
 for x in `/usr/bin/lsbom -sd "$BOMFILE" | /usr/bin/sort -r`
 do
   remove_dir "$INSTALL_VOLUME/$x"
@@ -182,7 +186,7 @@ do
   fi
 done
 
-# 3. Remove the Receipt.
+# 4. Remove the Receipt.
 if [ $IS_BOTCHED_UNINSTALL -eq 0 ]
 then
   remove_tree "$PACKAGE_RECEIPT"

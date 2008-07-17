@@ -6,7 +6,6 @@
 
 # TODO: 
 #  - Fill in the pkg size with the size from one our our .pkgs  
-#  - postflight script
 
 MACFUSE_VERSION=$1
 MACFUSE_UPDATER=$2
@@ -77,6 +76,7 @@ mkdir $DISTRIBUTION_FOLDER
 sudo tar --exclude '.svn' -cpvf - "$INSTALL_RESOURCES_SRC" | sudo tar -C "$BUILD_DIR" -xpvf -
 
 # Copy all of the MacFUSE Core.pkg's in their platform directories under Resources
+PKG_SIZE=0
 SAVED_IFS="$IFS"
 IFS=","
 for i in $MACFUSE_PLATFORMS
@@ -91,6 +91,16 @@ do
   CORE_PKG_DIR=$(dirname "$CORE_PKG")
   CORE_PKG_NAME=$(basename "$CORE_PKG")
   PKG_DST="${INSTALL_RESOURCES}/${OS_VERSION}"
+
+  NEW_SIZE=$(defaults read "$CORE_PKG/Contents/Info" IFPkgFlagInstalledSize)
+  if [ -z "$NEW_SIZE" ]
+  then
+    echo "Unable to read pkg size from: ${CORE_PKG}"
+  fi
+  if [ $NEW_SIZE -gt $PKG_SIZE ]
+  then
+    PKG_SIZE=$NEW_SIZE
+  fi
 
   echo "Adding package for OS X Version=$OS_VERSION, Pkg=$CORE_PKG"
   mkdir "$PKG_DST"
@@ -117,7 +127,9 @@ then
 fi
 
 # Fix up the Info.plist
-sed -e "s/MACFUSE_PKG_VERSION_LITERAL/$MACFUSE_VERSION/g" < "$INFO_PLIST_IN" > "$INFO_PLIST_OUT"
+sed -e "s/MACFUSE_PKG_VERSION_LITERAL/$MACFUSE_VERSION/g" \
+    -e "s/MACFUSE_PKG_INSTALLED_SIZE/$PKG_SIZE/g" \
+  < "$INFO_PLIST_IN" > "$INFO_PLIST_OUT"
 
 # Build the package
 sudo $PACKAGEMAKER -build -p "$OUTPUT_PACKAGE" -f "$DISTRIBUTION_FOLDER" -b /tmp -ds -v \

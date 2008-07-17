@@ -26,10 +26,8 @@
 	<true/>
 	<key>IFPkgFlagInstallFat</key>
 	<false/>
-<!--
 	<key>IFPkgFlagInstalledSize</key>
-	<integer>0</integer>
--->
+	<integer>MACFUSE_PKG_INSTALLED_SIZE</integer>
 	<key>IFPkgFlagIsRequired</key>
 	<false/>
 	<key>IFPkgFlagOverwritePermissions</key>

@@ -16,7 +16,9 @@ INSTALL_VOLUME=$3
 SYSTEM_ROOT=$4
 
 # Binaries we use
-AUTOINSTALLER="${PACKAGE_PATH}/Contents/Resources/MacFUSEAutoinstaller.bundle/Contents/MacOS/autoinstaller"
+RESOURCES="${PACKAGE_PATH}/Contents/Resources"
+AUTOINSTALLER_BUNDLE="MacFUSEAutoinstaller.bundle"
+AUTOINSTALLER="${RESOURCES}/${AUTOINSTALLER_BUNDLE}/Contents/MacOS/autoinstaller"
 PATH="/bin:/usr/bin:/usr/sbin"; export PATH
 
 # Header
@@ -70,7 +72,7 @@ fi
 # Determine the appropriate embedded pkg for this platform.
 OS_MAJOR_MINOR="${OS_MAJOR}.${OS_MINOR}"
 EMBEDDED_PKG="${PACKAGE_PATH}/Contents/Resources/${OS_MAJOR_MINOR}/${CORE_NAME}"
-INSTALL_EMBEDDED_PKG=1  # Default to installing the embedded .pkg?
+INSTALL_EMBEDDED_PKG=1   # Default to installing the embedded .pkg?
 echo "Potential embedded package path: ${EMBEDDED_PKG}"
 
 # Use autoinstaller to see if there is a newer MacFUSE Core.
@@ -122,25 +124,52 @@ then
     echo "Missing embedded pkg: ${EMBEDDED_PKG}"
     exit 1
   fi
-  installer -pkg "$EMBEDDED_PKG" -target "$INSTALL_VOLUME" > "$INSTALLER_LOG"
+  INSTALLER_OUTPUT=$(installer -pkg "$EMBEDDED_PKG" -target "$INSTALL_VOLUME")
   INSTALLER_RC=$?
-  cat "$INSTALLER_LOG"  # So that we see it in our postflight log
-  if [ $INSTALLER_RC -ne 0 ]
+  echo "$INSTALLER_OUTPUT"  # So that we see it in our postflight log
+  if [ $INSTALLER_RC -eq 0 ]
   then
-    # If the install failed due to an existing newer version then it is OK.
-    # TODO: This grep is sort of lame and dependent on installer (and lang?)
-    grep "newer version of this software already exists" "$INSTALLER_LOG"
+    # Copy autoupdater to fusefs.fs/Support directory.
+    MACFUSE_SUPPORT="/Library/Filesystems/fusefs.fs/Support/"
+    if [ $OS_MINOR -eq 4 ]
+    then
+      MACFUSE_SUPPORT="/System/${MACFUSE_SUPPORT}"
+    fi
+    MACFUSE_SUPPORT="${INSTALL_VOLUME}/${MACFUSE_SUPPORT}"
+    if [ ! -d "$MACFUSE_SUPPORT" ]
+    then
+      echo "Unable to find Support directory: ${MACFUSE_SUPPORT}"
+      exit 1
+    fi
+    tar -C "$RESOURCES" -cpvf - "$AUTOINSTALLER_BUNDLE" | \
+      tar -C "$MACFUSE_SUPPORT" -xpvf -
     if [ $? -ne 0 ]
     then
+      echo "Unable to copy autoinstaller bundle to Support directory."
+      exit 1
+    fi
+    chown -R root:wheel "${MACFUSE_SUPPORT}/${AUTOINSTALLER_BUNDLE}"
+    if [ $? -ne 0 ]
+    then
+      echo "Unable to chown macfuse updater bundle."
+      exit 1
+    fi
+    ln -sf "${AUTOINSTALLER_BUNDLE}/Contents/MacOS/autoinstaller" \
+      "${MACFUSE_SUPPORT}/autoinstall-macfuse-core"      
+  else
+    # If the install failed due to an existing newer version then it is OK.
+    # TODO: This grep is sort of lame and dependent on installer (and lang?)
+    echo "$INSTALLER_OUTPUT" | \
+          grep "newer version of this software already exists" > /dev/null
+    if [ $? -eq 0 ]
+    then
+      echo "Embedded package was older than what is already installed (status OK)."
+    else
       echo "Failed to install $EMBEDDED_PKG"
       exit 1
     fi
   fi
 fi
-
-# TODO:
-#  - Copy autoupdater into fusefs/Support
-#  - Update uninstall script to handle the above
 
 # Remove our receipt; MacFUSE.pkg doesn't have a payload.
 rm -rf "$FINAL_RECEIPT"
