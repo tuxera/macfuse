@@ -6,10 +6,10 @@
 //  Copyright 2008 Google Inc. All rights reserved.
 //
 
-#import "EncryptedPlistServer.h"
+#import "SignedPlistServer.h"
 
 
-@implementation EncryptedPlistServer
+@implementation SignedPlistServer
 
 - (NSArray *)updateInfosForResponse:(NSURLResponse *)response
                                data:(NSData *)data {

@@ -56,7 +56,7 @@
 		F954BF110E2D52AE00E776EB /* GTMPath.m in Sources */ = {isa = PBXBuildFile; fileRef = F954BF0D0E2D52AE00E776EB /* GTMPath.m */; };
 		F954BF910E2D548A00E776EB /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F954BF900E2D548A00E776EB /* IOKit.framework */; };
 		F954BFAC0E2D570E00E776EB /* GTMScriptRunner.m in Sources */ = {isa = PBXBuildFile; fileRef = F954BFAB0E2D570E00E776EB /* GTMScriptRunner.m */; };
-		F954C0D20E2D6C7200E776EB /* EncryptedPlistServer.m in Sources */ = {isa = PBXBuildFile; fileRef = F954C0CB0E2D6C6400E776EB /* EncryptedPlistServer.m */; };
+		F954C0D20E2D6C7200E776EB /* SignedPlistServer.m in Sources */ = {isa = PBXBuildFile; fileRef = F954C0CB0E2D6C6400E776EB /* SignedPlistServer.m */; };
 		F954C0D30E2D6C7700E776EB /* KeystoneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F954C0CD0E2D6C6400E776EB /* KeystoneDelegate.m */; };
 		F954C0D40E2D6C7C00E776EB /* ksurl-main.m in Sources */ = {isa = PBXBuildFile; fileRef = F954C0CE0E2D6C6400E776EB /* ksurl-main.m */; };
 		F96C9D890E26AAFA00BE4C10 /* Keystone.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = F9217A910E258B72007CB1A3 /* Keystone.framework */; };
@@ -251,8 +251,8 @@
 		F954BF900E2D548A00E776EB /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
 		F954BFAA0E2D570E00E776EB /* GTMScriptRunner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMScriptRunner.h; sourceTree = "<group>"; };
 		F954BFAB0E2D570E00E776EB /* GTMScriptRunner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTMScriptRunner.m; sourceTree = "<group>"; };
-		F954C0CA0E2D6C6400E776EB /* EncryptedPlistServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EncryptedPlistServer.h; sourceTree = "<group>"; };
-		F954C0CB0E2D6C6400E776EB /* EncryptedPlistServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EncryptedPlistServer.m; sourceTree = "<group>"; };
+		F954C0CA0E2D6C6400E776EB /* SignedPlistServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignedPlistServer.h; sourceTree = "<group>"; };
+		F954C0CB0E2D6C6400E776EB /* SignedPlistServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignedPlistServer.m; sourceTree = "<group>"; };
 		F954C0CC0E2D6C6400E776EB /* KeystoneDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeystoneDelegate.h; sourceTree = "<group>"; };
 		F954C0CD0E2D6C6400E776EB /* KeystoneDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeystoneDelegate.m; sourceTree = "<group>"; };
 		F954C0CE0E2D6C6400E776EB /* ksurl-main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ksurl-main.m"; sourceTree = "<group>"; };
@@ -564,8 +564,8 @@
 		F954C0C90E2D6C6400E776EB /* KeystoneExtensions */ = {
 			isa = PBXGroup;
 			children = (
-				F954C0CA0E2D6C6400E776EB /* EncryptedPlistServer.h */,
-				F954C0CB0E2D6C6400E776EB /* EncryptedPlistServer.m */,
+				F954C0CA0E2D6C6400E776EB /* SignedPlistServer.h */,
+				F954C0CB0E2D6C6400E776EB /* SignedPlistServer.m */,
 				F954C0CC0E2D6C6400E776EB /* KeystoneDelegate.h */,
 				F954C0CD0E2D6C6400E776EB /* KeystoneDelegate.m */,
 				F9DEA5950E2F02E200060106 /* UpdatePrinter.h */,
@@ -709,7 +709,7 @@
 				F954BF100E2D52AE00E776EB /* GTMNSString+FindFolder.m in Sources */,
 				F954BF110E2D52AE00E776EB /* GTMPath.m in Sources */,
 				F954BFAC0E2D570E00E776EB /* GTMScriptRunner.m in Sources */,
-				F954C0D20E2D6C7200E776EB /* EncryptedPlistServer.m in Sources */,
+				F954C0D20E2D6C7200E776EB /* SignedPlistServer.m in Sources */,
 				F954C0D30E2D6C7700E776EB /* KeystoneDelegate.m in Sources */,
 				F92F430F0E2E8DAE0049713E /* KSDiskImage.m in Sources */,
 				F92F43100E2E8DAE0049713E /* KSStatsCollection.m in Sources */,

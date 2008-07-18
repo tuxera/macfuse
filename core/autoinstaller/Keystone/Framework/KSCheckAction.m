@@ -9,7 +9,7 @@
 #import "KSCheckAction.h"
 #import "KSTicket.h"
 #import "KSUpdateCheckAction.h"
-#import "EncryptedPlistServer.h"
+#import "SignedPlistServer.h"
 #import "KSActionPipe.h"
 #import "KSActionProcessor.h"
 #import "KSTicketStore.h"
@@ -76,7 +76,7 @@
     [[KSFrameworkStats sharedStats] incrementStat:kStatValidTickets
                                                by:[filteredTickets count]];
     
-    KSServer *server = [EncryptedPlistServer serverWithURL:url];
+    KSServer *server = [SignedPlistServer serverWithURL:url];
     KSAction *checker = [KSUpdateCheckAction checkerWithServer:server
                                                        tickets:filteredTickets];
     [[self subProcessor] enqueueAction:checker];

@@ -10,6 +10,6 @@
 #import "KSPlistServer.h"
 
 
-@interface EncryptedPlistServer : KSPlistServer 
+@interface SignedPlistServer : KSPlistServer 
 
 @end
