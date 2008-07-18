@@ -16,11 +16,19 @@ then
   PLATFORMS=""
 fi
 
-# TODO: Remove this when updater is in tree!
-MACFUSE_UPDATER="$1"
-if [ -z "$MACFUSE_UPDATER" ]
+# Are we building developer or release?
+BUILD_TYPE=${1:-"Developer"}
+if [ \( "$BUILD_TYPE" != "Release" \) -a \( "$BUILD_TYPE" != "Developer" \) ]
 then
-  echo "Temporary: Must pass MACFUSE_UPDATER path as argument."
+  echo "Usage: build_dist.sh Release|Developer"
+  exit 1
+fi
+
+# TODO: Fix when updater is in tree!
+MACFUSE_UPDATER="/tmp/MacFUSEAutoinstaller.bundle/"
+if [ ! -d "$MACFUSE_UPDATER" ]
+then
+  echo "Temporary: Must untar autoinstaller bundle in /tmp."
   exit 1
 fi
 
@@ -112,14 +120,21 @@ then
 fi
 popd
 
-# Make CurrentRelease.plist
-
+# Make autoinstaller rules file.
 DMG_NAME="MacFUSE-$MAJOR_RELEASE_VERSION.dmg"
 DMG_PATH="$OUTPUT_DIR/$DMG_NAME"
 DMG_HASH=$(openssl sha1 -binary "$DMG_PATH" | openssl base64)
 DMG_SIZE=$(stat -f%z "$DMG_PATH")
 
-cat > "$OUTPUT_DIR/CurrentRelease.plist" <<__END_CONFIG
+OUTPUT_RULES="${OUTPUT_DIR}/DeveloperRelease.plist"
+DOWNLOAD_URL="http://macfuse.googlecode.com/svn/releases/developer/${DMG_NAME}"
+if [ "$BUILD_TYPE" == "Release" ]
+then
+  OUTPUT_RULES="${OUTPUT_DIR}/CurrentRelease.plist"
+  DOWNLOAD_URL="http://macfuse.googlecode.com/svn/releases/${DMG_NAME}"
+fi
+
+cat > "$OUTPUT_RULES" <<__END_CONFIG
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "https://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -134,7 +149,7 @@ cat > "$OUTPUT_DIR/CurrentRelease.plist" <<__END_CONFIG
       <key>Version</key>
       <string>$LEOPARD_VERSION</string>
       <key>Codebase</key>
-      <string>http://macfuse.googlecode.com/files/$DMG_NAME</string>
+      <string>$DOWNLOAD_URL</string>
       <key>Hash</key>
       <string>$DMG_HASH</string>
       <key>Size</key>
@@ -148,7 +163,7 @@ cat > "$OUTPUT_DIR/CurrentRelease.plist" <<__END_CONFIG
       <key>Version</key>
       <string>$TIGER_VERSION</string>
       <key>Codebase</key>
-      <string>http://macfuse.googlecode.com/files/$DMG_NAME</string>
+      <string>$DOWNLOAD_URL</string>
       <key>Hash</key>
       <string>$DMG_HASH</string>
       <key>Size</key>
