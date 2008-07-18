@@ -8,29 +8,29 @@
       <key>ProductID</key>
       <string>com.google.filesystems.fusefs</string>
       <key>Predicate</key>
-      <string>SystemVersion.ProductVersion beginswith '10.5' AND Ticket.version != '1.7.1'</string>
+      <string>SystemVersion.ProductVersion beginswith "10.5" AND Ticket.version != "1.7.1"</string>
       <key>Version</key>
       <string>1.7.1</string>
       <key>Codebase</key>
-      <string>http://macfuse.googlecode.com/files/MacFUSE-Core-10.5-1.7.1.dmg</string>
+      <string>http://macfuse.googlecode.com/svn/releases/MacFUSE-1.7.dmg</string>
       <key>Hash</key>
-      <string>8vcdTn42PE9tv9Hzr2BDMb/nfLc=</string>
+      <string>zkdWavBQmrZkvMA7gQoMrb/f3ps=</string>
       <key>Size</key>
-      <string>796604</string>
+      <string>1728181</string>
     </dict>
     <dict>
       <key>ProductID</key>
       <string>com.google.filesystems.fusefs</string>
       <key>Predicate</key>
-      <string>SystemVersion.ProductVersion beginswith '10.4' AND Ticket.version != '1.7.0'</string>
+      <string>SystemVersion.ProductVersion beginswith "10.4" AND Ticket.version != "1.7.0"</string>
       <key>Version</key>
       <string>1.7.0</string>
       <key>Codebase</key>
-      <string>http://macfuse.googlecode.com/files/MacFUSE-Core-10.4-1.7.0.dmg</string>
+      <string>http://macfuse.googlecode.com/svn/releases/MacFUSE-1.7.dmg</string>
       <key>Hash</key>
-      <string>ezVWVql1SqMOG0gltHiULHZe7ig=</string>
+      <string>zkdWavBQmrZkvMA7gQoMrb/f3ps=</string>
       <key>Size</key>
-      <string>776492</string>
+      <string>1728181</string>
     </dict>
   </array>
 </dict>
