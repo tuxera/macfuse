@@ -227,8 +227,8 @@ int main(int argc, char **argv) {
   UpdatePrinter *printer = nil;
   if (list) {
     printer = listPlist
-              ? [[[PlistUpdatePrinter alloc] init] autorelease]
-              : [[[UpdatePrinter alloc] init] autorelease];
+              ? [PlistUpdatePrinter printer]
+              : [UpdatePrinter printer];
   }
   
   KeystoneDelegate *delegate = [[[KeystoneDelegate alloc]

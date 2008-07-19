@@ -6,6 +6,25 @@
 	objectVersion = 45;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		F9246C460E31BEFE004ADF93 /* Build All */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = F9246C560E31BF20004ADF93 /* Build configuration list for PBXAggregateTarget "Build All" */;
+			buildPhases = (
+			);
+			dependencies = (
+				F9246C4A0E31BF08004ADF93 /* PBXTargetDependency */,
+				F9246C4C0E31BF0A004ADF93 /* PBXTargetDependency */,
+				F9246C4E0E31BF0C004ADF93 /* PBXTargetDependency */,
+				F9246C500E31BF0E004ADF93 /* PBXTargetDependency */,
+				F9246C600E31BF61004ADF93 /* PBXTargetDependency */,
+				F9246C520E31BF11004ADF93 /* PBXTargetDependency */,
+			);
+			name = "Build All";
+			productName = "Build All";
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		8DD76F9A0486AA7600D96B5E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
@@ -16,6 +35,19 @@
 		F9217E540E258D7C007CB1A3 /* Keystone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9217A910E258B72007CB1A3 /* Keystone.framework */; };
 		F9217E6D0E258F14007CB1A3 /* ksurl in Resources */ = {isa = PBXBuildFile; fileRef = F9217E650E258EDE007CB1A3 /* ksurl */; };
 		F9217E720E258F46007CB1A3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
+		F92468FF0E3164AA004ADF93 /* SignerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F92468FE0E316468004ADF93 /* SignerTest.m */; };
+		F92469060E3164B8004ADF93 /* Keystone.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9217A910E258B72007CB1A3 /* Keystone.framework */; };
+		F92469080E3164D4004ADF93 /* Signer.m in Sources */ = {isa = PBXBuildFile; fileRef = F92468FC0E316468004ADF93 /* Signer.m */; };
+		F924691D0E31689E004ADF93 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
+		F92469A80E316B5A004ADF93 /* SignedPlistServerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F92469A70E316B5A004ADF93 /* SignedPlistServerTest.m */; };
+		F9246A5D0E319CE3004ADF93 /* plist_signer.m in Sources */ = {isa = PBXBuildFile; fileRef = F9246A1B0E3199E3004ADF93 /* plist_signer.m */; };
+		F9246A5E0E319CEA004ADF93 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
+		F9246A730E319DF4004ADF93 /* Signer.m in Sources */ = {isa = PBXBuildFile; fileRef = F92468FC0E316468004ADF93 /* Signer.m */; };
+		F9246AB40E31A855004ADF93 /* PlistSigner.m in Sources */ = {isa = PBXBuildFile; fileRef = F9246AAF0E31A5DC004ADF93 /* PlistSigner.m */; };
+		F9246AB50E31A856004ADF93 /* PlistSigner.m in Sources */ = {isa = PBXBuildFile; fileRef = F9246AAF0E31A5DC004ADF93 /* PlistSigner.m */; };
+		F9246AB70E31A861004ADF93 /* PlistSignerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F9246AB10E31A681004ADF93 /* PlistSignerTest.m */; };
+		F9246CA10E3260B9004ADF93 /* KeystoneDelegateTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F9246CA00E3260B9004ADF93 /* KeystoneDelegateTest.m */; };
+		F9246CA60E3261CB004ADF93 /* UpdatePrinterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F9246CA50E3261CB004ADF93 /* UpdatePrinterTest.m */; };
 		F92F430F0E2E8DAE0049713E /* KSDiskImage.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42C90E2E8DAE0049713E /* KSDiskImage.m */; };
 		F92F43100E2E8DAE0049713E /* KSStatsCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42CB0E2E8DAE0049713E /* KSStatsCollection.m */; };
 		F92F43110E2E8DAE0049713E /* KSUUID.m in Sources */ = {isa = PBXBuildFile; fileRef = F92F42CD0E2E8DAE0049713E /* KSUUID.m */; };
@@ -80,6 +112,55 @@
 			remoteGlobalIDString = F9217E640E258EDE007CB1A3;
 			remoteInfo = ksurl;
 		};
+		F92469000E3164B2004ADF93 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F9217A900E258B72007CB1A3 /* Keystone */;
+			remoteInfo = Keystone;
+		};
+		F9246C490E31BF08004ADF93 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F9217E640E258EDE007CB1A3 /* ksurl */;
+			remoteInfo = ksurl;
+		};
+		F9246C4B0E31BF0A004ADF93 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F9217A900E258B72007CB1A3 /* Keystone */;
+			remoteInfo = Keystone;
+		};
+		F9246C4D0E31BF0C004ADF93 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DD76F960486AA7600D96B5E /* autoinstaller */;
+			remoteInfo = autoinstaller;
+		};
+		F9246C4F0E31BF0E004ADF93 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F96C9D7F0E26AA9100BE4C10 /* MacFUSEAutoinstaller */;
+			remoteInfo = MacFUSEAutoinstaller;
+		};
+		F9246C510E31BF11004ADF93 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F9246A1F0E3199F9004ADF93 /* rule_signer */;
+			remoteInfo = rule_signer;
+		};
+		F9246C5F0E31BF61004ADF93 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F92468F00E3163D1004ADF93 /* Extensions Tests */;
+			remoteInfo = "Extensions Tests";
+		};
 		F96C9D860E26AAF500BE4C10 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
@@ -140,6 +221,18 @@
 		F91662210E26B54400E2806B /* MacFUSEAutoinstaller-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MacFUSEAutoinstaller-Info.plist"; sourceTree = "<group>"; };
 		F9217A910E258B72007CB1A3 /* Keystone.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Keystone.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F9217E650E258EDE007CB1A3 /* ksurl */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ksurl; sourceTree = BUILT_PRODUCTS_DIR; };
+		F92468F10E3163D1004ADF93 /* Extensions Tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Extensions Tests.octest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F92468FB0E316468004ADF93 /* Signer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Signer.h; sourceTree = "<group>"; };
+		F92468FC0E316468004ADF93 /* Signer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Signer.m; sourceTree = "<group>"; };
+		F92468FE0E316468004ADF93 /* SignerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignerTest.m; sourceTree = "<group>"; };
+		F92469A70E316B5A004ADF93 /* SignedPlistServerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignedPlistServerTest.m; sourceTree = "<group>"; };
+		F9246A1B0E3199E3004ADF93 /* plist_signer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = plist_signer.m; sourceTree = "<group>"; };
+		F9246A200E3199F9004ADF93 /* plist_signer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = plist_signer; sourceTree = BUILT_PRODUCTS_DIR; };
+		F9246AAE0E31A5DC004ADF93 /* PlistSigner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlistSigner.h; sourceTree = "<group>"; };
+		F9246AAF0E31A5DC004ADF93 /* PlistSigner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlistSigner.m; sourceTree = "<group>"; };
+		F9246AB10E31A681004ADF93 /* PlistSignerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlistSignerTest.m; sourceTree = "<group>"; };
+		F9246CA00E3260B9004ADF93 /* KeystoneDelegateTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeystoneDelegateTest.m; sourceTree = "<group>"; };
+		F9246CA50E3261CB004ADF93 /* UpdatePrinterTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdatePrinterTest.m; sourceTree = "<group>"; };
 		F92F42C80E2E8DAE0049713E /* KSDiskImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSDiskImage.h; sourceTree = "<group>"; };
 		F92F42C90E2E8DAE0049713E /* KSDiskImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSDiskImage.m; sourceTree = "<group>"; };
 		F92F42CA0E2E8DAE0049713E /* KSStatsCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSStatsCollection.h; sourceTree = "<group>"; };
@@ -295,6 +388,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F92468EE0E3163D1004ADF93 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F924691D0E31689E004ADF93 /* Foundation.framework in Frameworks */,
+				F92469060E3164B8004ADF93 /* Keystone.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F9246A1E0E3199F9004ADF93 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F9246A5E0E319CEA004ADF93 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F96C9D7E0E26AA9100BE4C10 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -324,6 +434,7 @@
 			children = (
 				32A70AAB03705E1F00C91783 /* autoinstaller_Prefix.pch */,
 				08FB7796FE84155DC02AAC07 /* main.m */,
+				F9246A1B0E3199E3004ADF93 /* plist_signer.m */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -347,6 +458,8 @@
 				F9217A910E258B72007CB1A3 /* Keystone.framework */,
 				F9217E650E258EDE007CB1A3 /* ksurl */,
 				F96C9D800E26AA9100BE4C10 /* MacFUSEAutoinstaller.bundle */,
+				F92468F10E3163D1004ADF93 /* Extensions Tests.octest */,
+				F9246A200E3199F9004ADF93 /* plist_signer */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -564,12 +677,21 @@
 		F954C0C90E2D6C6400E776EB /* KeystoneExtensions */ = {
 			isa = PBXGroup;
 			children = (
+				F92468FB0E316468004ADF93 /* Signer.h */,
+				F92468FC0E316468004ADF93 /* Signer.m */,
+				F92468FE0E316468004ADF93 /* SignerTest.m */,
+				F9246AAE0E31A5DC004ADF93 /* PlistSigner.h */,
+				F9246AAF0E31A5DC004ADF93 /* PlistSigner.m */,
+				F9246AB10E31A681004ADF93 /* PlistSignerTest.m */,
 				F954C0CA0E2D6C6400E776EB /* SignedPlistServer.h */,
 				F954C0CB0E2D6C6400E776EB /* SignedPlistServer.m */,
+				F92469A70E316B5A004ADF93 /* SignedPlistServerTest.m */,
 				F954C0CC0E2D6C6400E776EB /* KeystoneDelegate.h */,
 				F954C0CD0E2D6C6400E776EB /* KeystoneDelegate.m */,
+				F9246CA00E3260B9004ADF93 /* KeystoneDelegateTest.m */,
 				F9DEA5950E2F02E200060106 /* UpdatePrinter.h */,
 				F9DEA5960E2F02E200060106 /* UpdatePrinter.m */,
+				F9246CA50E3261CB004ADF93 /* UpdatePrinterTest.m */,
 				F954C0CE0E2D6C6400E776EB /* ksurl-main.m */,
 			);
 			path = KeystoneExtensions;
@@ -631,6 +753,41 @@
 			productReference = F9217E650E258EDE007CB1A3 /* ksurl */;
 			productType = "com.apple.product-type.tool";
 		};
+		F92468F00E3163D1004ADF93 /* Extensions Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F92468F50E3163D2004ADF93 /* Build configuration list for PBXNativeTarget "Extensions Tests" */;
+			buildPhases = (
+				F92468EC0E3163D1004ADF93 /* Resources */,
+				F92468ED0E3163D1004ADF93 /* Sources */,
+				F92468EE0E3163D1004ADF93 /* Frameworks */,
+				F92468EF0E3163D1004ADF93 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F92469010E3164B2004ADF93 /* PBXTargetDependency */,
+			);
+			name = "Extensions Tests";
+			productName = "Extensions Tests";
+			productReference = F92468F10E3163D1004ADF93 /* Extensions Tests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+		F9246A1F0E3199F9004ADF93 /* plist_signer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F9246A240E319A18004ADF93 /* Build configuration list for PBXNativeTarget "plist_signer" */;
+			buildPhases = (
+				F9246A1D0E3199F9004ADF93 /* Sources */,
+				F9246A1E0E3199F9004ADF93 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = plist_signer;
+			productName = rule_signer;
+			productReference = F9246A200E3199F9004ADF93 /* plist_signer */;
+			productType = "com.apple.product-type.tool";
+		};
 		F96C9D7F0E26AA9100BE4C10 /* MacFUSEAutoinstaller */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F96C9D840E26AA9200BE4C10 /* Build configuration list for PBXNativeTarget "MacFUSEAutoinstaller" */;
@@ -664,10 +821,13 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				F9246C460E31BEFE004ADF93 /* Build All */,
 				F9217E640E258EDE007CB1A3 /* ksurl */,
 				F9217A900E258B72007CB1A3 /* Keystone */,
 				8DD76F960486AA7600D96B5E /* autoinstaller */,
 				F96C9D7F0E26AA9100BE4C10 /* MacFUSEAutoinstaller */,
+				F92468F00E3163D1004ADF93 /* Extensions Tests */,
+				F9246A1F0E3199F9004ADF93 /* plist_signer */,
 			);
 		};
 /* End PBXProject section */
@@ -681,6 +841,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F92468EC0E3163D1004ADF93 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F96C9D7C0E26AA9100BE4C10 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -689,6 +856,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F92468EF0E3163D1004ADF93 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8DD76F990486AA7600D96B5E /* Sources */ = {
@@ -746,6 +929,8 @@
 				F92F432F0E2E8DAE0049713E /* GMLogger.m in Sources */,
 				F9DEA5C40E2F04FC00060106 /* UpdatePrinter.m in Sources */,
 				F9DEA5EE0E2F069000060106 /* GTMObjC2Runtime.m in Sources */,
+				F92469080E3164D4004ADF93 /* Signer.m in Sources */,
+				F9246AB40E31A855004ADF93 /* PlistSigner.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -754,6 +939,28 @@
 			buildActionMask = 2147483647;
 			files = (
 				F954C0D40E2D6C7C00E776EB /* ksurl-main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F92468ED0E3163D1004ADF93 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F92468FF0E3164AA004ADF93 /* SignerTest.m in Sources */,
+				F92469A80E316B5A004ADF93 /* SignedPlistServerTest.m in Sources */,
+				F9246AB70E31A861004ADF93 /* PlistSignerTest.m in Sources */,
+				F9246CA10E3260B9004ADF93 /* KeystoneDelegateTest.m in Sources */,
+				F9246CA60E3261CB004ADF93 /* UpdatePrinterTest.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F9246A1D0E3199F9004ADF93 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F9246A5D0E319CE3004ADF93 /* plist_signer.m in Sources */,
+				F9246A730E319DF4004ADF93 /* Signer.m in Sources */,
+				F9246AB50E31A856004ADF93 /* PlistSigner.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -776,6 +983,41 @@
 			isa = PBXTargetDependency;
 			target = F9217E640E258EDE007CB1A3 /* ksurl */;
 			targetProxy = F9217E6A0E258F05007CB1A3 /* PBXContainerItemProxy */;
+		};
+		F92469010E3164B2004ADF93 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F9217A900E258B72007CB1A3 /* Keystone */;
+			targetProxy = F92469000E3164B2004ADF93 /* PBXContainerItemProxy */;
+		};
+		F9246C4A0E31BF08004ADF93 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F9217E640E258EDE007CB1A3 /* ksurl */;
+			targetProxy = F9246C490E31BF08004ADF93 /* PBXContainerItemProxy */;
+		};
+		F9246C4C0E31BF0A004ADF93 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F9217A900E258B72007CB1A3 /* Keystone */;
+			targetProxy = F9246C4B0E31BF0A004ADF93 /* PBXContainerItemProxy */;
+		};
+		F9246C4E0E31BF0C004ADF93 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8DD76F960486AA7600D96B5E /* autoinstaller */;
+			targetProxy = F9246C4D0E31BF0C004ADF93 /* PBXContainerItemProxy */;
+		};
+		F9246C500E31BF0E004ADF93 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F96C9D7F0E26AA9100BE4C10 /* MacFUSEAutoinstaller */;
+			targetProxy = F9246C4F0E31BF0E004ADF93 /* PBXContainerItemProxy */;
+		};
+		F9246C520E31BF11004ADF93 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F9246A1F0E3199F9004ADF93 /* plist_signer */;
+			targetProxy = F9246C510E31BF11004ADF93 /* PBXContainerItemProxy */;
+		};
+		F9246C600E31BF61004ADF93 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F92468F00E3163D1004ADF93 /* Extensions Tests */;
+			targetProxy = F9246C5F0E31BF61004ADF93 /* PBXContainerItemProxy */;
 		};
 		F96C9D870E26AAF500BE4C10 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -876,6 +1118,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F954BEE20E2D525000E776EB /* SharedLibrary.xcconfig */;
 			buildSettings = {
+				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_VERSION = A;
 				GCC_PREFIX_HEADER = "$(PROJECT_NAME)_Prefix.pch";
 				INFOPLIST_FILE = "Resources/Keystone-Info.plist";
@@ -889,6 +1132,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = F954BEE20E2D525000E776EB /* SharedLibrary.xcconfig */;
 			buildSettings = {
+				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_VERSION = A;
 				GCC_PREFIX_HEADER = "$(PROJECT_NAME)_Prefix.pch";
 				INFOPLIST_FILE = "Resources/Keystone-Info.plist";
@@ -909,6 +1153,75 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = ksurl;
+			};
+			name = Release;
+		};
+		F92468F30E3163D2004ADF93 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F954BEDC0E2D525000E776EB /* Unittest.xcconfig */;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				INFOPLIST_FILE = "Resources/Extensions Tests-Info.plist";
+				OTHER_LDFLAGS = (
+					"-framework",
+					SenTestingKit,
+				);
+				PRODUCT_NAME = "Extensions Tests";
+				SEPARATE_STRIP = NO;
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		F92468F40E3163D2004ADF93 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F954BEDC0E2D525000E776EB /* Unittest.xcconfig */;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				INFOPLIST_FILE = "Resources/Extensions Tests-Info.plist";
+				OTHER_LDFLAGS = (
+					"-framework",
+					SenTestingKit,
+				);
+				PRODUCT_NAME = "Extensions Tests";
+				SEPARATE_STRIP = NO;
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+		F9246A220E3199FA004ADF93 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_LDFLAGS = "-lcrypto";
+				PRODUCT_NAME = plist_signer;
+			};
+			name = Debug;
+		};
+		F9246A230E3199FA004ADF93 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_LDFLAGS = "-lcrypto";
+				PRODUCT_NAME = plist_signer;
+			};
+			name = Release;
+		};
+		F9246C470E31BEFE004ADF93 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = "Build All";
+			};
+			name = Debug;
+		};
+		F9246C480E31BEFE004ADF93 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = "Build All";
+				ZERO_LINK = NO;
 			};
 			name = Release;
 		};
@@ -965,6 +1278,33 @@
 			buildConfigurations = (
 				F9217E670E258EDE007CB1A3 /* Debug */,
 				F9217E680E258EDE007CB1A3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F92468F50E3163D2004ADF93 /* Build configuration list for PBXNativeTarget "Extensions Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F92468F30E3163D2004ADF93 /* Debug */,
+				F92468F40E3163D2004ADF93 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F9246A240E319A18004ADF93 /* Build configuration list for PBXNativeTarget "plist_signer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F9246A220E3199FA004ADF93 /* Debug */,
+				F9246A230E3199FA004ADF93 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F9246C560E31BF20004ADF93 /* Build configuration list for PBXAggregateTarget "Build All" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F9246C470E31BEFE004ADF93 /* Debug */,
+				F9246C480E31BEFE004ADF93 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -22,7 +22,6 @@
   if ((self = [super init])) {
     printer_ = [printer retain];
     doInstall_ = doInstall;
-
     wasSuccess_ = YES;
   }
   return self;

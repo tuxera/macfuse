@@ -103,7 +103,7 @@
       if (ui) [updateInfos addObject:ui];
     }
   }
-  
+    
   return [updateInfos count] > 0 ? updateInfos : nil;
 }
 

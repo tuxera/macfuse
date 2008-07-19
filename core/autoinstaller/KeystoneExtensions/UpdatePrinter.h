@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+@class GMLogger;
 
 // UpdatePrinter
 //
@@ -15,7 +16,20 @@
 // The updates are simply sent a -description message and the output is ent to 
 // stdout.
 //
-@interface UpdatePrinter : NSObject
+@interface UpdatePrinter : NSObject {
+ @private
+  GMLogger *logger_;
+}
+
+// Returns an autoreleased instance of this class.
++ (id)printer;
+
+// Designated initializer. Returns an UpdatePrinter that will print messages
+// using the specified |logger|.
+- (id)initWithLogger:(GMLogger *)logger;
+
+// Returns the |logger| that should be used for printing output.
+- (GMLogger *)logger;
 
 // Prints the |productUpdates| to stdout.
 - (void)printUpdates:(NSArray *)productUpdates;
