@@ -1,37 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "https://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>Rules</key>
-  <array>
-    <dict>
-      <key>ProductID</key>
-      <string>com.google.filesystems.fusefs</string>
-      <key>Predicate</key>
-      <string>SystemVersion.ProductVersion beginswith "10.5" AND Ticket.version != "1.9.1"</string>
-      <key>Version</key>
-      <string>1.9.1</string>
-      <key>Codebase</key>
-      <string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-1.9.dmg</string>
-      <key>Hash</key>
-      <string>vI5tFe3tSQDmC/5ZoZVveeDbJfo=</string>
-      <key>Size</key>
-      <string>1834902</string>
-    </dict>
-    <dict>
-      <key>ProductID</key>
-      <string>com.google.filesystems.fusefs</string>
-      <key>Predicate</key>
-      <string>SystemVersion.ProductVersion beginswith "10.4" AND Ticket.version != "1.9.0"</string>
-      <key>Version</key>
-      <string>1.9.0</string>
-      <key>Codebase</key>
-      <string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-1.9.dmg</string>
-      <key>Hash</key>
-      <string>vI5tFe3tSQDmC/5ZoZVveeDbJfo=</string>
-      <key>Size</key>
-      <string>1834902</string>
-    </dict>
-  </array>
+	<key>Rules</key>
+	<array>
+		<dict>
+			<key>Codebase</key>
+			<string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-1.9.dmg</string>
+			<key>Hash</key>
+			<string>+XbAqwr6sBk86knM/+X+6zbiHjo=</string>
+			<key>Predicate</key>
+			<string>SystemVersion.ProductVersion beginswith "10.5" AND Ticket.version != "1.9.1"</string>
+			<key>ProductID</key>
+			<string>com.google.filesystems.fusefs</string>
+			<key>Size</key>
+			<string>1847278</string>
+			<key>Version</key>
+			<string>1.9.1</string>
+		</dict>
+		<dict>
+			<key>Codebase</key>
+			<string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-1.9.dmg</string>
+			<key>Hash</key>
+			<string>+XbAqwr6sBk86knM/+X+6zbiHjo=</string>
+			<key>Predicate</key>
+			<string>SystemVersion.ProductVersion beginswith "10.4" AND Ticket.version != "1.9.0"</string>
+			<key>ProductID</key>
+			<string>com.google.filesystems.fusefs</string>
+			<key>Size</key>
+			<string>1847278</string>
+			<key>Version</key>
+			<string>1.9.0</string>
+		</dict>
+	</array>
+	<key>Signature</key>
+	<data>
+	cjfyE+VCk1LA2bHHAtv5nWgkIZ2z0aLMIT4zO25QjTY/TkjKakDOGlLTc3tA0jTVJXHq
+	GQiFlB/uBE6otm/+ZznXXhmfNdHfD5SPgM/raoS7tjVPYDD25z+Ok/0MdQUY40qQGyAE
+	l4qJx5d+EyxCxuzHbn2uI0pHpRFLW6b1VEo=
+	</data>
 </dict>
 </plist>
