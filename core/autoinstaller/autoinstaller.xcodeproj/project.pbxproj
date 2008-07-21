@@ -79,7 +79,6 @@
 		F97D50F20E352D0900D13489 /* KSKeystoneBroker.m in Sources */ = {isa = PBXBuildFile; fileRef = F97D50C20E352D0900D13489 /* KSKeystoneBroker.m */; };
 		F97D50F30E352D0900D13489 /* KSKeystoneVendor.m in Sources */ = {isa = PBXBuildFile; fileRef = F97D50C50E352D0900D13489 /* KSKeystoneVendor.m */; };
 		F97D50F40E352D0900D13489 /* KSMemoryTicketStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F97D50C70E352D0900D13489 /* KSMemoryTicketStore.m */; };
-		F97D50F50E352D0900D13489 /* KSMockFetcherFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = F97D50C90E352D0900D13489 /* KSMockFetcherFactory.m */; };
 		F97D50F60E352D0900D13489 /* KSMultiAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F97D50CB0E352D0900D13489 /* KSMultiAction.m */; };
 		F97D50F70E352D0900D13489 /* KSMultiUpdateAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F97D50CD0E352D0900D13489 /* KSMultiUpdateAction.m */; };
 		F97D50F80E352D0900D13489 /* KSPlistServer.m in Sources */ = {isa = PBXBuildFile; fileRef = F97D50CF0E352D0900D13489 /* KSPlistServer.m */; };
@@ -323,8 +322,6 @@
 		F97D50C50E352D0900D13489 /* KSKeystoneVendor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSKeystoneVendor.m; sourceTree = "<group>"; };
 		F97D50C60E352D0900D13489 /* KSMemoryTicketStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMemoryTicketStore.h; sourceTree = "<group>"; };
 		F97D50C70E352D0900D13489 /* KSMemoryTicketStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSMemoryTicketStore.m; sourceTree = "<group>"; };
-		F97D50C80E352D0900D13489 /* KSMockFetcherFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMockFetcherFactory.h; sourceTree = "<group>"; };
-		F97D50C90E352D0900D13489 /* KSMockFetcherFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSMockFetcherFactory.m; sourceTree = "<group>"; };
 		F97D50CA0E352D0900D13489 /* KSMultiAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMultiAction.h; sourceTree = "<group>"; };
 		F97D50CB0E352D0900D13489 /* KSMultiAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSMultiAction.m; sourceTree = "<group>"; };
 		F97D50CC0E352D0900D13489 /* KSMultiUpdateAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMultiUpdateAction.h; sourceTree = "<group>"; };
@@ -660,8 +657,6 @@
 				F97D50C50E352D0900D13489 /* KSKeystoneVendor.m */,
 				F97D50C60E352D0900D13489 /* KSMemoryTicketStore.h */,
 				F97D50C70E352D0900D13489 /* KSMemoryTicketStore.m */,
-				F97D50C80E352D0900D13489 /* KSMockFetcherFactory.h */,
-				F97D50C90E352D0900D13489 /* KSMockFetcherFactory.m */,
 				F97D50CA0E352D0900D13489 /* KSMultiAction.h */,
 				F97D50CB0E352D0900D13489 /* KSMultiAction.m */,
 				F97D50CC0E352D0900D13489 /* KSMultiUpdateAction.h */,
@@ -910,7 +905,6 @@
 				F97D50F20E352D0900D13489 /* KSKeystoneBroker.m in Sources */,
 				F97D50F30E352D0900D13489 /* KSKeystoneVendor.m in Sources */,
 				F97D50F40E352D0900D13489 /* KSMemoryTicketStore.m in Sources */,
-				F97D50F50E352D0900D13489 /* KSMockFetcherFactory.m in Sources */,
 				F97D50F60E352D0900D13489 /* KSMultiAction.m in Sources */,
 				F97D50F70E352D0900D13489 /* KSMultiUpdateAction.m in Sources */,
 				F97D50F80E352D0900D13489 /* KSPlistServer.m in Sources */,
