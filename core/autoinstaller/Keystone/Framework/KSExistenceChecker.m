@@ -7,7 +7,6 @@
 //
 
 #import "KSExistenceChecker.h"
-#import "GTMDefines.h"
 
 
 @implementation KSExistenceChecker
@@ -254,7 +253,7 @@
                                    (CFStringRef)query_,
                                    NULL, NULL);
   if (query == NULL) {
-    GMLoggerInfo(@"Failed to create MDQuery from %@", query_);
+    GTMLoggerInfo(@"Failed to create MDQuery from %@", query_);
     return NO;
   }
   
@@ -264,7 +263,7 @@
   if (ok) {
     count = MDQueryGetResultCount(query);
   } else {
-    GMLoggerInfo(@"failed to execute query\n");  // COV_NF_LINE
+    GTMLoggerInfo(@"failed to execute query\n");  // COV_NF_LINE
   }
   
   CFRelease(query);

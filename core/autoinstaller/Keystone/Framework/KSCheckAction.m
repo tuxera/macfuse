@@ -47,7 +47,7 @@
 - (void)performAction {
   NSDictionary *tixMap = [tickets_ ticketsByURL];
   if (tixMap == nil) {
-    GMLoggerInfo(@"no tickets to check on.");
+    GTMLoggerInfo(@"no tickets to check on.");
     [[self outPipe] setContents:nil];
     [[self processor] finishedProcessing:self successfully:YES];
     return;
@@ -72,7 +72,7 @@
     if ([filteredTickets count] == 0)
       continue;
     
-    GMLoggerInfo(@"filteredTickets = %@", filteredTickets);
+    GTMLoggerInfo(@"filteredTickets = %@", filteredTickets);
     [[KSFrameworkStats sharedStats] incrementStat:kStatValidTickets
                                                by:[filteredTickets count]];
     
@@ -83,7 +83,7 @@
   }
 
   if ([[[self subProcessor] actions] count] == 0) {
-    GMLoggerInfo(@"No checkers created.");
+    GTMLoggerInfo(@"No checkers created.");
     [[self processor] finishedProcessing:self successfully:YES];
     return;
   }

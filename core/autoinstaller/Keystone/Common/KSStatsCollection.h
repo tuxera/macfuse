@@ -1,6 +1,6 @@
 //
 //  KSStatsCollection.h
-//  SharedTest
+//  Keystone
 //
 //  Created by Greg Miller on 3/20/08.
 //  Copyright 2008 Google Inc. All rights reserved.

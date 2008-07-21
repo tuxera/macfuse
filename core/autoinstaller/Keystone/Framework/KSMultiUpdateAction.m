@@ -48,7 +48,7 @@
 - (void)performAction {  
   NSArray *availableUpdates = [[self inPipe] contents];
   if (availableUpdates == nil) {
-    GMLoggerInfo(@"no updates available.");
+    GTMLoggerInfo(@"no updates available.");
     [[self processor] finishedProcessing:self successfully:YES];
     return;
   }
@@ -87,7 +87,7 @@
            @"filteredUpdates + remainingUpdates should equal availableUpdates");
   
   // Use -description because it prints nicer than the way CF would format it
-  GMLoggerInfo(@"filteredUpdates=%@", [filteredUpdates description]);
+  GTMLoggerInfo(@"filteredUpdates=%@", [filteredUpdates description]);
   
   // Convert each dictionary in |filteredUpdates| into a KSUpdateAction and
   // enqueue it on our subProcessor_
@@ -103,7 +103,7 @@
   }
   
   if ([[[self subProcessor] actions] count] == 0) {
-    GMLoggerInfo(@"No update actions created for filteredUpdates.");
+    GTMLoggerInfo(@"No update actions created for filteredUpdates.");
     [[self processor] finishedProcessing:self successfully:YES];
     return;
   }
@@ -130,7 +130,7 @@
   NSString *statKey = KSMakeProductStatKey([ui productID], kStatInstallRC);
   [[KSFrameworkStats sharedStats] setNumber:rc forStat:statKey];
   
-  GMLoggerInfo(@"Got return code %@ after updating %@", rc, ui);
+  GTMLoggerInfo(@"Got return code %@ after updating %@", rc, ui);
   
   [[self keystone] action:self
                  finished:[ua updateInfo]

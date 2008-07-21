@@ -8,8 +8,7 @@
 
 #import "KSKeystoneVendor.h"
 #import "KSKeystoneBroker.h"
-#import "GMLogger.h"
-#import "GTMDefines.h"
+#import "GTMLogger.h"
 
 
 @implementation KSKeystoneVendor
@@ -62,7 +61,7 @@
   if (isVending_)
     return YES;
   
-  _GTMDevAssert(keystoneBroker_ != nil, @"vendedKeystoneBroker_ must not be nil");
+  _GTMDevAssert(keystoneBroker_ != nil, @"keystoneBroker_ must not be nil");
   _GTMDevAssert(name_ != nil, @"name_ must not be nil");
   _GTMDevAssert(connection_ == nil, @"connection_ must be nil at this point");
     
@@ -89,11 +88,11 @@
   isVending_ = YES;
   if ([connection_ registerName:name_]) {
     // Log at error level so this always shows up in the output.
-    GMLoggerError(@"Vending %@ on %@ with %@",
-                  keystoneBroker_, name_, connection_);
+    GTMLoggerError(@"Vending %@ on %@ with %@",
+                   keystoneBroker_, name_, connection_);
   } else {
-    GMLoggerError(@"Failed to vend %@ on %@ with %@",
-                  keystoneBroker_, name_, connection_);
+    GTMLoggerError(@"Failed to vend %@ on %@ with %@",
+                   keystoneBroker_, name_, connection_);
     // This will reset isVending_ to NO
     [self stopVending];
   }
@@ -111,7 +110,7 @@
   // |keystoneBroker_|'s delegate might be an NSDistantObject which would be 
   // invalid after we tear down the connection (which would make our 
   // -description call blow up).
-  GMLoggerInfo(@"Stopping vending %@ on %@", keystoneBroker_, name_); 
+  GTMLoggerInfo(@"Stopping vending %@ on %@", keystoneBroker_, name_); 
 
   // NSConnection doesn't unregister the port with the port name server (but it
   // should). The docs say that setting the registered name to nil should work,
@@ -133,7 +132,7 @@
 shouldMakeNewConnection:(NSConnection *)newConnection {  
   
   ++childConnections_;
-  GMLoggerInfo(@"Making new child connection (#%d)", childConnections_);    
+  GTMLoggerInfo(@"Making new child connection (#%d)", childConnections_);    
   
   // Listen for connection death notifications from the child connection
   [[NSNotificationCenter defaultCenter]
@@ -149,7 +148,7 @@ shouldMakeNewConnection:(NSConnection *)newConnection {
   NSConnection *deadConnection = [notification object];
   
   --childConnections_;
-  GMLoggerInfo(@"Connection died (#%d)", childConnections_);
+  GTMLoggerInfo(@"Connection died (#%d)", childConnections_);
   
   [[NSNotificationCenter defaultCenter]
       removeObserver:self
@@ -157,7 +156,7 @@ shouldMakeNewConnection:(NSConnection *)newConnection {
               object:deadConnection];
   
   if (childConnections_ == 0) {
-    GMLoggerInfo(@"Last child connection closed; forcing unlock of broker");
+    GTMLoggerInfo(@"Last child connection closed; forcing unlock of broker");
     // The last child connection died, so nobody could possibly be using the
     // KSKeystone from the keystoneBroker_. We force unlock the keystoneBroker_
     // in this case to make sure that things are clear and ready for a new

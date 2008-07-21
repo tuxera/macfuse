@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class GMLogger;
+@class GTMLogger;
 
 // UpdatePrinter
 //
@@ -18,7 +18,7 @@
 //
 @interface UpdatePrinter : NSObject {
  @private
-  GMLogger *logger_;
+  GTMLogger *logger_;
 }
 
 // Returns an autoreleased instance of this class.
@@ -26,10 +26,10 @@
 
 // Designated initializer. Returns an UpdatePrinter that will print messages
 // using the specified |logger|.
-- (id)initWithLogger:(GMLogger *)logger;
+- (id)initWithLogger:(GTMLogger *)logger;
 
 // Returns the |logger| that should be used for printing output.
-- (GMLogger *)logger;
+- (GTMLogger *)logger;
 
 // Prints the |productUpdates| to stdout.
 - (void)printUpdates:(NSArray *)productUpdates;

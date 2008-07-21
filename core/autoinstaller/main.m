@@ -13,7 +13,7 @@
 #import "KSExistenceChecker.h"
 #import "KSTicket.h"
 #import "KSMemoryTicketStore.h"
-#import "GMLogger.h"
+#import "GTMLogger.h"
 #import "GTMScriptRunner.h"
 #import "GTMPath.h"
 #import <getopt.h>
@@ -122,7 +122,7 @@ static NSDictionary *GetPreferences(void) {
   if (owner == 0 && (mode & S_IWGRP) == 0 && (mode & S_IWOTH) == 0) {
     prefs = [NSDictionary dictionaryWithContentsOfFile:[path fullPath]];
   } else {
-    GMLoggerError(@"Bad attributes on %@", path);
+    GTMLoggerError(@"Bad attributes on %@", path);
   }
   
   return prefs;
@@ -181,10 +181,10 @@ int main(int argc, char **argv) {
   }
   
   // Setup our output logging
-  [[GMLogger sharedLogger] setWriter:
+  [[GTMLogger sharedLogger] setWriter:
    [NSFileHandle fileHandleWithStandardError]];
   if (verbose) {
-    [[GMLogger sharedLogger] setFilter:nil];  // Remove log filtering
+    [[GTMLogger sharedLogger] setFilter:nil];  // Remove log filtering
   }
   
   NSDictionary *prefs = GetPreferences();

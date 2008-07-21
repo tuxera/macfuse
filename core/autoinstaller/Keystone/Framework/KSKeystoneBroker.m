@@ -60,7 +60,7 @@
   [lock_ tryLock];
   [lock_ unlock];
   
-  GMLoggerInfo(@"force unlocked: %@", lock_);
+  GTMLoggerInfo(@"force unlocked: %@", lock_);
 }
 
 @end

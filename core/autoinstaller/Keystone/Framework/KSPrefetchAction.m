@@ -46,7 +46,7 @@
   [[self outPipe] setContents:availableUpdates];
   
   if (availableUpdates == nil) {
-    GMLoggerInfo(@"no updates available.");
+    GTMLoggerInfo(@"no updates available.");
     [[self processor] finishedProcessing:self successfully:YES];
     return;
   }
@@ -72,7 +72,7 @@
       @"SELF IN %@", updatesToPrefetch]];
   
   // Use -description because it prints nicer than the way CF would format it
-  GMLoggerInfo(@"prefetches=%@", [prefetches description]);
+  GTMLoggerInfo(@"prefetches=%@", [prefetches description]);
   
   // Convert each dictionary in |prefetches| into a KSDownloadAction and
   // enqueue it on our subProcessor
@@ -90,7 +90,7 @@
   }
 
   if ([[[self subProcessor] actions] count] == 0) {
-    GMLoggerInfo(@"No prefetch downloads created.");
+    GTMLoggerInfo(@"No prefetch downloads created.");
     [[self processor] finishedProcessing:self successfully:YES];
     return;
   }

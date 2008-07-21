@@ -9,8 +9,7 @@
 #import "KSCompositeAction.h"
 #import "KSActionProcessor.h"
 #import "KSActionPipe.h"
-#import "GMLogger.h"
-#import "GTMDefines.h"
+#import "GTMLogger.h"
 
 
 @implementation KSCompositeAction
@@ -30,7 +29,7 @@
     completedActions_ = [[NSMutableArray alloc] init];
         
     if ([actions_ count] == 0) {
-      GMLoggerDebug(@"can't create a composite action with no actions");
+      GTMLoggerDebug(@"can't create a composite action with no actions");
       [self release];
       return nil;
     }
@@ -103,7 +102,7 @@
   if (wasOK) {
     [completedActions_ addObject:action];
   } else {
-    GMLoggerInfo(@"Composite sub-action failed %@", action);
+    GTMLoggerInfo(@"Composite sub-action failed %@", action);
     // If some (any) action fails, then we abort the whole thing
     [subProcessor_ stopProcessing];
     [[self processor] finishedProcessing:self successfully:NO];

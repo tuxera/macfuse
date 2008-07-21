@@ -1,6 +1,6 @@
 //
 //  KSUUID.m
-//  SharedTest
+//  Keystone
 //
 //  Created by dmaclach on 3/14/07.
 //  Moved to Keystone Common and trimmed down by mdalrymple 7/11/08

@@ -11,8 +11,7 @@
 #import "KSActionPipe.h"
 #import "KSCommandRunner.h"
 #import "KSDiskImage.h"
-#import "GMLogger.h"
-#import "GTMDefines.h"
+#import "GTMLogger.h"
 
 
 // Install script names that may appear at the top level of the dmg
@@ -64,8 +63,8 @@ static NSString *const kPostinstallScriptName = @".keystone_postinstall";
     updateInfo_ = [updateInfo retain];  // allowed to be nil
     
     if (runner_ == nil) {
-      GMLoggerDebug(@"created with illegal argument: "
-                    @"runner=%@, ui=%d", runner_, ui_);
+      GTMLoggerDebug(@"created with illegal argument: "
+                     @"runner=%@, ui=%d", runner_, ui_);
       [self release];
       return nil;
     }
@@ -109,7 +108,7 @@ static NSString *const kPostinstallScriptName = @".keystone_postinstall";
   KSDiskImage *diskImage = [KSDiskImage diskImageWithPath:[self dmgPath]];
   NSString *mountPoint = [diskImage mount];
   if (mountPoint == nil) {
-    GMLoggerError(@"Failed to mount %@", [self dmgPath]);
+    GTMLoggerError(@"Failed to mount %@", [self dmgPath]);
     rc = 1;
     success = NO;
     goto bail_no_unmount;
@@ -121,7 +120,7 @@ static NSString *const kPostinstallScriptName = @".keystone_postinstall";
   
   if (![self isPathToExecutableFile:script2]) {
     // This script is the ".keystone_install" script, and it MUST exist
-    GMLoggerError(@"%@ does not exist", script2);
+    GTMLoggerError(@"%@ does not exist", script2);
     success = NO;
     goto bail;
   }
@@ -160,7 +159,7 @@ static NSString *const kPostinstallScriptName = @".keystone_postinstall";
                         output:&output1];
     }
     @catch (id ex) {
-      GMLoggerError(@"Caught exception from runner_ (script1): %@", ex);      
+      GTMLoggerError(@"Caught exception from runner_ (script1): %@", ex);      
     }
     if (rc != KS_INSTALL_SUCCESS) {
       success = NO;
@@ -186,7 +185,7 @@ static NSString *const kPostinstallScriptName = @".keystone_postinstall";
                                                     output:&output2]; 
     }
     @catch (id ex) {
-      GMLoggerError(@"Caught exception from runner_ (script2): %@", ex);      
+      GTMLoggerError(@"Caught exception from runner_ (script2): %@", ex);      
     }
     if (rc != KS_INSTALL_SUCCESS) {
       success = NO;
@@ -207,7 +206,7 @@ static NSString *const kPostinstallScriptName = @".keystone_postinstall";
                         output:&output3];
     }
     @catch (id ex) {
-      GMLoggerError(@"Caught exception from runner_ (script3): %@", ex);      
+      GTMLoggerError(@"Caught exception from runner_ (script3): %@", ex);      
     }
     if (rc != KS_INSTALL_SUCCESS) {
       success = NO;
@@ -219,7 +218,7 @@ static NSString *const kPostinstallScriptName = @".keystone_postinstall";
   
 bail:
   if (![diskImage unmount])
-    GMLoggerError(@"Failed to unmount %@", mountPoint);  // COV_NF_LINE
+    GTMLoggerError(@"Failed to unmount %@", mountPoint);  // COV_NF_LINE
 
 bail_no_unmount:
   // Treat "try again later" and "requires reboot" return codes as successes.

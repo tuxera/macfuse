@@ -9,8 +9,7 @@
 #import "KSDownloadAction.h"
 #import "KSActionProcessor.h"
 #import "KSActionPipe.h"
-#import "GMLogger.h"
-#import "GTMDefines.h"
+#import "GTMLogger.h"
 #import "NSData+Hash.h"
 #import "GTMBase64.h"
 #import "KSUUID.h"
@@ -94,7 +93,7 @@ static void MarkFileDescriptorsCloseOnExec(void) {
   long maxfd = sysconf(_SC_OPEN_MAX);
   if (maxfd < 0) {
     // COV_NF_START
-    GMLoggerError(@"sysconf(_SC_OPEN_MAX) failed: %s", strerror(errno));
+    GTMLoggerError(@"sysconf(_SC_OPEN_MAX) failed: %s", strerror(errno));
     maxfd = 255;  // Use a reasonable default
     // COV_NF_END
   }
@@ -121,7 +120,7 @@ static void MarkFileDescriptorsCloseOnExec(void) {
   
   // This mode is important. Make sure it's correct before continuing.
   if ([[downloads attributes] filePosixPermissions] != 0700) {
-    GMLoggerError(@"Bad mode on %@, can't use", downloads);
+    GTMLoggerError(@"Bad mode on %@, can't use", downloads);
     return nil;
   }
 
@@ -164,9 +163,9 @@ static void MarkFileDescriptorsCloseOnExec(void) {
     
     if (url_ == nil || size_ == 0 || [hash_ length] == 0 || 
         [path_ length] == 0 || [tempPath_ length] == 0) {
-      GMLoggerDebug(@"created with illegal argument: "
-                    @"url=%@, size=%llu, hash=%@, destinationPath=%@",
-                    url_, size_, hash_, path_);
+      GTMLoggerDebug(@"created with illegal argument: "
+                     @"url=%@, size=%llu, hash=%@, destinationPath=%@",
+                     url_, size_, hash_, path_);
       [self release];
       return nil;
     }
@@ -213,8 +212,8 @@ static void MarkFileDescriptorsCloseOnExec(void) {
   // If we've already downloaded the file, then we can short circuit the
   // download and just return the one that we already have.
   if ([self isFileAtPathValid:path_]) {
-    GMLoggerInfo(@"Short circuiting download of %@, path=%@, "
-                 @"size=%llu, hash=%@", url_, path_, size_, hash_);
+    GTMLoggerInfo(@"Short circuiting download of %@, path=%@, "
+                  @"size=%llu, hash=%@", url_, path_, size_, hash_);
     [[self outPipe] setContents:path_];
     [[self processor] finishedProcessing:self successfully:YES];
     [[KSFrameworkStats sharedStats] incrementStat:kStatDownloadCacheHits];
@@ -232,8 +231,8 @@ static void MarkFileDescriptorsCloseOnExec(void) {
   [downloadTask_ setCurrentDirectoryPath:@"/tmp/"];
   [downloadTask_ setArguments:args];
   
-  GMLoggerInfo(@"Running '%@ %@'", ksurlPath,
-               [args componentsJoinedByString:@" "]);
+  GTMLoggerInfo(@"Running '%@ %@'", ksurlPath,
+                [args componentsJoinedByString:@" "]);
   
   MarkFileDescriptorsCloseOnExec();
   
@@ -254,8 +253,8 @@ static void MarkFileDescriptorsCloseOnExec(void) {
     // need to delete the installation of ksurl during the unit test, which 
     // may break further tests that rely on it. Or we could move it and move
     // it back, but really, ugh.
-    GMLoggerError(@"Failed to launch %@ %@: %@", ksurlPath,
-                  [args componentsJoinedByString:@" "], ex);
+    GTMLoggerError(@"Failed to launch %@ %@: %@", ksurlPath,
+                   [args componentsJoinedByString:@" "], ex);
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [downloadTask_ release];
     downloadTask_ = nil;
@@ -268,10 +267,10 @@ static void MarkFileDescriptorsCloseOnExec(void) {
   if (![self isRunning])
     return;
   
-  GMLoggerInfo(@"Cancelling download task %@ (%@ %@) at the behest of %@",
-               downloadTask_, [downloadTask_ launchPath],
-               [[downloadTask_ arguments] componentsJoinedByString:@" "], 
-               [self processor]);
+  GTMLoggerInfo(@"Cancelling download task %@ (%@ %@) at the behest of %@",
+                downloadTask_, [downloadTask_ launchPath],
+                [[downloadTask_ arguments] componentsJoinedByString:@" "], 
+                [self processor]);
   
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [downloadTask_ terminate];
@@ -296,8 +295,8 @@ static void MarkFileDescriptorsCloseOnExec(void) {
     NSFileManager *fm = [NSFileManager defaultManager];
     unlink([path_ fileSystemRepresentation]);  // Remove destination path
     if (![fm copyPath:tempPath_ toPath:path_ handler:nil]) {
-      GMLoggerError(@"Failed to rename %@ -> %@: errno=%d",  // COV_NF_LINE
-                    tempPath_, path_, errno);                // COV_NF_LINE
+      GTMLoggerError(@"Failed to rename %@ -> %@: errno=%d",  // COV_NF_LINE
+                     tempPath_, path_, errno);                // COV_NF_LINE
     }
     unlink([tempPath_ fileSystemRepresentation]);  // Clean up source path
     
@@ -309,8 +308,8 @@ static void MarkFileDescriptorsCloseOnExec(void) {
   else
     [[KSFrameworkStats sharedStats] incrementStat:kStatFailedDownloads];
   
-  GMLoggerDebug(@"Task %d finished status=%d, verified=%d",
-                [downloadTask_ processIdentifier], status, verified);
+  GTMLoggerDebug(@"Task %d finished status=%d, verified=%d",
+                 [downloadTask_ processIdentifier], status, verified);
   
   [[self processor] finishedProcessing:self successfully:verified];
   
@@ -361,7 +360,7 @@ static void MarkFileDescriptorsCloseOnExec(void) {
   NSBundle *bundle = [NSBundle bundleForClass:[KSDownloadAction class]];
   NSString *ksurl = [bundle pathForResource:@"ksurl" ofType:@""];
   if (![[NSFileManager defaultManager] isExecutableFileAtPath:ksurl]) {
-    GMLoggerError(@"No executable found at %@", ksurl);  // COV_NF_LINE
+    GTMLoggerError(@"No executable found at %@", ksurl);  // COV_NF_LINE
     return @"/dev/null";  // Never return nil            // COV_NF_LINE
   }
   return ksurl;

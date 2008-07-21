@@ -9,7 +9,7 @@
 #import "KSAction.h"
 #import "KSActionProcessor.h"
 #import "KSActionPipe.h"
-#import "GMLogger.h"
+#import "GTMLogger.h"
 
 
 @implementation KSAction

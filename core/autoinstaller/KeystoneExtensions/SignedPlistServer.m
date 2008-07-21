@@ -9,7 +9,7 @@
 #import "SignedPlistServer.h"
 #import "Signer.h"
 #import "PlistSigner.h"
-#import "GMLogger.h"
+#import "GTMLogger.h"
 
 
 // Public Key for officially signed MacFUSE rules plists
@@ -71,7 +71,7 @@ static unsigned int macfuse_public_der_len = 162;
     plist = [body propertyList];
   }
   @catch (id ex) {
-    GMLoggerError(@"Failed to parse response into plist: %@", ex);
+    GTMLoggerError(@"Failed to parse response into plist: %@", ex);
     return nil;
   }
 
@@ -80,7 +80,7 @@ static unsigned int macfuse_public_der_len = 162;
                                         plist:plist] autorelease];
   
   if (![plistSigner isPlistSigned]) {
-    GMLoggerInfo(@"Ignoring plist with bad signature\n%@", body);
+    GTMLoggerInfo(@"Ignoring plist with bad signature\n%@", body);
     return nil;
   }
   

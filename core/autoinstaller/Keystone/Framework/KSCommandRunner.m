@@ -55,8 +55,8 @@ static const int kFailure = 1;
     [task launch];
   }
   @catch (id ex) {
-    GMLoggerInfo(@"Caught exception while trying to launch task for "
-                 @"%@, args=%@, env=%@: ex=%@", path, args, env, ex);
+    GTMLoggerInfo(@"Caught exception while trying to launch task for "
+                  @"%@, args=%@, env=%@: ex=%@", path, args, env, ex);
     return kFailure;
   }
   

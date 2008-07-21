@@ -8,8 +8,7 @@
 
 #import "KSActionProcessor.h"
 #import "KSAction.h"
-#import "GTMDefines.h"  // For _GTMDevAssert
-#import "GMLogger.h"
+#import "GTMLogger.h"
 
 
 @interface KSActionProcessor (PrivateMethods)
@@ -115,8 +114,8 @@
   @synchronized (self) {
     if (action != currentAction_) {
       // COV_NF_START
-      GMLoggerError(@"finished processing %@, which was not the current action "
-                    @"(%@)", action, currentAction_);
+      GTMLoggerError(@"finished processing %@, which was not the current action"
+                     @" (%@)", action, currentAction_);
       return;
       // COV_NF_END
     }
@@ -151,8 +150,9 @@
   _GTMDevAssert(actionQ_ != nil, @"actionQ_ should never be nil");
 
   @synchronized (self) {
-    _GTMDevAssert(currentAction_ == nil, @"currentAction_ (%@) must be nil before "
-                                    @"processing a new action", currentAction_);
+    _GTMDevAssert(currentAction_ == nil,
+                  @"currentAction_ (%@) must be nil before "
+                  @"processing a new action", currentAction_);
     
     if ([actionQ_ count] > 0) {
       // Get the first action and assign it to currentAction_, make sure the
@@ -165,7 +165,7 @@
         // COV_NF_START
         [self stopProcessing];
         _GTMDevAssert(NO, @"%@ can't run %@ because it's already running!",
-                 self, action);
+                      self, action);
         return;
         // COV_NF_END
       }

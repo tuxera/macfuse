@@ -60,7 +60,7 @@
       KSTicket *t = nil;
       while ((t = [tenum nextObject])) {
         if (![[first serverURL] isEqual:[t serverURL]]) {
-          GMLoggerInfo(@"UpdateChecker passed tickets with different URLs?");
+          GTMLoggerInfo(@"UpdateChecker passed tickets with different URLs?");
           [self release];
           return nil;
         }
@@ -99,7 +99,7 @@
   while ((req = [renum nextObject])) {
     NSData *data = [req HTTPBody];
     // %.*s since we need length (data not NULL-terminated)
-    GMLoggerDebug(@"** XML request %d:\n%.*s", x++,
+    GTMLoggerDebug(@"** XML request %d:\n%.*s", x++,
                   [data length], (char*)[data bytes]);
   }
 #endif
@@ -157,7 +157,7 @@
 - (void)fetcher:(GTMHTTPFetcher *)fetcher finishedWithData:(NSData *)data {
   NSURLResponse *response = [fetcher response];
   NSString *prettyData = [server_ prettyPrintResponse:response data:data];
-  GMLoggerDebug(@"** XML response:\n%@", prettyData);
+  GTMLoggerDebug(@"** XML response:\n%@", prettyData);
   
   NSArray *results = [server_ updateInfosForResponse:response data:data];
   [[self outPipe] setContents:results];
@@ -166,7 +166,7 @@
 }
 
 - (void)fetcher:(GTMHTTPFetcher *)fetcher failedWithError:(NSError *)error {
-  GMLoggerError(@"KSUpdateCheckAction failed with error %@", error);
+  GTMLoggerError(@"KSUpdateCheckAction failed with error %@", error);
   [delegate_ fetcher:fetcher failedWithError:error];
   [self requestFinishedForFetcher:fetcher success:NO];
 }

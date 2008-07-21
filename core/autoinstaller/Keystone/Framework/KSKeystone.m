@@ -19,8 +19,7 @@
 #import "KSPromptAction.h"
 #import "KSActionPipe.h"
 #import "KSKeystoneParameters.h"
-#import "GMLogger.h"
-#import "GTMDefines.h"
+#import "GTMLogger.h"
 #import "GTMPath.h"
 #import "GTMNSString+FindFolder.h"
 
@@ -87,7 +86,7 @@ static NSString *gDefaultTicketStorePath = nil;
     [self setDelegate:delegate];
     [self stopAndReset];
     if (store_ == nil) {
-      GMLoggerDebug(@"error: created with nil ticket store");
+      GTMLoggerDebug(@"error: created with nil ticket store");
       [self release];
       return nil;
     }
@@ -127,7 +126,7 @@ static NSString *gDefaultTicketStorePath = nil;
   // COV_NF_START
   }
   @catch (id ex) {
-    GMLoggerError(@"Caught exception setting delegate: %@", ex);
+    GTMLoggerError(@"Caught exception setting delegate: %@", ex);
   }
   // COV_NF_END
 }
@@ -142,7 +141,7 @@ static NSString *gDefaultTicketStorePath = nil;
   _GTMDevAssert(store_ != nil, @"store_ must not be nil");  
   KSTicket *ticket = [store_ ticketForProductID:productID];
   if (ticket == nil) {
-    GMLoggerInfo(@"No ticket for product with Product ID %@", productID);
+    GTMLoggerInfo(@"No ticket for product with Product ID %@", productID);
     return;
   }
   
@@ -178,36 +177,36 @@ static NSString *gDefaultTicketStorePath = nil;
 //
 
 - (void)processingStarted:(KSActionProcessor *)processor {
-  GMLoggerInfo(@"processor=%@", processor);
+  GTMLoggerInfo(@"processor=%@", processor);
   @try {
     if ([delegate_ respondsToSelector:@selector(keystoneStarted:)])
       [delegate_ keystoneStarted:self];
   }
   @catch (id ex) {
-    GMLoggerError(@"Caught exception talking to delegate: %@", ex);
+    GTMLoggerError(@"Caught exception talking to delegate: %@", ex);
   }
 }
 
 - (void)processingStopped:(KSActionProcessor *)processor {
-  GMLoggerInfo(@"processor=%@, wasSuccesful_=%d", processor, wasSuccessful_);
+  GTMLoggerInfo(@"processor=%@, wasSuccesful_=%d", processor, wasSuccessful_);
   @try {
     if ([delegate_ respondsToSelector:@selector(keystoneFinished:wasSuccess:)])
       [delegate_ keystoneFinished:self wasSuccess:wasSuccessful_];
   }
   @catch (id ex) {
-    GMLoggerError(@"Caught exception talking to delegate: %@", ex);
+    GTMLoggerError(@"Caught exception talking to delegate: %@", ex);
   }
 }
 
 - (void)processor:(KSActionProcessor *)processor
    startingAction:(KSAction *)action {
-  GMLoggerInfo(@"processor=%@, action=%@", processor, action);
+  GTMLoggerInfo(@"processor=%@, action=%@", processor, action);
 }
 
 - (void)processor:(KSActionProcessor *)processor
    finishedAction:(KSAction *)action
      successfully:(BOOL)wasOK {
-  GMLoggerInfo(@"processor=%@, action=%@, wasOK=%d", processor, action, wasOK);
+  GTMLoggerInfo(@"processor=%@, action=%@, wasOK=%d", processor, action, wasOK);
   if (!wasOK) {
     // If any of these actions fail (in reality, the only one that can possibly
     // fail is the KSCheckAction), we indicate that this fetch was not
@@ -241,7 +240,7 @@ static NSString *gDefaultTicketStorePath = nil;
       return [delegate_ keystone:self shouldPrefetchProducts:products];
   }
   @catch (id ex) {
-    GMLoggerError(@"Caught exception talking to delegate: %@", ex);
+    GTMLoggerError(@"Caught exception talking to delegate: %@", ex);
   }
   return products;  // if not implemented, assume we want to prefetch everything
 }
@@ -253,7 +252,7 @@ static NSString *gDefaultTicketStorePath = nil;
       return [delegate_ keystone:self shouldSilentlyUpdateProducts:products];
   }
   @catch (id ex) {
-    GMLoggerError(@"Caught exception talking to delegate: %@", ex);
+    GTMLoggerError(@"Caught exception talking to delegate: %@", ex);
   }
   return products;  // if not implemented, assume we want to update everything
 }
@@ -265,7 +264,7 @@ static NSString *gDefaultTicketStorePath = nil;
       return [delegate_ commandRunnerForKeystone:self];
   }
   @catch (id ex) {
-    GMLoggerError(@"Caught exception talking to delegate: %@", ex);
+    GTMLoggerError(@"Caught exception talking to delegate: %@", ex);
   }
   return nil;
 }
@@ -278,7 +277,7 @@ static NSString *gDefaultTicketStorePath = nil;
       [delegate_ keystone:self starting:updateInfo];
   }
   @catch (id ex) {
-    GMLoggerError(@"Caught exception talking to delegate: %@", ex);
+    GTMLoggerError(@"Caught exception talking to delegate: %@", ex);
   }
 }
 
@@ -296,7 +295,7 @@ static NSString *gDefaultTicketStorePath = nil;
               wantsReboot:wantsReboot];
   }
   @catch (id ex) {
-    GMLoggerError(@"Caught exception talking to delegate: %@", ex);
+    GTMLoggerError(@"Caught exception talking to delegate: %@", ex);
   }
 }
 
@@ -306,7 +305,7 @@ static NSString *gDefaultTicketStorePath = nil;
       return [delegate_ keystone:self shouldUpdateProducts:products];
   }
   @catch (id ex) {
-    GMLoggerError(@"Caught exception talking to delegate: %@", ex);
+    GTMLoggerError(@"Caught exception talking to delegate: %@", ex);
     products = nil;
   }
   return products;  // if not implemented, assume we want to update everything

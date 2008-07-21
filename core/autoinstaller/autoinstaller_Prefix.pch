@@ -4,6 +4,8 @@
 
 #ifdef __OBJC__
   #import <Foundation/Foundation.h>
-  #import "GMLogRemap.h"
-  #import "GMLog.h"
+  #import "GTMLogger.h"
+  
+  #define _GTMDevLog GTMLoggerInfo
+  #import "GTMDefines.h"
 #endif

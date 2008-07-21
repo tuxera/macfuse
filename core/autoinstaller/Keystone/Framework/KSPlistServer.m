@@ -8,7 +8,7 @@
 
 #import "KSPlistServer.h"
 #import "KSTicket.h"
-#import "GMLogger.h"
+#import "GTMLogger.h"
 #import "KSUpdateInfo.h"
 
 
@@ -35,7 +35,7 @@
                       @"/System/Library/CoreServices/SystemVersion.plist"];
     if (systemVersion_ == nil) {
       // COV_NF_START
-      GMLoggerError(@"Failed to read SystemVersion.plist, bailing.");
+      GTMLoggerError(@"Failed to read SystemVersion.plist, bailing.");
       [self release];
       return nil;
       // COV_NF_END
@@ -84,7 +84,7 @@
     plist = [body propertyList];
   }
   @catch (id ex) {
-    GMLoggerError(@"Failed to parse response into plist: %@", ex);
+    GTMLoggerError(@"Failed to parse response into plist: %@", ex);
     return nil;
   }
   
@@ -103,7 +103,7 @@
       if (ui) [updateInfos addObject:ui];
     }
   }
-    
+  
   return [updateInfos count] > 0 ? updateInfos : nil;
 }
 
@@ -153,8 +153,8 @@
     matches = [predicate evaluateWithObject:predicateTarget];
   }
   @catch (id ex) {
-    GMLoggerError(@"Caught exception evaluating predicate for %@: %@",
-                  productID, ex);
+    GTMLoggerError(@"Caught exception evaluating predicate for %@: %@",
+                   productID, ex);
   }
   
   return matches;
@@ -194,7 +194,7 @@
   return updateInfo;
   
 invalid_rule:
-  GMLoggerError(@"Can't create KSUpdateInfo from invalid rule %@", rule);
+  GTMLoggerError(@"Can't create KSUpdateInfo from invalid rule %@", rule);
   return nil;
 }
 

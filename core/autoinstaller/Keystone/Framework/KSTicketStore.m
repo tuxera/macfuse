@@ -8,7 +8,6 @@
 
 #import "KSTicketStore.h"
 #import "KSTicket.h"
-#import "GTMDefines.h"
 #import <fcntl.h>
 #import <unistd.h>
 
@@ -116,8 +115,8 @@
   // COV_NF_START
   }
   @catch (id ex) {
-    GMLoggerError(@"Caught exception unarchiving ticket store at %@: %@",
-                  path_, ex);
+    GTMLoggerError(@"Caught exception unarchiving ticket store at %@: %@",
+                   path_, ex);
   }
   // COV_NF_END
   
@@ -134,8 +133,8 @@
   // COV_NF_START
   }
   @catch (id ex) {
-    GMLoggerError(@"Caught exception archiving ticket map to %@: %@",
-                  path_, ex);
+    GTMLoggerError(@"Caught exception archiving ticket map to %@: %@",
+                   path_, ex);
   }
   // COV_NF_END
   
@@ -225,7 +224,7 @@
     // Return nil if we find an object in the array that's not a KSTicket
     if (![ticket isKindOfClass:[KSTicket class]]) {
       // COV_NF_START
-      GMLoggerError(@"%@ is not a KSTicket, returning nil", ticket);
+      GTMLoggerError(@"%@ is not a KSTicket, returning nil", ticket);
       return nil;
       // COV_NF_END
     }

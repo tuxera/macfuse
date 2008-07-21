@@ -8,15 +8,15 @@
 
 #import <SenTestingKit/SenTestingKit.h>
 #import "UpdatePrinter.h"
-#import "GMLogger.h"
+#import "GTMLogger.h"
 
 
-@interface NSMutableArray (TestLogWriter) <GMLogWriter>
+@interface NSMutableArray (TestLogWriter) <GTMLogWriter>
 @end
 
 @implementation NSMutableArray (TestLogWriter)
 
-- (void)logMessage:(NSString *)msg level:(GMLoggerLevel)level {
+- (void)logMessage:(NSString *)msg level:(GTMLoggerLevel)level {
   [self addObject:msg];
 }
 
@@ -39,7 +39,7 @@
 }
 
 - (void)testBasePrinterOneUpdate {
-  GMLogger *logger = [GMLogger logger];
+  GTMLogger *logger = [GTMLogger logger];
   [logger setWriter:[NSMutableArray array]];
   UpdatePrinter *printer = [[[UpdatePrinter alloc]
                              initWithLogger:logger] autorelease];
@@ -62,7 +62,7 @@
 }
 
 - (void)testBasePrinterTwoUpdates {
-  GMLogger *logger = [GMLogger logger];
+  GTMLogger *logger = [GTMLogger logger];
   [logger setWriter:[NSMutableArray array]];
   UpdatePrinter *printer = [[[UpdatePrinter alloc]
                              initWithLogger:logger] autorelease];
@@ -94,7 +94,7 @@
 }
 
 - (void)testPlistPrinterOneUpdate {
-  GMLogger *logger = [GMLogger logger];
+  GTMLogger *logger = [GTMLogger logger];
   [logger setWriter:[NSMutableArray array]];
   UpdatePrinter *printer = [[[PlistUpdatePrinter alloc]
                              initWithLogger:logger] autorelease];
@@ -123,7 +123,7 @@
 }
 
 - (void)testPlistPrinterTwoUpdates {
-  GMLogger *logger = [GMLogger logger];
+  GTMLogger *logger = [GTMLogger logger];
   [logger setWriter:[NSMutableArray array]];
   UpdatePrinter *printer = [[[PlistUpdatePrinter alloc]
                              initWithLogger:logger] autorelease];

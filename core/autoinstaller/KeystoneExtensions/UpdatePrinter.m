@@ -7,7 +7,7 @@
 //
 
 #import "UpdatePrinter.h"
-#import "GMLogger.h"
+#import "GTMLogger.h"
 
 
 @implementation UpdatePrinter
@@ -17,11 +17,11 @@
 }
 
 - (id)init {
-  GMLogger *logger = [GMLogger logger];
+  GTMLogger *logger = [GTMLogger logger];
   return [self initWithLogger:logger];
 }
 
-- (id)initWithLogger:(GMLogger *)logger {
+- (id)initWithLogger:(GTMLogger *)logger {
   if ((self = [super init])) {
     logger_ = [logger retain];
   }
@@ -33,7 +33,7 @@
   [super dealloc];
 }
 
-- (GMLogger *)logger {
+- (GTMLogger *)logger {
   return logger_;
 }
 

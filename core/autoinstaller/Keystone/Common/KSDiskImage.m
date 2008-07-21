@@ -7,8 +7,7 @@
 //
 
 #import "KSDiskImage.h"
-#import "GTMDefines.h"  // For _GTMDevAssert
-#import "GMLogger.h"
+#import "GTMLogger.h"
 
 
 @implementation KSDiskImage
@@ -150,8 +149,8 @@
                                        outputString:&plist];
   if (status != 0) {
     // COV_NF_START
-    GMLoggerError(@"Failed to mount %@, status = %d, output: %@",
-                  path_, status, plist);
+    GTMLoggerError(@"Failed to mount %@, status = %d, output: %@",
+                   path_, status, plist);
     return nil;
     // COV_NF_END
   }
@@ -229,8 +228,8 @@
     [task launch];
   // COV_NF_START
   } @catch (id ex) {
-    GMLoggerError(@"GMHDIUtilTask: Caught %@ when launching %@ with args %@",
-                  ex, task, [args componentsJoinedByString:@" "]);
+    GTMLoggerError(@"GMHDIUtilTask: Caught %@ when launching %@ with args %@",
+                   ex, task, [args componentsJoinedByString:@" "]);
     return -1;
   }
   // COV_NF_END
@@ -255,8 +254,8 @@
     // COV_NF_START
     } @catch (id ex) {
       // running in gdb we get exception: Interrupted system call
-      GMLoggerDebug(@"GMHDIUtilTask diskImageInfo: gdb issue -- "
-                    @"getting file data causes exception: %@", ex);
+      GTMLoggerDebug(@"GMHDIUtilTask diskImageInfo: gdb issue -- "
+                     @"getting file data causes exception: %@", ex);
     }
     // COV_NF_END
   }
@@ -265,8 +264,8 @@
   
   int status = [task terminationStatus];  
   if (status != 0) {
-    GMLoggerError(@"GMHDIUtilTask: hdiutil %@, returned %d", 
-                  [args componentsJoinedByString:@" "], status);
+    GTMLoggerError(@"GMHDIUtilTask: hdiutil %@, returned %d", 
+                   [args componentsJoinedByString:@" "], status);
   }
   
   return status;

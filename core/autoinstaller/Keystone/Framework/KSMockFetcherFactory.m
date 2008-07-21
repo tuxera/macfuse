@@ -4,7 +4,7 @@
 //  Copyright 2008 Google Inc. All rights reserved.
 //
 #import "KSMockFetcherFactory.h"
-#import "GTMDefines.h"
+
 
 // Base class for mock fetchers, to be used in place of GTMHTTPFetcher.
 @interface KSMockFetcher : NSObject {
