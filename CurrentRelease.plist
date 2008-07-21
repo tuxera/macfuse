@@ -8,13 +8,13 @@
 			<key>Codebase</key>
 			<string>http://macfuse.googlecode.com/svn/releases/MacFUSE-1.7.dmg</string>
 			<key>Hash</key>
-			<string>Wfd/ekCGz/apMTDfqBeFT/OCWNw=</string>
+			<string>g50GKQCDIEtUjLnk2pROJDtvlwc=</string>
 			<key>Predicate</key>
 			<string>SystemVersion.ProductVersion beginswith "10.5" AND Ticket.version != "1.7.1"</string>
 			<key>ProductID</key>
 			<string>com.google.filesystems.fusefs</string>
 			<key>Size</key>
-			<string>1741187</string>
+			<string>1746867</string>
 			<key>Version</key>
 			<string>1.7.1</string>
 		</dict>
@@ -22,22 +22,22 @@
 			<key>Codebase</key>
 			<string>http://macfuse.googlecode.com/svn/releases/MacFUSE-1.7.dmg</string>
 			<key>Hash</key>
-			<string>Wfd/ekCGz/apMTDfqBeFT/OCWNw=</string>
+			<string>g50GKQCDIEtUjLnk2pROJDtvlwc=</string>
 			<key>Predicate</key>
 			<string>SystemVersion.ProductVersion beginswith "10.4" AND Ticket.version != "1.7.0"</string>
 			<key>ProductID</key>
 			<string>com.google.filesystems.fusefs</string>
 			<key>Size</key>
-			<string>1741187</string>
+			<string>1746867</string>
 			<key>Version</key>
 			<string>1.7.0</string>
 		</dict>
 	</array>
 	<key>Signature</key>
 	<data>
-	LTr9ss/v9ejZHRpLjStu1QXlYuNBtOuW8ckZy8EzJP+a3uAywdKRpKnV43hi5t7rmNrd
-	R1ZwAJF2Ol57UE5tB73nrntTz21CSpXyP4DSRIcil1tZX04CGQfyvGlLNXMzmuajA0+Y
-	cpmWP0XuEXxh3znJ+/YL0KgVQNjYjtjnx1U=
+	Li44A3etlNygkD5Cvsbe/QuTPuQPnUUyRvFD/4UiKO0yb9H9UO/RF2lPUqI5mM/E0w63
+	x0qVCraeOPOJKnAb5WQ2/2dqASh+KjDGac1wCtrYeqc8Vt4bX+uHp0W3j1XZ+jn/E+dF
+	IuS/RKNxDlDycVBDuVzhhaZC/rMLrlZbkTk=
 	</data>
 </dict>
 </plist>
