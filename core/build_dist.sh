@@ -31,11 +31,11 @@ popd > /dev/null
 # Maybe they want to clean?
 if [ \( "$1" = "clean" \) -o \( "$1" = "0" \) ]
 then
-  "echo Cleaning..."
-  pushd "$macfuse_dir/core/autoinstaller"
+  echo "Cleaning..."
+  pushd "$macfuse_dir/core/autoinstaller" > /dev/null
   xcodebuild -target "Build All" clean
   rm -rf "$macfuse_dir/core/autoinstaller/build"
-  popd
+  popd > /dev/null
   $macfuse_dir/core/build_macfuse.sh 0
   exit 0
 fi
@@ -68,15 +68,15 @@ then
 fi
 
 # Build the autoinstaller
-pushd "$macfuse_dir/core/autoinstaller"
+pushd "$macfuse_dir/core/autoinstaller" > /dev/null
 xcodebuild -target "Build All" -configuration Release
 if [ $? -ne 0 ]
 then
   echo "Unable to build autoinstaller."
-  popd
+  popd > /dev/null
   exit 1
 fi
-popd
+popd > /dev/null
 MACFUSE_UPDATER="$macfuse_dir/core/autoinstaller/build/Release/MacFUSEAutoinstaller.bundle/"
 if [ ! -d "$MACFUSE_UPDATER" ]
 then
@@ -149,15 +149,15 @@ echo "-Building MacFUSE.pkg-"
 echo "RELEASE_ARG=$MAJOR_RELEASE_VERSION"
 echo "MACFUSE_UPDATER=$MACFUSE_UPDATER"
 echo "PLATFORM_ARG=${PLATFORM_ARG}"
-pushd "$macfuse_dir/core/packaging/macfuse/"
+pushd "$macfuse_dir/core/packaging/macfuse/" > /dev/null
 ./make-pkg.sh "$MAJOR_RELEASE_VERSION" "$MACFUSE_UPDATER" "$PLATFORM_ARG"
 if [ $? -ne 0 ]
 then
   echo "Failed to build MacFUSE.pkg"
-  popd
+  popd > /dev/null
   exit 1
 fi
-popd
+popd > /dev/null
 
 # Make autoinstaller rules file.
 DMG_NAME="MacFUSE-$MAJOR_RELEASE_VERSION.dmg"
