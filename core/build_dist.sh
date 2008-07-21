@@ -41,11 +41,7 @@ then
 fi
 
 # Make sure a private key is provided.
-if [ "$MACFUSE_PRIVATE_KEY_FILE" = "" ]
-then
-  echo "No value for variable MACFUSE_PRIVATE_KEY_FILE."
-  exit 1
-fi
+MACFUSE_PRIVATE_KEY_FILE=/etc/macfuse/private.der
 if [ ! -f "$MACFUSE_PRIVATE_KEY_FILE" ]
 then
   echo "Private key file missing: $MACFUSE_PRIVATE_KEY_FILE"
