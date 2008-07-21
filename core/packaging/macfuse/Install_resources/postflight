@@ -80,7 +80,7 @@ AUTOINSTALLER_RC=$?
 echo "$AUTOINSTALLER_OUTPUT"  # So that we can see in postflight log
 if [ $AUTOINSTALLER_RC -eq 0 ]
 then
-  ( unset Version; eval "$AUTOINSTALLER_OUTPUT"; NEW_VERSION=$Version )
+  NEW_VERSION=$(unset Version; eval "$AUTOINSTALLER_OUTPUT" > /dev/null; echo "$Version")
   NEW_VERSION_STRING=${NEW_VERSION:-"None"}
   if [ "$NEW_VERSION_STRING" = "None" ]
   then
