@@ -1,7 +1,6 @@
 // !$*UTF8*$!
 {
 	089C1669FE841209C02AAC07 /* Project object */ = {
-		activeArchitecture = i386;
 		activeBuildConfigurationName = Release;
 		activeExecutable = 540966F60C33BEC900F5E227 /* load_fusefs */;
 		activeTarget = 32A4FEB80562C75700D090E7 /* fusefs */;
@@ -159,8 +158,8 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 231470168;
-			PBXWorkspaceStateSaveDate = 231470168;
+			PBXPerProjectTemplateStateSaveDate = 238115086;
+			PBXWorkspaceStateSaveDate = 238115086;
 		};
 		sourceControlManager = 5494A9280ACA12160020068B /* Source Control */;
 		userBuildSettings = {
