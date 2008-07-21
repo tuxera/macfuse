@@ -9,29 +9,6 @@ CUT=/usr/bin/cut
 DIRNAME=/usr/bin/dirname
 TRUE=/usr/bin/true
 
-# Set of platforms to build for. We start with '0' to clean things up.
-PLATFORMS=${PLATFORMS:-"0 8 9"}
-if [ "$SKIP_PLATFORMS" = "1" ]
-then
-  PLATFORMS=""
-fi
-
-# Are we building developer or release?
-BUILD_TYPE=${1:-"Developer"}
-if [ \( "$BUILD_TYPE" != "Release" \) -a \( "$BUILD_TYPE" != "Developer" \) ]
-then
-  echo "Usage: build_dist.sh Release|Developer"
-  exit 1
-fi
-
-# TODO: Fix when updater is in tree!
-MACFUSE_UPDATER="/tmp/MacFUSEAutoinstaller.bundle/"
-if [ ! -d "$MACFUSE_UPDATER" ]
-then
-  echo "Temporary: Must untar autoinstaller bundle in /tmp."
-  exit 1
-fi
-
 sudo $TRUE  # Need root password to delete previous builds
 if [ $? -ne 0 ]
 then
@@ -50,6 +27,68 @@ pushd . > /dev/null
 cd "$macfuse_dir" || exit 1
 macfuse_dir=`pwd`
 popd > /dev/null
+
+# Maybe they want to clean?
+if [ \( "$1" = "clean" \) -o \( "$1" = "0" \) ]
+then
+  "echo Cleaning..."
+  pushd "$macfuse_dir/core/autoinstaller"
+  xcodebuild -target "Build All" clean
+  rm -rf "$macfuse_dir/core/autoinstaller/build"
+  popd
+  $macfuse_dir/core/build_macfuse.sh 0
+  exit 0
+fi
+
+# Make sure a private key is provided.
+if [ "$MACFUSE_PRIVATE_KEY_FILE" = "" ]
+then
+  echo "No value for variable MACFUSE_PRIVATE_KEY_FILE."
+  exit 1
+fi
+if [ ! -f "$MACFUSE_PRIVATE_KEY_FILE" ]
+then
+  echo "Private key file missing: $MACFUSE_PRIVATE_KEY_FILE"
+  exit 1
+fi
+
+# Set of platforms to build for. We start with '0' to clean things up.
+PLATFORMS=${PLATFORMS:-"0 8 9"}
+if [ "$SKIP_PLATFORMS" = "1" ]
+then
+  PLATFORMS=""
+fi
+
+# Are we building developer or release?
+BUILD_TYPE=${1:-"Developer"}
+if [ \( "$BUILD_TYPE" != "Release" \) -a \( "$BUILD_TYPE" != "Developer" \) ]
+then
+  echo "Usage: build_dist.sh Release|Developer"
+  exit 1
+fi
+
+# Build the autoinstaller
+pushd "$macfuse_dir/core/autoinstaller"
+xcodebuild -target "Build All" -configuration Release
+if [ $? -ne 0 ]
+then
+  echo "Unable to build autoinstaller."
+  popd
+  exit 1
+fi
+popd
+MACFUSE_UPDATER="$macfuse_dir/core/autoinstaller/build/Release/MacFUSEAutoinstaller.bundle/"
+if [ ! -d "$MACFUSE_UPDATER" ]
+then
+  echo "Build OK, but missing autoinstaller: $MACFUSE_UPDATER"
+  exit 1
+fi
+PLIST_SIGNER="$macfuse_dir/core/autoinstaller/build/Release/plist_signer"
+if [ ! -x "$PLIST_SIGNER" ]
+then
+  echo "Build OK, but missing plist_signer: $PLIST_SIGNER"
+  exit 1
+fi
 
 # Build for requested platforms.
 for i in $PLATFORMS
@@ -174,4 +213,10 @@ cat > "$OUTPUT_RULES" <<__END_CONFIG
 </plist>
 __END_CONFIG
 
-exit 0
+# Sign the output rules.
+"$PLIST_SIGNER" --sign --key "$MACFUSE_PRIVATE_KEY_FILE" "$OUTPUT_RULES"
+if [ $? -ne 0 ]
+then
+  echo "Failed to sign the rules file: $OUTPUT_RULES"
+  exit 1
+fi 

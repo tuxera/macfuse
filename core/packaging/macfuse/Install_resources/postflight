@@ -80,10 +80,8 @@ AUTOINSTALLER_RC=$?
 echo "$AUTOINSTALLER_OUTPUT"  # So that we can see in postflight log
 if [ $AUTOINSTALLER_RC -eq 0 ]
 then
-  NEW_VERSION_LINE=$(echo "$AUTOINSTALLER_OUTPUT" | grep "Version =")
-  NEW_VERSION=${NEW_VERSION_LINE#*= }  # Version = "1.6.2"; -> "1.6.2";
-  NEW_VERSION=${NEW_VERSION%;}         # Remove trailing ';'
-  NEW_VERSION=${NEW_VERSION//\"/}      # Remove quotes
+  NEW_VERSION_LINE=$(echo "$AUTOINSTALLER_OUTPUT" | grep "Version=")
+  NEW_VERSION=${NEW_VERSION_LINE#*=}  # Version="1.6.2"; -> "1.6.2";
   NEW_VERSION_STRING=${NEW_VERSION:-"None"}
   if [ "$NEW_VERSION_STRING" = "None" ]
   then
@@ -167,7 +165,7 @@ then
       exit 1
     fi
     ln -sf "${AUTOINSTALLER_BUNDLE}/Contents/MacOS/autoinstaller" \
-      "${MACFUSE_SUPPORT}/autoinstall-macfuse-core"      
+      "${MACFUSE_SUPPORT}/autoinstall-macfuse-core"
   else
     # If the install failed due to an existing newer version then it is OK.
     # TODO: This grep is sort of lame and dependent on installer (and lang?)
