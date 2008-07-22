@@ -31,9 +31,8 @@ popd > /dev/null
 # Maybe they want to clean?
 if [ \( "$1" = "clean" \) -o \( "$1" = "0" \) ]
 then
-  echo "Cleaning..."
   pushd "$macfuse_dir/core/autoinstaller" > /dev/null
-  #sudo xcodebuild -target "Build All" clean
+  echo "Cleaning up any previous autoinstaller builds"
   sudo rm -rf "$macfuse_dir/core/autoinstaller/build"
   popd > /dev/null
   $macfuse_dir/core/build_macfuse.sh 0
