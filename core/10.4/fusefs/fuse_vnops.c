@@ -2000,8 +2000,8 @@ ok:
         fvdat->flag |= FN_DIRECT_IO;
         goto out;
     } else if (fufh->fuse_open_flags & FOPEN_PURGE_UBC) {
-        ubc_msync(vp, (off_t)0, ubc_getsize(vp), (off_t*)0,
-                  UBC_PUSHALL | UBC_INVALIDATE);
+        ubc_sync_range(vp, (off_t)0, ubc_getsize(vp),
+                       UBC_PUSHALL | UBC_INVALIDATE);
         fufh->fuse_open_flags &= ~FOPEN_PURGE_UBC;
         hint |= NOTE_WRITE;
         if (fufh->fuse_open_flags & FOPEN_PURGE_ATTR) {
