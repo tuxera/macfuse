@@ -43,6 +43,7 @@ static NSString *gDefaultTicketStorePath = nil;
 // Returns [~]/Library/Google/Keystone/TicketStore/Keystone.ticketstore
 + (NSString *)defaultTicketStorePath {
   if (gDefaultTicketStorePath) return gDefaultTicketStorePath;
+  // COV_NF_START
   short domain = geteuid() == 0 ? kLocalDomain : kUserDomain;
   NSString *library =
     [NSString gtm_stringWithPathForFolder:kDomainLibraryFolderType
@@ -56,6 +57,7 @@ static NSString *gDefaultTicketStorePath = nil;
                    createFileName:@"Keystone.ticketstore" mode:0700];
   
   return [path fullPath];
+  //COV_NF_END
 }
 
 + (void)setDefaultTicketStorePath:(NSString *)path {

@@ -76,8 +76,6 @@
 		F97D50EF0E352D0900D13489 /* KSFrameworkStats.m in Sources */ = {isa = PBXBuildFile; fileRef = F97D50BC0E352D0900D13489 /* KSFrameworkStats.m */; };
 		F97D50F00E352D0900D13489 /* KSInstallAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F97D50BE0E352D0900D13489 /* KSInstallAction.m */; };
 		F97D50F10E352D0900D13489 /* KSKeystone.m in Sources */ = {isa = PBXBuildFile; fileRef = F97D50C00E352D0900D13489 /* KSKeystone.m */; };
-		F97D50F20E352D0900D13489 /* KSKeystoneBroker.m in Sources */ = {isa = PBXBuildFile; fileRef = F97D50C20E352D0900D13489 /* KSKeystoneBroker.m */; };
-		F97D50F30E352D0900D13489 /* KSKeystoneVendor.m in Sources */ = {isa = PBXBuildFile; fileRef = F97D50C50E352D0900D13489 /* KSKeystoneVendor.m */; };
 		F97D50F40E352D0900D13489 /* KSMemoryTicketStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F97D50C70E352D0900D13489 /* KSMemoryTicketStore.m */; };
 		F97D50F60E352D0900D13489 /* KSMultiAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F97D50CB0E352D0900D13489 /* KSMultiAction.m */; };
 		F97D50F70E352D0900D13489 /* KSMultiUpdateAction.m in Sources */ = {isa = PBXBuildFile; fileRef = F97D50CD0E352D0900D13489 /* KSMultiUpdateAction.m */; };
@@ -315,11 +313,7 @@
 		F97D50BE0E352D0900D13489 /* KSInstallAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSInstallAction.m; sourceTree = "<group>"; };
 		F97D50BF0E352D0900D13489 /* KSKeystone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSKeystone.h; sourceTree = "<group>"; };
 		F97D50C00E352D0900D13489 /* KSKeystone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSKeystone.m; sourceTree = "<group>"; };
-		F97D50C10E352D0900D13489 /* KSKeystoneBroker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSKeystoneBroker.h; sourceTree = "<group>"; };
-		F97D50C20E352D0900D13489 /* KSKeystoneBroker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSKeystoneBroker.m; sourceTree = "<group>"; };
 		F97D50C30E352D0900D13489 /* KSKeystoneParameters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSKeystoneParameters.h; sourceTree = "<group>"; };
-		F97D50C40E352D0900D13489 /* KSKeystoneVendor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSKeystoneVendor.h; sourceTree = "<group>"; };
-		F97D50C50E352D0900D13489 /* KSKeystoneVendor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSKeystoneVendor.m; sourceTree = "<group>"; };
 		F97D50C60E352D0900D13489 /* KSMemoryTicketStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMemoryTicketStore.h; sourceTree = "<group>"; };
 		F97D50C70E352D0900D13489 /* KSMemoryTicketStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KSMemoryTicketStore.m; sourceTree = "<group>"; };
 		F97D50CA0E352D0900D13489 /* KSMultiAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KSMultiAction.h; sourceTree = "<group>"; };
@@ -650,11 +644,7 @@
 				F97D50BE0E352D0900D13489 /* KSInstallAction.m */,
 				F97D50BF0E352D0900D13489 /* KSKeystone.h */,
 				F97D50C00E352D0900D13489 /* KSKeystone.m */,
-				F97D50C10E352D0900D13489 /* KSKeystoneBroker.h */,
-				F97D50C20E352D0900D13489 /* KSKeystoneBroker.m */,
 				F97D50C30E352D0900D13489 /* KSKeystoneParameters.h */,
-				F97D50C40E352D0900D13489 /* KSKeystoneVendor.h */,
-				F97D50C50E352D0900D13489 /* KSKeystoneVendor.m */,
 				F97D50C60E352D0900D13489 /* KSMemoryTicketStore.h */,
 				F97D50C70E352D0900D13489 /* KSMemoryTicketStore.m */,
 				F97D50CA0E352D0900D13489 /* KSMultiAction.h */,
@@ -902,8 +892,6 @@
 				F97D50EF0E352D0900D13489 /* KSFrameworkStats.m in Sources */,
 				F97D50F00E352D0900D13489 /* KSInstallAction.m in Sources */,
 				F97D50F10E352D0900D13489 /* KSKeystone.m in Sources */,
-				F97D50F20E352D0900D13489 /* KSKeystoneBroker.m in Sources */,
-				F97D50F30E352D0900D13489 /* KSKeystoneVendor.m in Sources */,
 				F97D50F40E352D0900D13489 /* KSMemoryTicketStore.m in Sources */,
 				F97D50F60E352D0900D13489 /* KSMultiAction.m in Sources */,
 				F97D50F70E352D0900D13489 /* KSMultiUpdateAction.m in Sources */,
