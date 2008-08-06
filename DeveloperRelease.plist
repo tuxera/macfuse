@@ -8,36 +8,36 @@
 			<key>Codebase</key>
 			<string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-1.9.dmg</string>
 			<key>Hash</key>
-			<string>S5YHG1HSJ6C0iHXuajqwp/K24CA=</string>
+			<string>4iZ2FomlMgmPFjUdCE1M9h93PJE=</string>
 			<key>Predicate</key>
-			<string>SystemVersion.ProductVersion beginswith "10.5" AND Ticket.version != "1.9.1"</string>
+			<string>SystemVersion.ProductVersion beginswith "10.5" AND Ticket.version != "1.9.3"</string>
 			<key>ProductID</key>
 			<string>com.google.filesystems.fusefs</string>
 			<key>Size</key>
-			<string>1845248</string>
+			<string>1840457</string>
 			<key>Version</key>
-			<string>1.9.1</string>
+			<string>1.9.3</string>
 		</dict>
 		<dict>
 			<key>Codebase</key>
 			<string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-1.9.dmg</string>
 			<key>Hash</key>
-			<string>S5YHG1HSJ6C0iHXuajqwp/K24CA=</string>
+			<string>4iZ2FomlMgmPFjUdCE1M9h93PJE=</string>
 			<key>Predicate</key>
-			<string>SystemVersion.ProductVersion beginswith "10.4" AND Ticket.version != "1.9.0"</string>
+			<string>SystemVersion.ProductVersion beginswith "10.4" AND Ticket.version != "1.9.2"</string>
 			<key>ProductID</key>
 			<string>com.google.filesystems.fusefs</string>
 			<key>Size</key>
-			<string>1845248</string>
+			<string>1840457</string>
 			<key>Version</key>
-			<string>1.9.0</string>
+			<string>1.9.2</string>
 		</dict>
 	</array>
 	<key>Signature</key>
 	<data>
-	UJwkIGYdSIYWwT0ec2zQiUCb0+yFSj6iB7dHKl0UuJRwxv2HxpGxAV9z/2SeNaaroSft
-	2N3cO+L8lwTrU1Rwy9d6CXGLaL/t/VVjte50lL9WFH8VvK6Ec8L5zsnft1VgnHayk6dw
-	YTLtL+SmqYDBOKSAS+vwsYTgbGbuv5JH5Tc=
+	wthECS2heMP1EYNoQZVLsLObT3aBOeMrnAhSYIiHizgnqUi1GSxNNl4o8JUYsP5+tGom
+	9UliQ1sDXbYyEJNBR+Kb/rQlWV9vLcYNSe7YfhKa/CNvcAyNX0kuuFV1BbpnbWjNQsdW
+	GBe5tr4h9zzXTvPdOkrjohBz2kPh07yU7ic=
 	</data>
 </dict>
 </plist>
