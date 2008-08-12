@@ -4,6 +4,7 @@
 #
 
 INSTALL_LOG="/tmp/.macfuse-install.log"
+FORCE_EMBEDDED_FILE="/tmp/.macfuse-force-embedded"
 
 exec >> "$INSTALL_LOG" 2>&1
 
@@ -75,20 +76,28 @@ echo "Potential embedded package path: ${EMBEDDED_PKG}"
 
 # Use autoinstaller to see if there is a newer MacFUSE Core.
 NEW_VERSION=
-AUTOINSTALLER_OUTPUT=$("$AUTOINSTALLER" --list)
-AUTOINSTALLER_RC=$?
-echo "$AUTOINSTALLER_OUTPUT"  # So that we can see in postflight log
-if [ $AUTOINSTALLER_RC -eq 0 ]
+
+if [ -f "$FORCE_EMBEDDED_FILE" ]
 then
-  NEW_VERSION=$(unset Version; eval "$AUTOINSTALLER_OUTPUT" > /dev/null; echo "$Version")
-  NEW_VERSION_STRING=${NEW_VERSION:-"None"}
-  if [ "$NEW_VERSION_STRING" = "None" ]
-  then
-    FAIL_IF_MISSING_EMBEDDED_PKG=0
-  fi
-  echo "New version available: $NEW_VERSION_STRING"
+  # We are being forced to use the embedded package and not check for updates
+  echo "Found $FORCE_EMBEDDED_FILE; skipping check for online updates"
+  rm -f "$FORCE_EMBEDDED_FILE"
 else
-  echo "Unable to get data from autoinstaller about new versions."
+  AUTOINSTALLER_OUTPUT=$("$AUTOINSTALLER" --list)
+  AUTOINSTALLER_RC=$?
+  echo "$AUTOINSTALLER_OUTPUT"  # So that we can see in postflight log
+  if [ $AUTOINSTALLER_RC -eq 0 ]
+  then
+    NEW_VERSION=$(unset Version; eval "$AUTOINSTALLER_OUTPUT" > /dev/null; echo "$Version")
+    NEW_VERSION_STRING=${NEW_VERSION:-"None"}
+    if [ "$NEW_VERSION_STRING" = "None" ]
+    then
+      FAIL_IF_MISSING_EMBEDDED_PKG=0
+    fi
+    echo "New version available: $NEW_VERSION_STRING"
+  else
+    echo "Unable to get data from autoinstaller about new versions."
+  fi
 fi
 
 # If there is a newer version, we check if it is newer than what we have embedded
