@@ -1,4 +1,32 @@
-= Changes and Feature Additions in MacFUSE Core Binary Releases =
+= Changes and Feature Additions in MacFUSE Binary Releases =
+
+== MacFUSE 1.9.x (???) ==
+
+  * Feature: New option `auto_cache`; when you enable this option, MacFUSE will automatically purge the buffer cache and/or attributes of files based on changes it detects in modification times. By default, if MacFUSE detects a change in a file's size during getattr(), it will purge that file's buffer cache. When auto_cache is enabled,  MacFUSE will additionally detect modification time changes during getattr() and open(). Relevant knote messages are also generated. All this is subject to the attribute timeout. (That is, up to one purge per attribute timeout window.) As long as your file system's getattr() returns up-to-date size and modification time information, this should work as intended. For file systems that wish the kernel to keep up with "remote" changes, this should obviate the need for explicit purging through `fuse_purge_np()`. 
+
+  * Feature: Support for multiple concurrent file systems in a single process; enhancements to the user-space library should allow developers to run multiple instances of either a file system or even different file systems without having to create a separate process for each instance. Moreover, each instance can be managed (mounted, accessed, unmounted) independently. [*Experimental*]
+
+  * Feature: New user-space library function `fuse_purge_np()`; can be used by a user-space file system daemon to purge a given file's buffer cache, tell the kernel that the file's size has changed, invalidate the file's in-kernel attributes cache, and generate an appropriate kernel event (kevent) that can be received through `kqueue()`. [*Experimental*]
+
+  * Feature: New callback `chflags`; provides support for setting file flags. (See `chflags(2)`.)
+
+  * Feature: New callback `exchange`; provides support for exchanging data between two files. (See `exchangedata(2)`.)
+
+  * Feature: New callback `getxtimes`; provides support for reading backup and creation times. (See `ATTR_CMN_BKUPTIME` and `ATTR_CMN_CRTIME` in `getattrlist(2)`.)
+
+  * Feature: New callback `setbkuptime`; provides support for setting backup time.
+
+  * Feature: New callback `setcrtime`; provides support for setting creation time.
+
+  * Feature: New user-space library function `fuse_knote_np()`; can be used by a user-space file system daemon to generate arbitrary kernel events (kevent) for a given file. [*Experimental*]
+
+  * Feature: Backward compatibility (both binary and source levels) despite new callbacks; existing file system binaries linked against older MacFUSE versions should continue to work; file systems can choose to opt out of all the aforementioned new callbacks.
+
+  * Tweak: Removed an instance of the "MacFUSE: vnode reclaimed with valid fufh..." warning message that would show up in the system log even when it was unwarranted.
+
+  * Update: Better version of the `fusexmp_fh` reference file system; implements newly introduced callbacks and provides higher fidelity with the native file system.
+
+  * Packaging: The user-space library is now installed with proper "current" and "compatibility" version numbers; it is also installed with an appropriate file name such as `libfuse.2.7.3.dylib` instead of the constant name `libfuse.0.0.0.dylib`. To maintain compatibility with existing binaries, a new symbolic link `libfuse.0.dylib` is included for the time being.
 
 == MacFUSE 1.7 (June 30, 2008) ==
 
