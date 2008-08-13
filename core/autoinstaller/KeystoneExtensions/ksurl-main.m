@@ -97,7 +97,7 @@ int main(void) {
   
   NSURLRequest *request = nil;
   request = [NSURLRequest requestWithURL:url
-                             cachePolicy:NSURLRequestUseProtocolCachePolicy
+                             cachePolicy:NSURLRequestReloadIgnoringCacheData
                          timeoutInterval:60];
   
   DownloadDelegate *delegate = [[[DownloadDelegate alloc] init] autorelease];

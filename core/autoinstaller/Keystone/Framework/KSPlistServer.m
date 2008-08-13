@@ -63,9 +63,15 @@
   // updateInfosForResposne:data: method.
   [tickets_ autorelease];
   tickets_ = [tickets copy];
+
+  NSURLRequest *request = nil;
+  request = [NSURLRequest requestWithURL:[self url]
+                             cachePolicy:NSURLRequestReloadIgnoringCacheData
+                         timeoutInterval:60];
+
   
   // Returns a trivial NSURLRequest to do a GET of the URL
-  return [NSArray arrayWithObject:[NSURLRequest requestWithURL:[self url]]];
+  return [NSArray arrayWithObject:request];
 }
 
 - (NSArray *)updateInfosForResponse:(NSURLResponse *)response
