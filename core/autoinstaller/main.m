@@ -7,12 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "KeystoneDelegate.h"
+#import "EngineDelegate.h"
 #import "UpdatePrinter.h"
-#import "KSKeystone.h"
-#import "KSExistenceChecker.h"
-#import "KSTicket.h"
-#import "KSMemoryTicketStore.h"
+#import "KSUpdateEngine.h"
+#import "KSUpdateEngine+Configuration.h"
+#import "SignedPlistServer.h"
 #import "GTMLogger.h"
 #import "GTMScriptRunner.h"
 #import "GTMPath.h"
@@ -133,8 +132,8 @@ static NSDictionary *GetPreferences(void) {
 //
 // Parses command-line options, gets the ticket for the currently-installed
 // version of MacFUSE, stuffs that in a KSTicketStore, then finally creates
-// a KSKeystone instance to drive the install/update with this ticket store and
-// a custom delegate.
+// a KSUpdateEngine instance to drive the install/update with this ticket store
+// and a custom delegate.
 //
 int main(int argc, char **argv) {
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -231,20 +230,23 @@ int main(int argc, char **argv) {
               : [UpdatePrinter printer];
   }
   
-  KeystoneDelegate *delegate = [[[KeystoneDelegate alloc]
-                                 initWithPrinter:printer
-                                       doInstall:install] autorelease];
+  // Configure the Update Engine to use our custome KSServer subclass.
+  [KSUpdateEngine setServerClass:[SignedPlistServer class]];
   
-  // Create a KSKeystone instance with our ticket store that only contains one
-  // ticket (for MacFUSE itself), and our custom delegate that knows how to
-  // handle installing/listing the available updates. Then, tell that keystone 
-  // to update everything. This will kick off Keystone's update engine, but our
+  EngineDelegate *delegate = [[[EngineDelegate alloc]
+                               initWithPrinter:printer
+                                     doInstall:install] autorelease];
+  
+  // Create a KSUpdateEngine instance with our ticket store that only contains
+  // one ticket (for MacFUSE itself), and our custom delegate that knows how to
+  // handle installing/listing the available updates. Then, tell that Update 
+  // Engine to update everything. This will kick off Update Engine, but our 
   // delegate will be able to customize the experience.
-  KSKeystone *keystone = [KSKeystone keystoneWithTicketStore:store
-                                                    delegate:delegate];
-  [keystone updateAllProducts];
+  KSUpdateEngine *engine = [KSUpdateEngine engineWithTicketStore:store
+                                                        delegate:delegate];
+  [engine updateAllProducts];
   
-  while ([keystone isUpdating]) {
+  while ([engine isUpdating]) {
     NSDate *date = [NSDate dateWithTimeIntervalSinceNow:0.2];
     [[NSRunLoop currentRunLoop] runUntilDate:date];
   }
