@@ -128,8 +128,6 @@
 		08FB779EFE84155DC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32A70AAB03705E1F00C91783 /* autoinstaller_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = autoinstaller_Prefix.pch; sourceTree = "<group>"; };
 		F9041AE40E25397800886258 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
-		F91662200E26B54400E2806B /* Keystone-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Keystone-Info.plist"; sourceTree = "<group>"; };
-		F91662210E26B54400E2806B /* MacFUSEAutoinstaller-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MacFUSEAutoinstaller-Info.plist"; sourceTree = "<group>"; };
 		F92468F10E3163D1004ADF93 /* Extensions Tests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Extensions Tests.octest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F92468FB0E316468004ADF93 /* Signer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Signer.h; sourceTree = "<group>"; };
 		F92468FC0E316468004ADF93 /* Signer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Signer.m; sourceTree = "<group>"; };
@@ -252,6 +250,7 @@
 		F954C0CD0E2D6C6400E776EB /* EngineDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EngineDelegate.m; sourceTree = "<group>"; };
 		F95A05210E25327300A22FA6 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		F95A05260E25328100A22FA6 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = /System/Library/Frameworks/CoreServices.framework; sourceTree = "<absolute>"; };
+		F975C8490E957D26000D9E9A /* Extensions Tests-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Extensions Tests-Info.plist"; sourceTree = "<group>"; };
 		F9DEA5950E2F02E200060106 /* UpdatePrinter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpdatePrinter.h; sourceTree = "<group>"; };
 		F9DEA5960E2F02E200060106 /* UpdatePrinter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdatePrinter.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -337,8 +336,7 @@
 		F916621F0E26B54400E2806B /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				F91662200E26B54400E2806B /* Keystone-Info.plist */,
-				F91662210E26B54400E2806B /* MacFUSEAutoinstaller-Info.plist */,
+				F975C8490E957D26000D9E9A /* Extensions Tests-Info.plist */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
