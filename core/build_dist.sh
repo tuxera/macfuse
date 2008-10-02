@@ -72,8 +72,8 @@ then
   exit 1
 fi
 popd > /dev/null
-MACFUSE_UPDATER="$macfuse_dir/core/autoinstaller/build/Release/MacFUSEAutoinstaller.bundle/"
-if [ ! -d "$MACFUSE_UPDATER" ]
+MACFUSE_UPDATER="$macfuse_dir/core/autoinstaller/build/Release/autoinstall-macfuse-core"
+if [ ! -x "$MACFUSE_UPDATER" ]
 then
   echo "Build OK, but missing autoinstaller: $MACFUSE_UPDATER"
   exit 1

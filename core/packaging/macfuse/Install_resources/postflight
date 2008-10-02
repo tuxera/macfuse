@@ -15,8 +15,8 @@ SYSTEM_ROOT=$4
 
 # Binaries we use
 RESOURCES="${PACKAGE_PATH}/Contents/Resources"
-AUTOINSTALLER_BUNDLE="MacFUSEAutoinstaller.bundle"
-AUTOINSTALLER="${RESOURCES}/${AUTOINSTALLER_BUNDLE}/Contents/MacOS/autoinstaller"
+AUTOINSTALLER_NAME="autoinstall-macfuse-core"
+AUTOINSTALLER="${RESOURCES}/${AUTOINSTALLER_NAME}"
 PATH="/bin:/usr/bin:/usr/sbin"; export PATH
 
 # Header
@@ -159,21 +159,24 @@ then
       echo "Unable to find Support directory: ${MACFUSE_SUPPORT}"
       exit 1
     fi
-    tar -C "$RESOURCES" -cpvf - "$AUTOINSTALLER_BUNDLE" | \
-      tar -C "$MACFUSE_SUPPORT" -xpvf -
+
+    # Remove the old autoinstall symlink (or binary) and bundle if necessary.
+    rm -f "${MACFUSE_SUPPORT}/autoinstall-macfuse-core"
+    rm -rf "${MACFUSE_SUPPORT}/MacFUSEAutoinstaller.bundle"
+
+    # Copy the autoinstaller binary.
+    cp "$AUTOINSTALLER" "${MACFUSE_SUPPORT}/${AUTOINSTALLER_NAME}"
     if [ $? -ne 0 ]
     then
       echo "Unable to copy autoinstaller bundle to Support directory."
       exit 1
     fi
-    chown -R root:wheel "${MACFUSE_SUPPORT}/${AUTOINSTALLER_BUNDLE}"
+    chown -R root:wheel "${MACFUSE_SUPPORT}/${AUTOINSTALLER_NAME}"
     if [ $? -ne 0 ]
     then
-      echo "Unable to chown macfuse updater bundle."
+      echo "Unable to chown macfuse autoinstaller."
       exit 1
     fi
-    ln -sf "${AUTOINSTALLER_BUNDLE}/Contents/MacOS/autoinstaller" \
-      "${MACFUSE_SUPPORT}/autoinstall-macfuse-core"
   else
     # If the install failed due to an existing newer version then it is OK.
     # TODO: This grep is sort of lame and dependent on installer (and lang?)

@@ -115,11 +115,8 @@ done
 IFS="$SAVED_IFS"
 
 # Copy the MacFUSE Updater under Resources.
-MACFUSE_UPDATER_DIR=$(dirname "$MACFUSE_UPDATER")
-MACFUSE_UPDATER_BUNDLE=$(basename "$MACFUSE_UPDATER")
-echo "Adding MacFUSEUpdater: ${MACFUSE_UPDATER_DIR}/${MACFUSE_UPDATER_BUNDLE}"
-sudo tar -C "$MACFUSE_UPDATER_DIR" -cpvf - "$MACFUSE_UPDATER_BUNDLE" | \
-  sudo tar -C "$INSTALL_RESOURCES" -xpvf -
+echo "Adding MacFUSEUpdater: ${MACFUSE_UPDATER}"
+sudo cp "$MACFUSE_UPDATER" "$INSTALL_RESOURCES"
 if [ $? -ne 0 ]
 then
   echo "Failed to copy MacFUSE Updater."
@@ -163,13 +160,16 @@ fi
 
 VOLUME_PATH="/Volumes/$VOLUME_NAME"
 
-# Create the .keystone_install file.
-KEYSTONE_INSTALL_DST="${VOLUME_PATH}/.keystone_install"
-cat >  "$KEYSTONE_INSTALL_DST" <<EOF
+# Create the .engine_install file.
+ENGINE_INSTALL_DST="${VOLUME_PATH}/.engine_install"
+cat >  "$ENGINE_INSTALL_DST" <<EOF
 #!/bin/sh
 /usr/sbin/installer -pkg "\$1/${OUTPUT_PACKAGE_NAME}" -target /
 EOF
-chmod +x "$KEYSTONE_INSTALL_DST"
+chmod +x "$ENGINE_INSTALL_DST"
+
+# For backward compatibility, we need a .keystone_install
+ln -s ".engine_install" "${VOLUME_PATH}/.keystone_install"
 
 # Copy over the package.
 sudo cp -pRX "$OUTPUT_PACKAGE" "$VOLUME_PATH"
