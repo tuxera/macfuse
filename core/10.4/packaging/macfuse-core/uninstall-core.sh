@@ -174,7 +174,6 @@ done
 
 # 2. Remove autoinstaller
 remove_file "$INSTALL_VOLUME/./System/Library/Filesystems/fusefs.fs/Support/autoinstall-macfuse-core"
-remove_tree "$INSTALL_VOLUME/./System/Library/Filesystems/fusefs.fs/Support/MacFUSEAutoInstaller.bundle"
 
 # 3. Remove the directories
 for x in `/usr/bin/lsbom -sd "$BOMFILE" | /usr/bin/sort -r`
