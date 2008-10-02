@@ -34,7 +34,7 @@ static unsigned int macfuse_public_der_len = 162;
 
 @implementation SignedPlistServer
 
-- (id)initWithURL:(NSURL *)url {
+- (id)initWithURL:(NSURL *)url params:(NSDictionary *)params {
   // By default, this class will create a SignedPlistServer customized with 
   // the appropriate public key for the signature of MacFUSE rules plists.
   NSData *pubKey = [NSData dataWithBytes:macfuse_public_der
@@ -44,7 +44,7 @@ static unsigned int macfuse_public_der_len = 162;
 }
 
 - (id)initWithURL:(NSURL *)url signer:(Signer *)signer {
-  if ((self = [super initWithURL:url])) {
+  if ((self = [super initWithURL:url params:nil])) {
     signer_ = [signer retain];
     if (signer_ == nil) {
       [self release];
@@ -80,7 +80,8 @@ static unsigned int macfuse_public_der_len = 162;
                                         plist:plist] autorelease];
   
   if (![plistSigner isPlistSigned]) {
-    GTMLoggerInfo(@"Ignoring plist with bad signature\n%@", body);
+    GTMLoggerInfo(@"Ignoring plist with bad signature (plistSigner=%@)\n%@",
+                  plistSigner, body);
     return nil;
   }
   
