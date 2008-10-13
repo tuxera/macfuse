@@ -179,6 +179,20 @@ cat > "$OUTPUT_RULES" <<__END_CONFIG
       <key>ProductID</key>
       <string>com.google.filesystems.fusefs</string>
       <key>Predicate</key>
+      <string>SystemVersion.ProductVersion beginswith "10.6" AND Ticket.version != "$LEOPARD_VERSION"</string>
+      <key>Version</key>
+      <string>$LEOPARD_VERSION</string>
+      <key>Codebase</key>
+      <string>$DOWNLOAD_URL</string>
+      <key>Hash</key>
+      <string>$DMG_HASH</string>
+      <key>Size</key>
+      <string>$DMG_SIZE</string>
+    </dict>
+    <dict>
+      <key>ProductID</key>
+      <string>com.google.filesystems.fusefs</string>
+      <key>Predicate</key>
       <string>SystemVersion.ProductVersion beginswith "10.5" AND Ticket.version != "$LEOPARD_VERSION"</string>
       <key>Version</key>
       <string>$LEOPARD_VERSION</string>
