@@ -114,6 +114,12 @@ do
 done
 IFS="$SAVED_IFS"
 
+# If we included 10.5, then we can symlink and get 10.6 for free.
+if [ -d "${INSTALL_RESOURCES}/10.5" ]
+then
+  ln -s "10.5" "${INSTALL_RESOURCES}/10.6"
+fi
+
 # Copy the MacFUSE Updater under Resources.
 echo "Adding MacFUSEUpdater: ${MACFUSE_UPDATER}"
 sudo cp "$MACFUSE_UPDATER" "$INSTALL_RESOURCES"
