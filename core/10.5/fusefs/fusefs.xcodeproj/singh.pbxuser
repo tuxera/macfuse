@@ -54,7 +54,7 @@
 				PBXFileTableDataSourceColumnWidthsKey = (
 					22,
 					300,
-					327.58349609375,
+					531.58349609375,
 				);
 				PBXFileTableDataSourceColumnsKey = (
 					PBXExecutablesDataSource_ActiveFlagID,
@@ -67,7 +67,7 @@
 				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
-					440,
+					644,
 					20,
 					48,
 					43,
@@ -158,16 +158,16 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 238114943;
-			PBXWorkspaceStateSaveDate = 238114943;
+			PBXPerProjectTemplateStateSaveDate = 245639379;
+			PBXWorkspaceStateSaveDate = 245639379;
 		};
 		perUserProjectItems = {
 			54A2B44E0E3158E100ECB1F1 /* PBXTextBookmark */ = 54A2B44E0E3158E100ECB1F1 /* PBXTextBookmark */;
 			54A2B44F0E3158E100ECB1F1 /* PBXTextBookmark */ = 54A2B44F0E3158E100ECB1F1 /* PBXTextBookmark */;
-			54A2B4500E3158E100ECB1F1 /* PBXBookmark */ = 54A2B4500E3158E100ECB1F1 /* PBXBookmark */;
 			54A2B4510E3158E100ECB1F1 /* PBXTextBookmark */ = 54A2B4510E3158E100ECB1F1 /* PBXTextBookmark */;
 			54A2B4520E3158E100ECB1F1 /* PBXTextBookmark */ = 54A2B4520E3158E100ECB1F1 /* PBXTextBookmark */;
 			54A2B4720E31592600ECB1F1 /* PBXTextBookmark */ = 54A2B4720E31592600ECB1F1 /* PBXTextBookmark */;
+			54D9FCF80EA429420077C37C /* PBXTextBookmark */ = 54D9FCF80EA429420077C37C /* PBXTextBookmark */;
 		};
 		sourceControlManager = 5494A9280ACA12160020068B /* Source Control */;
 		userBuildSettings = {
@@ -297,10 +297,6 @@
 		vrLen = 204;
 		vrLoc = 0;
 	};
-	54A2B4500E3158E100ECB1F1 /* PBXBookmark */ = {
-		isa = PBXBookmark;
-		fRef = 54C6DDB70B5EEB44002D9FD9 /* fuse.h */;
-	};
 	54A2B4510E3158E100ECB1F1 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = 54C6DDC00B5EEB44002D9FD9 /* fuse_kernel.h */;
@@ -336,7 +332,7 @@
 	};
 	54C6DDB70B5EEB44002D9FD9 /* fuse.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {822, 3136}}";
+			sepNavIntBoundsRect = "{{0, 0}, {822, 3052}}";
 			sepNavSelRange = "{4261, 70}";
 			sepNavVisRange = "{4119, 260}";
 			sepNavVisRect = "{{0, 1775}, {702, 269}}";
@@ -465,6 +461,16 @@
 		executables = (
 			540966F60C33BEC900F5E227 /* load_fusefs */,
 		);
+	};
+	54D9FCF80EA429420077C37C /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 54C6DDB70B5EEB44002D9FD9 /* fuse.h */;
+		name = "fuse.h: 147";
+		rLen = 70;
+		rLoc = 4261;
+		rType = 0;
+		vrLen = 260;
+		vrLoc = 4119;
 	};
 	54F862610B8029A400416A6F /* fuse_kludges.c */ = {
 		uiCtxt = {
