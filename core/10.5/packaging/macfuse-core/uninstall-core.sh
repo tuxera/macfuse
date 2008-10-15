@@ -162,7 +162,10 @@ then
   exit 4
 fi
 
-# 1. Remove files and symlinks
+# 1. Try to unload the kext if possible. Best effort, so ignore errors.
+kextunload -b com.google.filesystems.fusefs
+
+# 2. Remove files and symlinks
 for x in `/usr/bin/lsbom -slf "$BOMFILE"` 
 do
   remove_file "$INSTALL_VOLUME/$x"
@@ -172,10 +175,10 @@ do
   fi
 done
 
-# 2. Remove autoinstaller
+# 3. Remove autoinstaller
 remove_file "$INSTALL_VOLUME/./Library/Filesystems/fusefs.fs/Support/autoinstall-macfuse-core"
 
-# 3. Remove the directories
+# 4. Remove the directories
 for x in `/usr/bin/lsbom -sd "$BOMFILE" | /usr/bin/sort -r`
 do
   remove_dir "$INSTALL_VOLUME/$x"
@@ -185,7 +188,7 @@ do
   fi
 done
 
-# 3. Remove the Receipt.
+# 5. Remove the Receipt.
 if [ $IS_BOTCHED_UNINSTALL -eq 0 ]
 then
   remove_tree "$PACKAGE_RECEIPT"
