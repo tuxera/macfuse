@@ -163,7 +163,7 @@ then
 fi
 
 # 1. Try to unload the kext if possible. Best effort, so ignore errors.
-kextunload -b com.google.filesystems.fusefs
+kextunload -b com.google.filesystems.fusefs > /dev/null 2>&1
 
 # 2. Remove files and symlinks
 for x in `/usr/bin/lsbom -slf "$BOMFILE"` 
