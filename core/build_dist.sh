@@ -19,13 +19,13 @@ fi
 is_absolute_path=`echo "$0" | $CUT -c1`
 if [ "$is_absolute_path" = "/" ]
 then
-    macfuse_dir="`$DIRNAME $0`/.."
+    macfuse_dir="`$DIRNAME \"$0\"`/.."
 else
-    macfuse_dir="`pwd`/`$DIRNAME $0`/.."
+    macfuse_dir="`pwd`"/"`$DIRNAME \"$0\"`/.."
 fi
 pushd . > /dev/null
 cd "$macfuse_dir" || exit 1
-macfuse_dir=`pwd`
+macfuse_dir="`pwd`"
 popd > /dev/null
 
 # Maybe they want to clean?
@@ -35,7 +35,7 @@ then
   echo "Cleaning up any previous autoinstaller builds"
   sudo rm -rf "$macfuse_dir/core/autoinstaller/build"
   popd > /dev/null
-  $macfuse_dir/core/build_macfuse.sh 0
+  "$macfuse_dir/core/build_macfuse.sh" 0
   exit 0
 fi
 
@@ -88,7 +88,7 @@ fi
 # Build for requested platforms.
 for i in $PLATFORMS
 do
-$macfuse_dir/core/build_macfuse.sh $i
+"$macfuse_dir/core/build_macfuse.sh" $i
 if [ $? -ne 0 ]
 then
   echo "Failed building for platform: $i"
