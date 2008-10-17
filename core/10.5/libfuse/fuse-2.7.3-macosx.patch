@@ -39047,7 +39047,7 @@ diff -Naur old/include/fuse_darwin.h new/include/fuse_darwin.h
 +++ new/include/fuse_darwin.h	2008-10-13 13:47:28.000000000 -0700
 @@ -0,0 +1,102 @@
 +/*
-+ * Copyright (C) 2006,2007 Google. All Rights Reserved.
++ * Copyright (C) 2006-2008 Google. All Rights Reserved.
 + * Amit Singh <singh@>
 + */
 +
@@ -40814,7 +40814,7 @@ diff -Naur old/lib/fuse_darwin.c new/lib/fuse_darwin.c
 +++ new/lib/fuse_darwin.c	2008-10-13 13:47:28.000000000 -0700
 @@ -0,0 +1,449 @@
 +/*
-+ * Copyright (C) 2006,2007 Google. All Rights Reserved.
++ * Copyright (C) 2006-2008 Google. All Rights Reserved.
 + * Amit Singh <singh@>
 + */
 +
