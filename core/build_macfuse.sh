@@ -13,13 +13,13 @@ os_codename="Unknown"
 is_absolute_path=`echo "$0" | $CUT -c1`
 if [ "$is_absolute_path" = "/" ]
 then
-    macfuse_dir="`$DIRNAME $0`/.."
+    macfuse_dir="`$DIRNAME \"$0\"`/.."
 else
-    macfuse_dir="`pwd`/`$DIRNAME $0`/.."
+    macfuse_dir="`pwd`/`$DIRNAME \"$0\"`/.."
 fi
 pushd . > /dev/null
 cd "$macfuse_dir" || exit 1
-macfuse_dir=`pwd`
+macfuse_dir="`pwd`"
 popd > /dev/null
 
 os_release=`$UNAME -r`
