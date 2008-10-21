@@ -8,50 +8,50 @@
 			<key>Codebase</key>
 			<string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-1.9.dmg</string>
 			<key>Hash</key>
-			<string>VWRtQI6bQF4ZKr3Us/99mRqcX6w=</string>
+			<string>HwcJsUPXyprf9dlQ5MT3qOMhLt8=</string>
 			<key>Predicate</key>
-			<string>SystemVersion.ProductVersion beginswith "10.6" AND Ticket.version != "1.9.15"</string>
+			<string>SystemVersion.ProductVersion beginswith "10.6" AND Ticket.version != "1.9.17"</string>
 			<key>ProductID</key>
 			<string>com.google.filesystems.fusefs</string>
 			<key>Size</key>
-			<string>2983763</string>
+			<string>2987112</string>
 			<key>Version</key>
-			<string>1.9.15</string>
+			<string>1.9.17</string>
 		</dict>
 		<dict>
 			<key>Codebase</key>
 			<string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-1.9.dmg</string>
 			<key>Hash</key>
-			<string>VWRtQI6bQF4ZKr3Us/99mRqcX6w=</string>
+			<string>HwcJsUPXyprf9dlQ5MT3qOMhLt8=</string>
 			<key>Predicate</key>
-			<string>SystemVersion.ProductVersion beginswith "10.5" AND Ticket.version != "1.9.15"</string>
+			<string>SystemVersion.ProductVersion beginswith "10.5" AND Ticket.version != "1.9.17"</string>
 			<key>ProductID</key>
 			<string>com.google.filesystems.fusefs</string>
 			<key>Size</key>
-			<string>2983763</string>
+			<string>2987112</string>
 			<key>Version</key>
-			<string>1.9.15</string>
+			<string>1.9.17</string>
 		</dict>
 		<dict>
 			<key>Codebase</key>
 			<string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-1.9.dmg</string>
 			<key>Hash</key>
-			<string>VWRtQI6bQF4ZKr3Us/99mRqcX6w=</string>
+			<string>HwcJsUPXyprf9dlQ5MT3qOMhLt8=</string>
 			<key>Predicate</key>
-			<string>SystemVersion.ProductVersion beginswith "10.4" AND Ticket.version != "1.9.14"</string>
+			<string>SystemVersion.ProductVersion beginswith "10.4" AND Ticket.version != "1.9.16"</string>
 			<key>ProductID</key>
 			<string>com.google.filesystems.fusefs</string>
 			<key>Size</key>
-			<string>2983763</string>
+			<string>2987112</string>
 			<key>Version</key>
-			<string>1.9.14</string>
+			<string>1.9.16</string>
 		</dict>
 	</array>
 	<key>Signature</key>
 	<data>
-	Eucuw3q9hhdwkA/jnaB2UbJdlh3MJRxsubz2yUZ7l13cXgEoXEhjTWfQpMhCb0/yup1C
-	rEAiJ1Ahfi+dMsiTTrMmYPSYodegvMXG86A7ZxKJc4p2t0fGrBjymKiq9keE+B9vH7sf
-	qJwfRtBKvTt7desW5lTwJTpVRNPEMAHIbr4=
+	iWb+WUMEil+4ySqkhdFS2O3w1p7htdzIkFomNrUjYaExgbzC0VCcZI7zCSJIvnpNB7Nu
+	E1XxkCinukzC31KpkteB3ZEQgG3LxqX8kWd03OWXAUHHJZH0+OYUzs4x+HJkAiSBq+fZ
+	ZvZjrw7joNAS2n4aSvt2sBOnZw1rgQxvVac=
 	</data>
 </dict>
 </plist>
