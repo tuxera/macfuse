@@ -1883,6 +1883,12 @@ fuse_vnop_open(struct vnop_open_args *ap)
         return ENXIO;
     }
 
+#if !M_MACFUSE_ENABLE_FIFOFS
+    if (vnode_isfifo(vp)) {
+        return EPERM;
+    }
+#endif
+
     CHECK_BLANKET_DENIAL(vp, context, ENOENT);
 
     fvdat = VTOFUD(vp);
