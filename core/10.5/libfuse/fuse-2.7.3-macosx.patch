@@ -43566,7 +43566,7 @@ diff -Naur old/lib/modules/volicon.c new/lib/modules/volicon.c
 +    }
 +
 +    if (res == -ENOSYS) {
-+        res = 0;
++        res = -ENOTSUP;
 +    }
 +
 +    return res;
