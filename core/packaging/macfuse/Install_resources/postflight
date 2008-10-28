@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+# Copyright (C) 2008 Google. All Rights Reserved.
+#
+
+PACKAGE_PATH=$1
+INSTALL_PATH=$2
+INSTALL_VOLUME=$3
+SYSTEM_ROOT=$4
+
+# Determine this .pkg's receipt location.
+PACKAGE_NAME=$(basename "$PACKAGE_PATH")
+if [ -z "$PACKAGE_NAME" ]
+then
+  echo "Empty PACKAGE_NAME."
+  exit 1
+fi
+FINAL_RECEIPT="${INSTALL_VOLUME}/Library/Receipts/${PACKAGE_NAME}"
+
+# Remove our receipt; MacFUSE.pkg doesn't have a payload.
+rm -rf "$FINAL_RECEIPT"
+
+## Signal success
+exit 0
