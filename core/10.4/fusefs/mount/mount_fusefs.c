@@ -920,7 +920,7 @@ main(int argc, char **argv)
             errx(EX_USAGE, "fstypename can be at most %d characters",
                  FUSE_FSTYPENAME_MAXLEN);
         } else {
-            snprintf(args.fstypename, MFSTYPENAMELEN, fstypename);
+            snprintf(args.fstypename, MFSTYPENAMELEN, "%s", fstypename);
         }
     }
 
