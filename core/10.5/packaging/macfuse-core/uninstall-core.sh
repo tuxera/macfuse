@@ -229,6 +229,11 @@ then
     then
       IS_BOTCHED_UNINSTALL=1
     fi
+    /usr/sbin/pkgutil --forget com.google.macfuse
+    if [ $? -ne 0 ]
+    then
+      IS_BOTCHED_UNINSTALL=1
+    fi
   fi
 fi
 
