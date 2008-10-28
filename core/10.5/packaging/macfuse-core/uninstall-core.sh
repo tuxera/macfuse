@@ -13,8 +13,23 @@ then
 fi
 
 INSTALL_VOLUME="/"
-PACKAGE_RECEIPT="$INSTALL_VOLUME/Library/Receipts/MacFUSE Core.pkg"
-BOMFILE="$PACKAGE_RECEIPT/Contents/Archive.bom"
+
+OS_RELEASE=`/usr/bin/uname -r`
+
+case "$OS_RELEASE" in 
+  8*)
+    echo "Incorrect uninstall. Use the Tiger version please."
+    exit 1
+    ;;
+  9*)
+    PACKAGE_RECEIPT="$INSTALL_VOLUME/Library/Receipts/MacFUSE Core.pkg"
+    BOMFILE="$PACKAGE_RECEIPT/Contents/Archive.bom"
+    ;;
+  10*)
+     PACKAGE_RECEIPT=""
+     BOMFILE="$INSTALL_VOLUME/var/db/receipts/com.google.macfuse.core.bom"
+     ;;
+esac
 
 # Set to 1 if at any point it looks like the uninstall did not proceed
 # smoothly. If IS_BOTCHED_UNINSTALL then we don't remove the Receipt. 
@@ -151,14 +166,24 @@ if [ ! -d "$INSTALL_VOLUME" ]; then
 fi
 
 # Make sure that MacFUSE Core is installed and the Archive.bom is present.
-if [ ! -d "$PACKAGE_RECEIPT" ]
-then
-  echo "It appears that MacFUSE Core is not installed."
-  exit 3
+if [ ! -z "$PACKAGE_RECEIPT" ]
+then 
+  if [ ! -d "$PACKAGE_RECEIPT" ]
+  then
+    echo "It appears that MacFUSE Core is not installed."
+    exit 3
+  fi
+else
+  /usr/sbin/pkgutil --pkg-info com.google.macfuse.core > /dev/null 2>&1
+  if [ $? -ne 0 ]
+  then
+    echo "It appears that MacFUSE Core is not installed."
+    exit 3    
+  fi
 fi
 if [ ! -f "$BOMFILE" ]
 then
-  echo "Can't find the Archive.bom for MacFUSE Core package."
+  echo "Can not find the Archive.bom for MacFUSE Core package."
   exit 4
 fi
 
@@ -191,10 +216,19 @@ done
 # 5. Remove the Receipt.
 if [ $IS_BOTCHED_UNINSTALL -eq 0 ]
 then
-  remove_tree "$PACKAGE_RECEIPT"
-  if [ $? -ne 0 ]
+  if [ ! -z "$PACKAGE_RECEIPT" ]
   then
-    IS_BOTCHED_UNINSTALL=1
+    remove_tree "$PACKAGE_RECEIPT"
+    if [ $? -ne 0 ]
+    then
+      IS_BOTCHED_UNINSTALL=1
+    fi
+  else 
+    /usr/sbin/pkgutil --forget com.google.macfuse.core
+    if [ $? -ne 0 ]
+    then
+      IS_BOTCHED_UNINSTALL=1
+    fi
   fi
 fi
 
