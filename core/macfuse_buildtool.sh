@@ -255,7 +255,8 @@ function m_build_pkg()
     # Get rid of .svn files from M_INSTALL_RESOURCES_DIR
     #
     (tar -C "$bp_install_srcroot" --exclude '.svn' -cpvf - \
-        "$M_INSTALL_RESOURCES_DIR" | tar -C "$bp_output_dir/" -xpvf - >$m_stdout 2>$m_stderr)>$m_stdout 2>$m_stderr
+        "$M_INSTALL_RESOURCES_DIR" | tar -C "$bp_output_dir/" \
+            -xpvf - >$m_stdout 2>$m_stderr)>$m_stdout 2>$m_stderr
     m_exit_on_error "cannot migrate resources from '$M_INSTALL_RESOURCES_DIR'."
 
     # Make the package
@@ -318,9 +319,10 @@ function m_handler_lib()
         return $retval
     fi
 
-    m_log "initiating Universal build for Mac OS X \"$m_osname\""
+    m_log "initiating Universal build for $m_platform"
 
-    tar -C "$M_CONF_TMPDIR" -xzvf "$lib_dir/$M_LIBFUSE_SRC" >$m_stdout 2>$m_stderr
+    tar -C "$M_CONF_TMPDIR" -xzvf "$lib_dir/$M_LIBFUSE_SRC" \
+        >$m_stdout 2>$m_stderr
     m_exit_on_error "cannot untar MacFUSE library source from '$M_LIBFUSE_SRC'."
 
     cd "$M_CONF_TMPDIR/$package_name"
@@ -373,7 +375,7 @@ function m_handler_reload()
         return $retval
     fi
 
-    m_log "initiating kernel extension rebuild/reload for Mac OS X \"$m_osname\""
+    m_log "initiating kernel extension rebuild/reload for $m_platform"
 
     kextstat -l -b "$M_KEXT_ID" | grep "$M_KEXT_ID" >/dev/null 2>/dev/null
     if [ "$?" == "0" ]
@@ -480,27 +482,30 @@ function m_handler_dist()
     # Autoinstaller
     #
 
+    local md_ai_builddir="$m_srcroot/core/autoinstaller/build"
+
     if [ "$m_shortcircuit" != "1" ]
     then
-        rm -rf "$m_srcroot/core/autoinstaller/build"
+        rm -rf "$md_ai_builddir"
         # ignore any errors
     fi
 
     m_log "building the autoinstaller"
 
-    pushd "$m_srcroot"/core/autoinstaller >/dev/null 2>/dev/null
+    pushd "$m_srcroot/core/autoinstaller" >/dev/null 2>/dev/null
     m_exit_on_error "cannot access the autoinstaller source."
-    xcodebuild -configuration "$m_configuration" -target "Build All" >$m_stdout 2>$m_stderr
+    xcodebuild -configuration "$m_configuration" -target "Build All" \
+        >$m_stdout 2>$m_stderr
     m_exit_on_error "xcodebuild cannot build configuration $m_configuration for target autoinstaller."
     popd >/dev/null 2>/dev/null
 
-    local md_autoinstaller="$m_srcroot/core/autoinstaller/build/$m_configuration/autoinstall-macfuse-core"
-    if [ ! -x "$md_autoinstaller" ]
+    local md_ai="$md_ai_builddir/$m_configuration/autoinstall-macfuse-core"
+    if [ ! -x "$md_ai" ]
     then
         false
-        m_exit_on_error "cannot find autoinstaller '$md_autoinstaller'."
+        m_exit_on_error "cannot find autoinstaller '$md_ai'."
     fi
-    local md_plistsigner="$m_srcroot/core/autoinstaller/build/$m_configuration/plist_signer"
+    local md_plistsigner="$md_ai_builddir/$m_configuration/plist_signer"
     if [ ! -x "$md_plistsigner" ]
     then
         false
@@ -578,7 +583,9 @@ function m_handler_dist()
 
     # Get rid of .svn files from M_INSTALL_RESOURCES_DIR
     #
-    (tar -C "$md_srcroot" --exclude '.svn' -cpvf - "$M_INSTALL_RESOURCES_DIR" | tar -C "$md_macfuse_out" -xpvf - >$m_stdout 2>$m_stderr)>$m_stdout 2>$m_stderr
+    (tar -C "$md_srcroot" --exclude '.svn' -cpvf - \
+        "$M_INSTALL_RESOURCES_DIR" | tar -C "$md_macfuse_out" -xpvf - \
+            >$m_stdout 2>$m_stderr)>$m_stdout 2>$m_stderr
 
     # Copy subpackage platform directories under Resources
     #
@@ -628,8 +635,8 @@ function m_handler_dist()
     # Throw in the autoinstaller
     #
     m_set_suprompt "to add the autoinstaller to the container package"
-    sudo -p "$m_suprompt" cp "$md_autoinstaller" "$md_install_resources"
-    m_exit_on_error "cannot copy '$md_autoinstaller' to '$md_install_resources'."
+    sudo -p "$m_suprompt" cp "$md_ai" "$md_install_resources"
+    m_exit_on_error "cannot copy '$md_ai' to '$md_install_resources'."
 
     # Fix up the container's Info.plist
     #
@@ -690,7 +697,8 @@ __END_ENGINE_INSTALL
 
     # Set the custom icon
     #
-    cp -pRX "$md_install_resources/.VolumeIcon.icns" "$md_volume_path/.VolumeIcon.icns"
+    cp -pRX "$md_install_resources/.VolumeIcon.icns" \
+        "$md_volume_path/.VolumeIcon.icns"
     m_exit_on_error "cannot copy custom volume icon to scratch disk image."
 
     /Developer/Tools/SetFile -a C "$md_volume_path"
@@ -720,7 +728,8 @@ __END_ENGINE_INSTALL
     #
     local md_dmg_name="MacFUSE-$m_release.dmg"
     local md_dmg_path="$md_macfuse_out/$md_dmg_name"
-    hdiutil convert -imagekey zlib-level=9 -format UDZO "$md_scratch_dmg" -o "$md_dmg_path" >$m_stdout 2>$m_stderr
+    hdiutil convert -imagekey zlib-level=9 -format UDZO "$md_scratch_dmg" \
+        -o "$md_dmg_path" >$m_stdout 2>$m_stderr
     m_exit_on_error "cannot finalize MacFUSE distribution disk image."
 
     rm -f "$md_scratch_dmg"
@@ -874,7 +883,7 @@ function m_handler_smalldist()
         return $retval
     fi
 
-    m_log "initiating Universal build for Mac OS X \"$m_osname\""
+    m_log "initiating Universal build for $m_platform"
 
     cd "$kernel_dir"
     m_exit_on_error "failed to access the kext source directory '$kernel_dir'."
@@ -948,7 +957,8 @@ function m_handler_smalldist()
 
     m_log "building user-space MacFUSE library"
 
-    tar -C "$ms_macfuse_build" -xzf "$lib_dir/$M_LIBFUSE_SRC" >$m_stdout 2>$m_stderr
+    tar -C "$ms_macfuse_build" -xzf "$lib_dir/$M_LIBFUSE_SRC" \
+        >$m_stdout 2>$m_stderr
     m_exit_on_error "cannot untar MacFUSE library source from '$M_LIBFUSE_SRC'."
 
     cd "$ms_macfuse_build"/fuse*
