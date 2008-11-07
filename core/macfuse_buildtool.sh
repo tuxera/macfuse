@@ -72,10 +72,8 @@ function m_help()
     cat <<__END_HELP_CONTENT
 $M_PROGDESC version $M_PROGVERS
 Copyright (C) 2008 Google. All Rights Reserved.
-
 Usage:
-
-  $M_PROGNAME [-c configuration] [-d] [-p platform] [-q] [-s] -t target [-v]
+  $M_PROGNAME [-dqsv] [-c configuration] [-p platform] -t target
 
   * configuration is one of: $M_CONFIGURATIONS (default is $m_configuration)
   * platform is one of: $M_PLATFORMS (default is the host's platform)
@@ -83,7 +81,6 @@ Usage:
   * platforms can only be specified for: $M_TARGETS_WITH_PLATFORM
 
 The target keywords mean the following:
-
     clean       clean all targets
     dist        create a multiplatform distribution package
     lib         build the user-space library (e.g. to run fusexmp_fh)
@@ -92,12 +89,10 @@ The target keywords mean the following:
     swconfigure configure software (e.g. sshfs) for compilation
 
 Other options are:
-
     -d  create a developer release package instead of a regular release
     -q  enable quiet mode (suppresses verbose build output)
     -s  enable shortcircuit mode (useful for testing the build mechanism itself)
     -v  report version numbers and quit
-
 __END_HELP_CONTENT
 
     return 0
