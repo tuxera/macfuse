@@ -73,7 +73,7 @@ function m_help()
 $M_PROGDESC version $M_PROGVERS
 Copyright (C) 2008 Google. All Rights Reserved.
 Usage:
-  $M_PROGNAME [-dqsv] [-c configuration] [-p platform] -t target
+  $M_PROGNAME [-dhqsv] [-c configuration] [-p platform] -t target
 
   * configuration is one of: $M_CONFIGURATIONS (default is $m_configuration)
   * platform is one of: $M_PLATFORMS (default is the host's platform)
