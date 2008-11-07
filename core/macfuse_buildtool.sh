@@ -201,6 +201,12 @@ function m_set_platform()
        m_platform=`sw_vers -productVersion | cut -d . -f 1,2`
     fi
 
+    # XXX For now
+    if [ "$m_platform" == "10.6" ]
+    then
+        m_platform="10.5"
+    fi
+
     case "$m_platform" in
     10.4*)
         m_osname="Tiger"
@@ -273,23 +279,31 @@ function m_handler_lib()
     m_set_srcroot "$m_platform"
 
     local lib_dir="$m_srcroot"/core/"$m_platform"/libfuse
-    local kernel_dir="$m_srcroot"/core/"$m_platform"/fusefs
-
     if [ ! -d "$lib_dir" ]
     then
+        false
         m_exit_on_error "cannot access directory '$lib_dir'."
     fi
 
+    local kernel_dir="$m_srcroot"/core/"$m_platform"/fusefs
     if [ ! -d "$kernel_dir" ]
     then
+        false
         m_exit_on_error "cannot access directory '$kernel_dir'."
     fi
 
     local package_dir=`tar -tzvf "$lib_dir/$M_LIBFUSE_SRC" | head -1 | awk '{print $NF}'`
+    if [ "x$package_dir" == "x" ]
+    then
+        false
+        m_exit_on_error "cannot determine MacFUSE library version."
+    fi
+
     local package_name=`basename "$package_dir"`
 
     if [ "x$package_name" == "x" ]
     then
+        false
         m_exit_on_error "cannot determine MacFUSE library version."
     fi
 
@@ -343,6 +357,11 @@ function m_handler_reload()
     m_set_srcroot "$m_platform"
 
     local kernel_dir="$m_srcroot/core/$m_platform/fusefs"
+    if [ ! -d "$kernel_dir" ]
+    then
+        false
+        m_exit_on_error "cannot access directory '$kernel_dir'."
+    fi
 
     if [ "$1" == "clean" ]
     then
@@ -804,15 +823,16 @@ function m_handler_smalldist()
     m_set_srcroot "$m_platform"
 
     local lib_dir="$m_srcroot"/core/"$m_platform"/libfuse
-    local kernel_dir="$m_srcroot"/core/"$m_platform"/fusefs
-
     if [ ! -d "$lib_dir" ]
     then
+        false
         m_exit_on_error "cannot access directory '$lib_dir'."
     fi
 
+    local kernel_dir="$m_srcroot"/core/"$m_platform"/fusefs
     if [ ! -d "$kernel_dir" ]
     then
+        false
         m_exit_on_error "cannot access directory '$kernel_dir'."
     fi
 
@@ -1037,7 +1057,18 @@ function m_handler_swconfigure()
     m_set_srcroot "$m_platform"
 
     local lib_dir="$m_srcroot"/core/"$m_platform"/libfuse
+    if [ ! -d "$lib_dir" ]
+    then
+        false
+        m_exit_on_error "cannot access directory '$lib_dir'."
+    fi
+
     local kernel_dir="$m_srcroot"/core/"$m_platform"/fusefs
+    if [ ! -d "$kernel_dir" ]
+    then
+        false
+        m_exit_on_error "cannot access directory '$kernel_dir'."
+    fi
 
     local current_dir=`pwd`
     local current_product=`basename "$current_dir"`
