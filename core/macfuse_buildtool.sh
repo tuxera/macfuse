@@ -72,12 +72,14 @@ function m_help()
 $M_PROGDESC version $M_PROGVERS
 Copyright (C) 2008 Google. All Rights Reserved.
 
-Usage: $M_PROGNAME [-c configuration] [-p platform] [-q] [-s] -t target
+Usage:
 
-  - configuration is one of: $M_CONFIGURATIONS
-  - platform is one of: $M_PLATFORMS
-  - target is one of: $M_TARGETS
-  - platforms can only be specified for: $M_TARGETS_WITH_PLATFORM
+  $M_PROGNAME [-c configuration] [-p platform] [-q] [-s] -t target [-v]
+
+  * configuration is one of: $M_CONFIGURATIONS (default is $m_configuration)
+  * platform is one of: $M_PLATFORMS (default is the host's platform)
+  * target is one of: $M_TARGETS
+  * platforms can only be specified for: $M_TARGETS_WITH_PLATFORM
 
 The target keywords mean the following:
 
@@ -88,8 +90,11 @@ The target keywords mean the following:
     smalldist   create a platform-specific distribution package
     swconfigure configure software (e.g. sshfs) for compilation
 
-Use -q for quiet mode (minimal output). Use -s to shortcircuit giant builds,
-which can be useful while testing the build mechanism itself.
+Other options are:
+
+    -q  enable quiet mode (suppresses verbose build output)
+    -s  enable shortcircuit mode (useful for testing the build mechanism itself)
+    -v  report version numbers and quit
 
 __END_HELP_CONTENT
 
@@ -177,7 +182,7 @@ function m_set_srcroot()
         m_srcroot_platformdir="$m_srcroot/core/$1"
         if [ ! -d "$m_srcroot_platformdir" ]
         then
-            m_srcroot_platformdir="__default__"
+            m_srcroot_platformdir="$M_DEFAULT_VALUE"
             m_warn "directory '$m_srcroot/$1' does not exist."
         fi
     fi
@@ -331,7 +336,7 @@ function m_handler_reload()
     m_active_target="reload"
 
     # Argument validation would have ensured that we use native platform
-    # (__default__) for this target.
+    # for this target.
 
     m_set_platform
 
