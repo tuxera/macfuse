@@ -22,7 +22,7 @@ readonly M_PROGVERS=1.0
 
 readonly M_DEFAULT_VALUE=__default__
 
-readonly M_CONFIGURATIONS="Debug Release" # default is Debug
+readonly M_CONFIGURATIONS="Debug Release" # default is Release
 readonly M_PLATFORMS="10.4 10.5 10.6"     # default is native
 readonly M_PLATFORMS_REALISTIC="10.4 10.5"
 readonly M_TARGETS="clean dist lib reload smalldist swconfigure"
@@ -34,7 +34,7 @@ readonly M_DEFAULT_TARGET="$M_DEFAULT_VALUE"
 # Globals
 #
 declare m_active_target=""
-declare m_configuration=Debug
+declare m_configuration=Release
 declare m_osname=""
 declare m_platform="$M_DEFAULT_PLATFORM"
 declare m_release=""
