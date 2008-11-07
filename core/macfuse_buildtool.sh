@@ -490,7 +490,7 @@ function m_handler_dist()
         # ignore any errors
     fi
 
-    m_log "building the autoinstaller"
+    m_log "building the MacFUSE autoinstaller"
 
     pushd "$m_srcroot/core/autoinstaller" >/dev/null 2>/dev/null
     m_exit_on_error "cannot access the autoinstaller source."
@@ -539,11 +539,11 @@ function m_handler_dist()
     sudo -p "$m_suprompt" rm -rf "$md_macfuse_out"
     # ignore any errors
 
-    m_log "building distributon in $md_macfuse_out"
+    m_log "initiating distribution build"
 
     local md_platforms=""
     local md_platform_dirs=`ls -d "$M_CONF_TMPDIR"/macfuse-core-*${m_release}.* | paste -s -`
-    m_log "found platforms $md_platform_dirs"
+    m_log "found payloads $md_platform_dirs"
     for i in $md_platform_dirs
     do
         local md_tmp_versions=${i#*core-}
@@ -988,7 +988,7 @@ function m_handler_smalldist()
     # Build MacFUSE.framework
     #
 
-    m_log "building Objective-C SDK"
+    m_log "building MacFUSE Objective-C SDK"
 
     cd "$ms_project_dir/../../sdk-objc"
     m_exit_on_error "cannot access Objective-C SDK directory."
@@ -1048,7 +1048,7 @@ function m_handler_smalldist()
     # Create the MacFUSE Installer Package
     #
 
-    m_log "building installer package"
+    m_log "building installer package for $m_platform"
 
     m_build_pkg "$ms_macfuse_version" "$m_srcroot/core/$m_platform/packaging/macfuse-core" "$ms_macfuse_root" "$M_PKGNAME_CORE" "$ms_macfuse_out"
     m_exit_on_error "cannot create '$M_PKGNAME_CORE'."
