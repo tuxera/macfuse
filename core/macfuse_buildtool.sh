@@ -634,8 +634,7 @@ function m_handler_dist()
 
     # Throw in the autoinstaller
     #
-    m_set_suprompt "to add the autoinstaller to the container package"
-    sudo -p "$m_suprompt" cp "$md_ai" "$md_install_resources"
+    cp "$md_ai" "$md_install_resources"
     m_exit_on_error "cannot copy '$md_ai' to '$md_install_resources'."
 
     # Fix up the container's Info.plist
@@ -711,9 +710,7 @@ __END_ENGINE_INSTALL
 
     # Copy over the CHANGELOG.txt file
     #
-    m_set_suprompt "to copy CHANGELOG.txt to container package"
-    sudo -p "$m_suprompt" \
-        cp "$m_srcroot/CHANGELOG.txt" "$md_volume_path/CHANGELOG.txt"
+    cp "$m_srcroot/CHANGELOG.txt" "$md_volume_path/CHANGELOG.txt"
     m_exit_on_error "cannot copy MacFUSE CHANGELOG to scratch disk image."
 
     # Detach the volume.
