@@ -888,7 +888,7 @@ function m_handler_smalldist()
     cd "$kernel_dir"
     m_exit_on_error "failed to access the kext source directory '$kernel_dir'."
 
-    m_log "building kernel extension and tools"
+    m_log "building MacFUSE kernel extension and tools"
 
     xcodebuild -configuration "$m_configuration" -target All >$m_stdout 2>$m_stderr
     m_exit_on_error "xcodebuild cannot build configuration $m_configuration."
