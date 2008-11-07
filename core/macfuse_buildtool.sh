@@ -362,6 +362,20 @@ function m_handler_reload()
         m_exit_on_error "cannot access directory '$kernel_dir'."
     fi
 
+    if [ -e "$M_CONF_TMPDIR/$M_KEXT_NAME" ]
+    then
+        m_set_suprompt "to remove old MacFUSE kext"
+        sudo -p "$m_suprompt" rm -rf "$M_CONF_TMPDIR/$M_KEXT_NAME"
+        m_exit_on_error "cannot remove old copy of MacFUSE kext."
+    fi
+
+    if [ -e "$M_CONF_TMPDIR/$M_KEXT_SYMBOLS" ]
+    then
+        m_set_suprompt "to remove old copy of MacFUSE kext symbols"
+        sudo -p "$m_suprompt" rm -rf "$M_CONF_TMPDIR/$M_KEXT_SYMBOLS"
+        m_exit_on_error "cannot remove old copy of MacFUSE kext symbols."
+    fi
+
     if [ "$1" == "clean" ]
     then
         rm -rf "$kernel_dir/build/"
@@ -390,14 +404,6 @@ function m_handler_reload()
     xcodebuild -configuration Debug -target fusefs >$m_stdout 2>$m_stderr
     m_exit_on_error "xcodebuild cannot build configuration Debug for target fusefs."
  
-    m_set_suprompt "to remove old MacFUSE kext"
-    sudo -p "$m_suprompt" rm -rf "$M_CONF_TMPDIR/$M_KEXT_NAME"
-    m_exit_on_error "cannot remove old copy of MacFUSE kext."
-
-    m_set_suprompt "to remove old copy of MacFUSE kext symbols"
-    sudo -p "$m_suprompt" rm -rf "$M_CONF_TMPDIR/$M_KEXT_SYMBOLS"
-    m_exit_on_error "cannot remove old copy of MacFUSE kext symbols."
-
     mkdir "$M_CONF_TMPDIR/$M_KEXT_SYMBOLS"
     m_exit_on_error "cannot create directory for MacFUSE kext symbols."
 
@@ -454,9 +460,12 @@ function m_handler_dist()
         m_release=`awk '/#define[ \t]*MACFUSE_VERSION_LITERAL/ {print $NF}' "$m_srcroot/core/$m_platform/fusefs/common/fuse_version.h" | cut -d . -f 1,2`
         if [ ! -z "$m_release" ]
         then
-            m_set_suprompt "to remove previous output packages"
-            sudo -p "$m_suprompt" rm -rf "$M_CONF_TMPDIR/macfuse-$m_release"
-            m_log "cleaned any previous output packages in '$M_CONF_TMPDIR'"
+            if [ -e "$M_CONF_TMPDIR/macfuse-$m_release" ]
+            then
+                m_set_suprompt "to remove previous output packages"
+                sudo -p "$m_suprompt" rm -rf "$M_CONF_TMPDIR/macfuse-$m_release"
+                m_log "cleaned any previous output packages in '$M_CONF_TMPDIR'"
+            fi
         fi
 
         return 0
@@ -530,9 +539,12 @@ function m_handler_dist()
     local md_macfuse_out="$M_CONF_TMPDIR/macfuse-$m_release"
     local md_macfuse_root="$md_macfuse_out/pkgroot/"
 
-    m_set_suprompt "to remove a previously built container package"
-    sudo -p "$m_suprompt" rm -rf "$md_macfuse_out"
-    # ignore any errors
+    if [ -e "$md_macfuse_out" ]
+    then
+        m_set_suprompt "to remove a previously built container package"
+        sudo -p "$m_suprompt" rm -rf "$md_macfuse_out"
+        # ignore any errors
+    fi
 
     m_log "initiating distribution build"
 
@@ -855,9 +867,12 @@ function m_handler_smalldist()
 
     if [ "$m_shortcircuit" != "1" ]
     then
-        m_set_suprompt "to remove a previously built platform-specific package"
-        sudo -p "$m_suprompt" rm -rf "$ms_macfuse_out"
-        m_exit_on_error "failed to clean up previous platform-specific MacFUSE build."
+        if [ -e "$ms_macfuse_out" ]
+        then
+            m_set_suprompt "to remove a previously built platform-specific package"
+            sudo -p "$m_suprompt" rm -rf "$ms_macfuse_out"
+            m_exit_on_error "failed to clean up previous platform-specific MacFUSE build."
+        fi
     else
         if [ -e "$ms_macfuse_out/$M_PKGNAME_CORE" ]
         then
@@ -976,6 +991,42 @@ function m_handler_smalldist()
 
     rm -f "ms_macfuse_root"/usr/local/include/*ulockmgr*
     # ignore any errors
+
+    # Now build again, if necessary, with 64-bit inode support
+    #
+
+    # ino64 is not supported on Tiger
+
+    if [ "$m_platform" != "10.4" ]
+    then
+
+        m_log "building user-space MacFUSE library (ino64)"
+
+        cd "$ms_macfuse_build"/fuse*/lib
+        m_exit_on_error "cannot access MacFUSE library (ino64) source in '$ms_macfuse_build/fuse*/lib'."
+
+        make clean >$m_stdout 2>$m_stderr
+        m_exit_on_error "make failed while compiling the MacFUSE library (ino64)."
+
+        perl -pi -e 's#libfuse#libfuse_ino64#g' Makefile
+        m_exit_on_error "failed to prepare MacFUSE library (ino64) for compilation."
+
+        perl -pi -e 's#-D__FreeBSD__=10#-D__DARWIN_64_BIT_INO_T -D__FreeBSD__=10#g' Makefile
+        m_exit_on_error "failed to prepare MacFUSE library (ino64) for compilation."
+
+        make -j2 >$m_stdout 2>$m_stderr
+        m_exit_on_error "make failed while compiling the MacFUSE library (ino64)."
+
+        make install DESTDIR="$ms_macfuse_root" >$m_stdout 2>$m_stderr
+        m_exit_on_error "cannot prepare MacFUSE library (ino64) build for installation."
+
+        rm -f "$ms_macfuse_root"/usr/local/lib/*ulockmgr*
+        # ignore any errors
+
+        rm -f "$ms_macfuse_root"/usr/local/include/*ulockmgr*
+        # ignore any errors
+
+    fi # ino64 on > Tiger
 
     # Build MacFUSE.framework
     #
