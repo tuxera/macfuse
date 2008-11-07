@@ -16,7 +16,9 @@ readonly M_CONF_PRIVKEY=/etc/macfuse/private.der
 
 # Other constants
 #
-readonly M_PROGNAME="macfuse_buildtool"
+readonly M_PROGDESC="MacFUSE build tool"
+readonly M_PROGNAME=macfuse_buildtool
+readonly M_PROGVERS=1.0
 
 readonly M_DEFAULT_VALUE=__default__
 
@@ -66,8 +68,8 @@ readonly M_WARNING="*** Warning"
 
 function m_help()
 {
-    cat <<__END_TARGETS_DESCRIPTION
-MacFUSE build tool
+    cat <<__END_HELP_CONTENT
+$M_PROGDESC version $M_PROGVERS
 Copyright (C) 2008 Google. All Rights Reserved.
 
 Usage: $M_PROGNAME [-c configuration] [-p platform] [-q] [-s] -t target
@@ -89,7 +91,29 @@ The target keywords mean the following:
 Use -q for quiet mode (minimal output). Use -s to shortcircuit giant builds,
 which can be useful while testing the build mechanism itself.
 
-__END_TARGETS_DESCRIPTION
+__END_HELP_CONTENT
+
+    return 0
+}
+
+# m_version()
+#
+function m_version
+{
+    echo "$M_PROGDESC version $M_PROGVERS"
+
+    m_set_platform
+    m_set_srcroot "$m_platform"
+
+    local mv_platform_dirs=`ls -d "$m_srcroot"/core/10.*`
+    for i in $mv_platform_dirs
+    do
+        local mv_release=`awk '/#define[ \t]*MACFUSE_VERSION_LITERAL/ {print $NF}' "$i/fusefs/common/fuse_version.h"`
+        if [ ! -z "$mv_release" ]
+        then
+            echo "Platform source '$i': MacFUSE version $mv_release"
+        fi
+    done
 
     return 0
 }
@@ -1170,7 +1194,7 @@ function m_validate_input()
 
 function m_read_input()
 {
-    local mri_args=`getopt c:hp:qst: $*`
+    local mri_args=`getopt c:hp:qst:v $*`
 
     if [ $? != 0 ]
     then
@@ -1209,6 +1233,11 @@ function m_read_input()
         -t)
             m_target="$2"
             shift
+            shift
+            ;;
+        -v)
+            m_version
+            exit 0
             shift
             ;;
         --)
