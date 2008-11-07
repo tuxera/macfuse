@@ -472,7 +472,7 @@ function m_handler_dist()
     m_set_platform
     m_set_srcroot "$m_platform"
 
-    m_log "looking for MacFUSE private key"
+    m_log "locating MacFUSE private key"
     if [ ! -f "$M_CONF_PRIVKEY" ]
     then
         false
