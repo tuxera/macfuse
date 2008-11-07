@@ -35,6 +35,7 @@ readonly M_DEFAULT_TARGET="$M_DEFAULT_VALUE"
 #
 declare m_active_target=""
 declare m_configuration=Release
+declare m_developer=0
 declare m_osname=""
 declare m_platform="$M_DEFAULT_PLATFORM"
 declare m_release=""
@@ -74,7 +75,7 @@ Copyright (C) 2008 Google. All Rights Reserved.
 
 Usage:
 
-  $M_PROGNAME [-c configuration] [-p platform] [-q] [-s] -t target [-v]
+  $M_PROGNAME [-c configuration] [-d] [-p platform] [-q] [-s] -t target [-v]
 
   * configuration is one of: $M_CONFIGURATIONS (default is $m_configuration)
   * platform is one of: $M_PLATFORMS (default is the host's platform)
@@ -92,6 +93,7 @@ The target keywords mean the following:
 
 Other options are:
 
+    -d  create a developer release package instead of a regular release
     -q  enable quiet mode (suppresses verbose build output)
     -s  enable shortcircuit mode (useful for testing the build mechanism itself)
     -v  report version numbers and quit
@@ -545,7 +547,7 @@ function m_handler_dist()
 
         md_platforms="${md_platforms},${md_tmp_os_version}=${i}/$M_PKGNAME_CORE"
 
-        case "$m_tmp_os_version" in
+        case "$md_tmp_os_version" in
         10.4)
             m_version_tiger=$md_tmp_release_version
         ;;
@@ -733,7 +735,7 @@ __END_ENGINE_INSTALL
 
     local md_rules_plist="$md_macfuse_out/DeveloperRelease.plist"
     local md_download_url="http://macfuse.googlecode.com/svn/releases/developer/$md_dmg_name"
-    if [ "$m_configuration" == "Release" ]
+    if [ "$m_developer" == "0" ]
     then
         md_rules_plist="$md_macfuse_out/CurrentRelease.plist"
         md_download_url="http://macfuse.googlecode.com/svn/releases/$md_dmg_name"
@@ -1230,7 +1232,7 @@ function m_validate_input()
 
 function m_read_input()
 {
-    local mri_args=`getopt c:hp:qst:v $*`
+    local mri_args=`getopt c:dhp:qst:v $*`
 
     if [ $? != 0 ]
     then
@@ -1246,6 +1248,10 @@ function m_read_input()
         -c)
             m_configuration="$2"
             shift
+            shift
+            ;;
+        -d)
+            m_developer=1
             shift
             ;;
         -h)
