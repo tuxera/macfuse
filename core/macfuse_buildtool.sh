@@ -318,13 +318,6 @@ function m_handler_lib()
     fi
 
     m_log "initiating Universal build for $m_platform"
-    m_log "configuration is '$m_configuration'"
-    if [ "$m_developer" == "0" ]
-    then
-        m_log "packaging flavor is 'Mainstream'"
-    else
-        m_log "packaging flavor is 'Developer Prerelease'"
-    fi
 
     tar -C "$M_CONF_TMPDIR" -xzvf "$lib_dir/$M_LIBFUSE_SRC" \
         >$m_stdout 2>$m_stderr
@@ -485,6 +478,14 @@ function m_handler_dist()
 
     m_set_platform
     m_set_srcroot "$m_platform"
+
+    m_log "configuration is '$m_configuration'"
+    if [ "$m_developer" == "0" ]
+    then
+        m_log "packaging flavor is 'Mainstream'"
+    else
+        m_log "packaging flavor is 'Developer Prerelease'"
+    fi
 
     m_log "locating MacFUSE private key"
     if [ ! -f "$M_CONF_PRIVKEY" ]
