@@ -11,6 +11,9 @@ export PATH
 
 # Configurables
 #
+# Beware: GNU libtool cannot handle directory names containing whitespace.
+#         Therefore, do not set M_CONF_TMPDIR to such a directory.
+#
 readonly M_CONF_TMPDIR=/tmp
 readonly M_CONF_PRIVKEY=/etc/macfuse/private.der
 
@@ -89,7 +92,7 @@ The target keywords mean the following:
     swconfigure configure software (e.g. sshfs) for compilation
 
 Other options are:
-    -d  create a developer release package instead of a regular release
+    -d  create a developer prerelease package instead of a regular release
     -q  enable quiet mode (suppresses verbose build output)
     -s  enable shortcircuit mode (useful for testing the build mechanism itself)
     -v  report version numbers and quit
@@ -315,6 +318,13 @@ function m_handler_lib()
     fi
 
     m_log "initiating Universal build for $m_platform"
+    m_log "configuration is '$m_configuration'"
+    if [ "$m_developer" == "0" ]
+    then
+        m_log "packaging flavor is 'Mainstream'"
+    else
+        m_log "packaging flavor is 'Developer Prerelease'"
+    fi
 
     tar -C "$M_CONF_TMPDIR" -xzvf "$lib_dir/$M_LIBFUSE_SRC" \
         >$m_stdout 2>$m_stderr
@@ -1193,6 +1203,13 @@ function m_validate_input()
 {
     local mvi_found=
     local mvi_good=
+
+    # Validate scratch directory
+    if [ ! -d "$M_CONF_TMPDIR" ] || [ ! -w "$M_CONF_TMPDIR" ]
+    then
+        echo "M_CONF_TMPDIR (currently '$M_CONF_TMPDIR') must be set to a writeable directory."
+        exit 2
+    fi
 
     # Validate if platform was specified when it shouldn't have been
     #
