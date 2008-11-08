@@ -36,6 +36,7 @@ readonly M_DEFAULT_TARGET="$M_DEFAULT_VALUE"
 
 # Globals
 #
+declare m_args=
 declare m_active_target=""
 declare m_configuration=Release
 declare m_developer=0
@@ -1303,15 +1304,15 @@ function m_validate_input()
 
 function m_read_input()
 {
-    local mri_args=`getopt c:dhp:qst:v $*`
+    m_args=`getopt c:dhp:qst:v $*`
 
     if [ $? != 0 ]
     then
-        m_help
+        echo "Try $0 -h for help."
         exit 2
     fi
 
-    set -- $mri_args
+    set -- $m_args
 
     for m_i
     do
