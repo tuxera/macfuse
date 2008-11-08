@@ -885,6 +885,13 @@ function m_handler_smalldist()
             sudo -p "$m_suprompt" rm -rf "$ms_macfuse_out"
             m_exit_on_error "failed to clean up previous platform-specific MacFUSE build."
         fi
+        if [ -e "$M_CONF_TMPDIR/macfuse-core-$ms_os_version-"* ]
+        then
+            m_warn "removing unrecognized version of platform-specific package"
+            m_set_suprompt "to remove unrecognized version of platform-specific package"
+            sudo -p "$m_suprompt" rm -rf "$M_CONF_TMPDIR/macfuse-core-$ms_os_version-"*
+            m_exit_on_error "failed to clean up unrecognized version of platform-specific package."
+        fi
     else
         if [ -e "$ms_macfuse_out/$M_PKGNAME_CORE" ]
         then
