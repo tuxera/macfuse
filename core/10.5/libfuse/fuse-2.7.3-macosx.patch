@@ -37607,7 +37607,7 @@ diff -Naur old/darwin_configure.sh new/darwin_configure.sh
 +MACFUSE_SRCROOT=${MACFUSE_SRCROOT:-$1}
 +MACFUSE_SRCROOT=${MACFUSE_SRCROOT:?}
 +
-+CFLAGS="-D__FreeBSD__=10 -D_POSIX_C_SOURCE=200112L -I$MACFUSE_SRCROOT/common -O -g -arch i386 -arch ppc -arch x86_64 -arch ppc64 -isysroot /Developer/SDKs/MacOSX10.5.sdk" LDFLAGS="-arch i386 -arch ppc -arch x86_64 -arch ppc64 -framework CoreFoundation" ./configure --prefix=/usr/local --disable-dependency-tracking
++CFLAGS="-D__FreeBSD__=10 -D_POSIX_C_SOURCE=200112L -I$MACFUSE_SRCROOT/common -O -g -arch i386 -arch ppc -arch x86_64 -arch ppc64 -isysroot /Developer/SDKs/MacOSX10.5.sdk" LDFLAGS="-arch i386 -arch ppc -arch x86_64 -arch ppc64 -framework CoreFoundation" ./configure --prefix=/usr/local --disable-dependency-tracking --disable-static
 diff -Naur old/example/Makefile.am new/example/Makefile.am
 --- old/example/Makefile.am	2008-02-19 11:51:22.000000000 -0800
 +++ new/example/Makefile.am	2008-11-07 18:51:58.000000000 -0800
