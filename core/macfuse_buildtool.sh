@@ -1022,7 +1022,7 @@ function m_handler_smalldist()
         perl -pi -e 's#libfuse#libfuse_ino64#g' Makefile
         m_exit_on_error "failed to prepare MacFUSE library (ino64) for compilation."
 
-        perl -pi -e 's#-D__FreeBSD__=10#-D__DARWIN_64_BIT_INO_T -D__FreeBSD__=10#g' Makefile
+        perl -pi -e 's#-D__FreeBSD__=10#-D__DARWIN_64_BIT_INO_T=1 -D__FreeBSD__=10#g' Makefile
         m_exit_on_error "failed to prepare MacFUSE library (ino64) for compilation."
 
         make -j2 >$m_stdout 2>$m_stderr
