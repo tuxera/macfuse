@@ -34,6 +34,8 @@ readonly M_TARGETS_WITH_PLATFORM="examples lib smalldist swconfigure"
 readonly M_DEFAULT_PLATFORM="$M_DEFAULT_VALUE"
 readonly M_DEFAULT_TARGET="$M_DEFAULT_VALUE"
 
+readonly M_XCODE_VERSION_REQUIRED=3.1.1
+
 # Globals
 #
 declare m_args=
@@ -54,6 +56,7 @@ declare m_usdk_dir=""
 declare m_version_tiger=""
 declare m_version_leopard=""
 declare m_version_snowleopard=""
+declare m_xcode_version=
 
 # Other implementation details
 #
@@ -1297,6 +1300,37 @@ function m_handler_swconfigure()
 
 # --
 
+function m_validate_xcode()
+{
+    m_xcode_version=`xcodebuild -version | head -1 | awk '{print $NF}'`
+    if [ $? != 0 ]
+    then
+        echo "failed to determine Xcode version."
+        exit 2
+    fi
+
+    local mvs_xcode_major=`echo $m_xcode_version | cut -d . -f 1`
+    local mvs_xcode_minor=`echo $m_xcode_version | cut -d . -f 2`
+    local mvs_xcode_rev=`echo $m_xcode_version | cut -d . -f 3`
+    local mvs_have=$(( $mvs_xcode_major * 100 + $mvs_xcode_minor * 10 + $mvs_xcode_rev ))
+
+    mvs_xcode_major=`echo $M_XCODE_VERSION_REQUIRED | cut -d . -f 1`
+    mvs_xcode_minor=`echo $M_XCODE_VERSION_REQUIRED | cut -d . -f 2`
+    mvs_xcode_rev=`echo $M_XCODE_VERSION_REQUIRED | cut -d . -f 3`
+    local mvs_want=$(( $mvs_xcode_major * 100 + $mvs_xcode_minor * 10 + $mvs_xcode_rev ))
+
+    if [ $mvs_have -lt $mvs_want ]
+    then
+        echo "Xcode version $M_XCODE_VERSION_REQUIRED or higher is required to build MacFUSE."
+        exit 2
+    fi 
+
+    m_active_target="preflight"
+    m_log "Xcode version $m_xcode_version found (minimum requirement is $M_XCODE_VERSION_REQUIRED)"
+
+    return 0
+}
+
 function m_validate_input()
 {
     local mvi_found=
@@ -1470,11 +1504,12 @@ function m_handler()
     ;;
 
     "dist")
-       m_handler_dist
+        m_validate_xcode
+        m_handler_dist
     ;;
 
     "examples")
-       m_handler_examples
+        m_handler_examples
     ;;
 
     "lib")
@@ -1482,10 +1517,12 @@ function m_handler()
     ;;
 
     "reload")
+        m_validate_xcode
         m_handler_reload
     ;;
 
     "smalldist")
+        m_validate_xcode
         m_handler_smalldist
     ;;
 
