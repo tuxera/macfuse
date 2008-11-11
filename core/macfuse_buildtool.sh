@@ -1302,8 +1302,8 @@ function m_handler_swconfigure()
 
 function m_validate_xcode()
 {
-    m_xcode_version=`xcodebuild -version | head -1 | awk '{print $NF}'`
-    if [ $? != 0 ]
+    m_xcode_version=`xcodebuild -version | head -1 | grep Xcode | awk '{print $NF}'`
+    if [ $? != 0 ] || [ -z "$m_xcode_version" ]
     then
         echo "failed to determine Xcode version."
         exit 2
