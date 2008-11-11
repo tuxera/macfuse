@@ -1311,12 +1311,28 @@ function m_validate_xcode()
 
     local mvs_xcode_major=`echo $m_xcode_version | cut -d . -f 1`
     local mvs_xcode_minor=`echo $m_xcode_version | cut -d . -f 2`
+    if [ -z $mvs_xcode_minor ]
+    then
+        mvs_xcode_minor=0
+    fi
     local mvs_xcode_rev=`echo $m_xcode_version | cut -d . -f 3`
+    if [ -z $mvs_xcode_rev ]
+    then
+        mvs_xcode_rev=0
+    fi
     local mvs_have=$(( $mvs_xcode_major * 100 + $mvs_xcode_minor * 10 + $mvs_xcode_rev ))
 
     mvs_xcode_major=`echo $M_XCODE_VERSION_REQUIRED | cut -d . -f 1`
     mvs_xcode_minor=`echo $M_XCODE_VERSION_REQUIRED | cut -d . -f 2`
+    if [ -z $mvs_xcode_minor ]
+    then
+        mvs_xcode_minor=0
+    fi
     mvs_xcode_rev=`echo $M_XCODE_VERSION_REQUIRED | cut -d . -f 3`
+    if [ -z $mvs_xcode_rev ]
+    then
+        mvs_xcode_rev=0
+    fi
     local mvs_want=$(( $mvs_xcode_major * 100 + $mvs_xcode_minor * 10 + $mvs_xcode_rev ))
 
     if [ $mvs_have -lt $mvs_want ]
