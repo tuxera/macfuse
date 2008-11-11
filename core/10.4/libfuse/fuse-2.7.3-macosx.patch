@@ -39248,8 +39248,8 @@ diff -Naur old/include/fuse_common.h new/include/fuse_common.h
  
 diff -Naur old/include/fuse_darwin.h new/include/fuse_darwin.h
 --- old/include/fuse_darwin.h	1969-12-31 16:00:00.000000000 -0800
-+++ new/include/fuse_darwin.h	2008-11-11 14:43:32.000000000 -0800
-@@ -0,0 +1,102 @@
++++ new/include/fuse_darwin.h	2008-11-11 15:02:37.000000000 -0800
+@@ -0,0 +1,105 @@
 +/*
 + * Copyright (C) 2006-2008 Google. All Rights Reserved.
 + * Amit Singh <singh@>
@@ -39327,6 +39327,9 @@ diff -Naur old/include/fuse_darwin.h new/include/fuse_darwin.h
 +
 +#define LIBFUSE_UNOTIFICATIONS_NOTIFY_OSISTOOOLD      \
 +    LIBFUSE_BUNDLE_IDENTIFIER ".osistooold"                    
++
++#define LIBFUSE_UNOTIFICATIONS_NOTIFY_RUNTIMEVERSIONMISMATCH \
++    LIBFUSE_BUNDLE_IDENTIFIER ".runtimeversionmismatch"
 + 
 +#define LIBFUSE_UNOTIFICATIONS_NOTIFY_VERSIONMISMATCH \
 +    LIBFUSE_BUNDLE_IDENTIFIER ".versionmismatch"
