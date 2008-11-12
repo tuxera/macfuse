@@ -73,7 +73,7 @@ Please read further for specific details.
     SUCH DAMAGE.
     ================================================================
 
-* fusefs/fuse_nodehash.c is a slightly modified version of HashNode.c from an
+* fusefs/fuse_nodehash.c is a modified version of HashNode.c from an
   Apple Developer Technical Support (DTS) sample code example. The original
   source, which is available on http://developer.apple.com/samplecode/, has
   the following disclaimer:
