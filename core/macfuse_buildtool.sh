@@ -783,7 +783,7 @@ function m_handler_dist()
     local md_volume_path="/Volumes/$md_volume_name"
     local md_engine_install="$md_volume_path/.engine_install"
 cat > "$md_engine_install" <<__END_ENGINE_INSTALL
-#!/bin/sh
+#!/bin/sh -p
 /usr/sbin/installer -pkg "\$1/$M_PKGNAME" -target /
 __END_ENGINE_INSTALL
 
