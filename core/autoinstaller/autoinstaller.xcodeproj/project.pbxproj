@@ -292,7 +292,7 @@
 			isa = PBXGroup;
 			children = (
 				32A70AAB03705E1F00C91783 /* autoinstaller_Prefix.pch */,
-				F931F9AE0E92B699009FB4B0 /* UpdateEngine */,
+				F931F9AE0E92B699009FB4B0 /* update-engine */,
 				F954C0C90E2D6C6400E776EB /* UpdateEngineExtensions */,
 				08FB7795FE84155DC02AAC07 /* Source */,
 				F916621F0E26B54400E2806B /* Resources */,
@@ -341,7 +341,7 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		F931F9AE0E92B699009FB4B0 /* UpdateEngine */ = {
+		F931F9AE0E92B699009FB4B0 /* update-engine */ = {
 			isa = PBXGroup;
 			children = (
 				F931FBE90E92B6F9009FB4B0 /* XcodeConfigs */,
@@ -350,8 +350,8 @@
 				F931FA270E92B699009FB4B0 /* externals */,
 				F931FB770E92B699009FB4B0 /* UpdateEngine.pch */,
 			);
-			name = UpdateEngine;
-			path = "externals/update-engine";
+			name = "update-engine";
+			path = "../externals/update-engine";
 			sourceTree = "<group>";
 		};
 		F931F9AF0E92B699009FB4B0 /* Common */ = {
