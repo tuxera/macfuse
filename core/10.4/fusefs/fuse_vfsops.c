@@ -456,7 +456,7 @@ fuse_vfsop_mount(mount_t mp, __unused vnode_t devvp, user_addr_t udata,
        err = fuse_vfsop_getattr(mp, &vfs_attr, context);
        if (!err) {
            vfsstatfsp->f_bsize  = vfs_attr.f_bsize;
-           vfsstatfsp->f_iosize = data->iosize;
+           vfsstatfsp->f_iosize = vfs_attr.f_iosize;
            vfsstatfsp->f_blocks = vfs_attr.f_blocks;
            vfsstatfsp->f_bfree  = vfs_attr.f_bfree;
            vfsstatfsp->f_bavail = vfs_attr.f_bavail;
@@ -470,6 +470,16 @@ fuse_vfsop_mount(mount_t mp, __unused vnode_t devvp, user_addr_t udata,
            /* vfsstatfsp->f_mntonname handled elsewhere */
            /* vfsstatfsp->f_mnfromname already handled above */
            vfsstatfsp->f_fssubtype = data->fssubtype;
+       }
+       if (fusefs_args.altflags & FUSE_MOPT_BLOCKSIZE) {
+           vfsstatfsp->f_bsize = data->blocksize;
+       } else {
+           data->blocksize = vfsstatfsp->f_bsize;
+       }
+       if (fusefs_args.altflags & FUSE_MOPT_IOSIZE) {
+           vfsstatfsp->f_iosize = data->iosize;
+       } else {
+           data->iosize = vfsstatfsp->f_iosize;
        }
     }
 
@@ -914,17 +924,17 @@ dostatfs:
         fsfo = fdi.answ;
     }
 
-    /* fundamental file system block size; goes into f_bsize */
+    /* optimal transfer block size; will go into f_iosize in the kernel */
     fsfo->st.bsize = fuse_round_size(fsfo->st.bsize,
-                                     FUSE_MIN_BLOCKSIZE, FUSE_MAX_BLOCKSIZE);
+                                     FUSE_MIN_IOSIZE, FUSE_MAX_IOSIZE);
 
-    /* preferred/optimal file system block size; goes into f_iosize */
+    /* file system fragment size; will go into f_bsize in the kernel */
     fsfo->st.frsize  = fuse_round_size(fsfo->st.frsize,
-                                       FUSE_MIN_IOSIZE, FUSE_MAX_IOSIZE);
+                                       FUSE_MIN_BLOCKSIZE, FUSE_MAX_BLOCKSIZE);
 
-    /* We must have: f_iosize >= f_bsize */
-    if (fsfo->st.frsize < fsfo->st.bsize) {
-        fsfo->st.frsize = fsfo->st.bsize;
+    /* We must have: f_iosize >= f_bsize (fsfo->st.bsize >= fsfo->st_frsize) */
+    if (fsfo->st.bsize < fsfo->st.frsize) {
+        fsfo->st.bsize = fsfo->st.frsize;
     }
 
     /*
@@ -981,8 +991,8 @@ dostatfs:
      */
 
     VFSATTR_RETURN(attr, f_filecount, fsfo->st.files);
-    VFSATTR_RETURN(attr, f_bsize, fsfo->st.bsize);
-    VFSATTR_RETURN(attr, f_iosize, fsfo->st.frsize);
+    VFSATTR_RETURN(attr, f_bsize, fsfo->st.frsize);
+    VFSATTR_RETURN(attr, f_iosize, fsfo->st.bsize);
     VFSATTR_RETURN(attr, f_blocks, fsfo->st.blocks);
     VFSATTR_RETURN(attr, f_bfree, fsfo->st.bfree);
     VFSATTR_RETURN(attr, f_bavail, fsfo->st.bavail);
