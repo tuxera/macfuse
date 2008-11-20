@@ -1067,8 +1067,8 @@ function m_handler_smalldist()
     cp -pRX "$ms_built_products_dir/mount_fusefs" "$ms_bundle_support_dir/mount_fusefs"
     m_exit_on_error "cannot copy 'mount_fusefs' to destination."
 
-    cp -pRX "$m_srcroot/core/$m_platform/packaging/macfuse-core/uninstall-core.sh" "$ms_bundle_support_dir/uninstall-macfuse-core.sh"
-    m_exit_on_error "cannot copy 'uninstall-core.sh' to destination."
+    cp -pRX "$m_srcroot/core/$m_platform/packaging/macfuse-core/uninstall-macfuse-core.sh" "$ms_bundle_support_dir/uninstall-macfuse-core.sh"
+    m_exit_on_error "cannot copy 'uninstall-macfuse-core.sh' to destination."
 
     # Build the user-space MacFUSE library
     #
