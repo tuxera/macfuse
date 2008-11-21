@@ -553,6 +553,9 @@ function m_handler_dist()
         rm -rf "$m_srcroot/core/autoinstaller/build"
         m_log "cleaned internal subtarget autoinstaller"
 
+        rm -rf "$m_srcroot/core/prefpane/build"
+        m_log "cleaned internal subtarget prefpane"
+
         m_release=`awk '/#define[ \t]*MACFUSE_VERSION_LITERAL/ {print $NF}' "$m_srcroot/core/$m_platform/fusefs/common/fuse_version.h" | cut -d . -f 1,2`
         if [ ! -z "$m_release" ]
         then
@@ -604,7 +607,7 @@ function m_handler_dist()
     m_exit_on_error "cannot access the autoinstaller source."
     xcodebuild -configuration "$m_configuration" -target "Build All" \
         >$m_stdout 2>$m_stderr
-    m_exit_on_error "xcodebuild cannot build configuration $m_configuration for target autoinstaller."
+    m_exit_on_error "xcodebuild cannot build configuration $m_configuration for subtarget autoinstaller."
     popd >/dev/null 2>/dev/null
 
     local md_ai="$md_ai_builddir/$m_configuration/autoinstall-macfuse-core"
@@ -631,6 +634,35 @@ function m_handler_dist()
         m_handler_smalldist
         popd >/dev/null 2>/dev/null
     done
+
+    # Build the preference pane
+    #
+    local md_pp_builddir="$m_srcroot/core/prefpane/build"
+
+    if [ "$m_shortcircuit" != "1" ]
+    then
+        rm -rf "$md_pp_builddir"
+        # ignore any errors
+    fi
+
+    m_log "building the MacFUSE prefpane"
+
+    pushd "$m_srcroot/core/prefpane" >/dev/null 2>/dev/null
+    m_exit_on_error "cannot access the prefpane source."
+    xcodebuild -configuration "$m_configuration" -target "MacFUSE" \
+        >$m_stdout 2>$m_stderr
+    m_exit_on_error "xcodebuild cannot build configuration $m_configuration for subtarget prefpane."
+    popd >/dev/null 2>/dev/null
+
+    local md_pp="$md_pp_builddir/$m_configuration/MacFUSE.prefPane"
+    if [ ! -d "$md_pp" ]
+    then
+        false
+        m_exit_on_error "cannot find preference pane."
+    fi
+
+    cp "$md_ai" "$md_pp/Contents/MacOS"
+    m_exit_on_error "cannot copy the autoinstaller to the prefpane bundle."
 
     # Build the container
     #
@@ -685,6 +717,14 @@ function m_handler_dist()
 
     mkdir "$md_macfuse_root"
     m_exit_on_error "cannot create directory '$md_macfuse_root'."
+
+    m_log "copying generic container package payload"
+    mkdir -p "$md_macfuse_root/Library/PreferencePanes"
+    m_exit_on_error "cannot make directory '$md_macfuse_root/Library/PreferencePanes'."
+    cp -R "$md_pp" "$md_macfuse_root/Library/PreferencePanes/"
+    m_exit_on_error "cannot copy the prefpane to '$md_macfuse_root/Library/PreferencePanes/'."
+    m_set_suprompt "to chown '$md_macfuse_root/'."
+    sudo -p "$m_suprompt" chown -R root:wheel "$md_macfuse_root/"
 
     local md_srcroot="$m_srcroot/core/packaging/macfuse"
     local md_infoplist_in="$md_srcroot/Info.plist.in"
