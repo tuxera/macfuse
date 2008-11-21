@@ -1111,6 +1111,9 @@ function m_handler_smalldist()
     cp -pRX "$m_srcroot/core/$m_platform/packaging/macfuse-core/uninstall-macfuse-core.sh" "$ms_bundle_support_dir/uninstall-macfuse-core.sh"
     m_exit_on_error "cannot copy 'uninstall-macfuse-core.sh' to destination."
 
+    ln -s "/Library/PreferencePanes/MacFUSE.prefPane/Contents/MacOS/autoinstall-macfuse-core" "$ms_bundle_support_dir/autoinstall-macfuse-core"
+    m_exit_on_error "cannot create legacy symlink '$ms_bundle_support_dir/autoinstall-macfuse-core'".
+
     if [ "$m_platform" == "10.4" ]
     then
         mkdir -p "$ms_macfuse_root/Library/Filesystems"
