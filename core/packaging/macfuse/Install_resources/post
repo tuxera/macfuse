@@ -147,7 +147,7 @@ then
   echo "$INSTALLER_OUTPUT"  # So that we see it in our postflight log
   if [ $INSTALLER_RC -eq 0 ]
   then
-    # Copy autoupdater to fusefs.fs/Support directory.
+    # Remove old autoinstaller bundle if it is still there.
     MACFUSE_SUPPORT="/Library/Filesystems/fusefs.fs/Support/"
     if [ $OS_MINOR -eq 4 ]
     then
@@ -160,23 +160,23 @@ then
       exit 1
     fi
 
-    # Remove the old autoinstall symlink (or binary) and bundle if necessary.
-    rm -f "${MACFUSE_SUPPORT}/autoinstall-macfuse-core"
+    # Remove the old autoinstaller bundle if necessary.
     rm -rf "${MACFUSE_SUPPORT}/MacFUSEAutoinstaller.bundle"
 
     # Copy the autoinstaller binary.
-    cp "$AUTOINSTALLER" "${MACFUSE_SUPPORT}/${AUTOINSTALLER_NAME}"
-    if [ $? -ne 0 ]
-    then
-      echo "Unable to copy autoinstaller bundle to Support directory."
-      exit 1
-    fi
-    chown -R root:wheel "${MACFUSE_SUPPORT}/${AUTOINSTALLER_NAME}"
-    if [ $? -ne 0 ]
-    then
-      echo "Unable to chown macfuse autoinstaller."
-      exit 1
-    fi
+# DISABLED: The autoinstaller binary is now installed as part of the outer pkg.
+#    cp "$AUTOINSTALLER" "${MACFUSE_SUPPORT}/${AUTOINSTALLER_NAME}"
+#    if [ $? -ne 0 ]
+#    then
+#      echo "Unable to copy autoinstaller bundle to Support directory."
+#      exit 1
+#    fi
+#    chown -R root:wheel "${MACFUSE_SUPPORT}/${AUTOINSTALLER_NAME}"
+#    if [ $? -ne 0 ]
+#    then
+#      echo "Unable to chown macfuse autoinstaller."
+#      exit 1
+#    fi
   else
     # If the install failed due to an existing newer version then it is OK.
     # TODO: This grep is sort of lame and dependent on installer (and lang?)
