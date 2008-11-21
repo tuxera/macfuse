@@ -1049,7 +1049,8 @@ function m_handler_smalldist()
     mkdir -p "$ms_macfuse_root/usr/local/lib/pkgconfig/"
     m_exit_on_error "cannot make directory '$ms_macfuse_root/usr/local/lib/pkgconfig/'."
 
-    local ms_bundle_dir="$ms_macfuse_root$ms_macfuse_system_dir/Library/Filesystems/$M_FSBUNDLE_NAME"
+    local ms_bundle_dir_generic="/Library/Filesystems/$M_FSBUNDLE_NAME"
+    local ms_bundle_dir="$ms_macfuse_root$ms_macfuse_system_dir/$ms_bundle_dir_generic"
     local ms_bundle_support_dir="$ms_bundle_dir/Support"
 
     cp -pRX "$ms_built_products_dir/$M_FSBUNDLE_NAME" "$ms_bundle_dir"
@@ -1069,6 +1070,12 @@ function m_handler_smalldist()
 
     cp -pRX "$m_srcroot/core/$m_platform/packaging/macfuse-core/uninstall-macfuse-core.sh" "$ms_bundle_support_dir/uninstall-macfuse-core.sh"
     m_exit_on_error "cannot copy 'uninstall-macfuse-core.sh' to destination."
+
+    if [ "$m_platform" == "10.4" ]
+    then
+        mkdir -p "$ms_macfuse_root/Library/Filesystems"
+        ln -s "$ms_macfuse_system_dir/$ms_bundle_dir_generic" "$ms_macfuse_root/$ms_bundle_dir_generic"
+    fi
 
     # Build the user-space MacFUSE library
     #
