@@ -37,6 +37,7 @@ function is_safe_prefix() {
     "$INSTALL_VOLUME"/./usr/local/include/*                    |  \
     "$INSTALL_VOLUME"/./Library/Extensions/fusefs.kext         |  \
     "$INSTALL_VOLUME"/./Library/Extensions/fusefs.kext/*       |  \
+    "$INSTALL_VOLUME"/./Library/Filesystems/fusefs.fs          |  \
     "$INSTALL_VOLUME"/./System/Library/Filesystems/fusefs.fs   |  \
     "$INSTALL_VOLUME"/./System/Library/Filesystems/fusefs.fs/* |  \
     "$INSTALL_VOLUME"/./Library/Frameworks/MacFUSE.framework   |  \
@@ -175,7 +176,7 @@ do
   fi
 done
 
-# 3. Remove autoinstaller
+# 3. Best effort remove autoinstaller
 remove_file "$INSTALL_VOLUME/./System/Library/Filesystems/fusefs.fs/Support/autoinstall-macfuse-core"
 
 # 4. Remove the directories
