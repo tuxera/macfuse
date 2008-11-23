@@ -1297,10 +1297,10 @@ function m_handler_swconfigure()
         extra_cflags="-mmacosx-version-min=10.4"
         architectures="-arch i386 -arch ppc"
     else
-        architectures="-arch i386 -arch x86_64 -arch ppc"
+        architectures="-arch i386 -arch ppc"
     fi
 
-    local common_cflags="-O -g $architectures -isysroot $m_usdk_dir -I/usr/local/include"
+    local common_cflags="-O0 -g $architectures -isysroot $m_usdk_dir -I/usr/local/include"
     local common_ldflags="-Wl,-syslibroot,$m_usdk_dir $architectures -L/usr/local/lib"
 
     local final_cflags="$common_cflags $extra_cflags"
