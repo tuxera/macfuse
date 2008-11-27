@@ -229,6 +229,8 @@ enum {
 #define FSESS_VOL_RENAME          0x02000000
 #define FSESS_XTIMES              0x04000000
 #define FSESS_AUTO_CACHE          0x08000000
+#define FSESS_NATIVE_XATTR        0x10000000
+#define FSESS_SPARSE              0x20000000
 
 static __inline__
 struct fuse_data *
