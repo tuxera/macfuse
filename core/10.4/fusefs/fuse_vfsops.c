@@ -180,6 +180,10 @@ fuse_vfsop_mount(mount_t mp, __unused vnode_t devvp, user_addr_t udata,
         mntopts |= FSESS_AUTO_CACHE;
     }
 
+    if (fusefs_args.altflags & FUSE_MOPT_SPARSE) {
+        mntopts |= FSESS_SPARSE;
+    }
+
     if (fusefs_args.altflags & FUSE_MOPT_AUTO_XATTR) {
         mntopts |= FSESS_AUTO_XATTR;
     }
