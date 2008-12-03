@@ -56,6 +56,7 @@ function is_safe_prefix() {
     "$INSTALL_VOLUME"/./Library/Filesystems/fusefs.fs/*        |  \
     "$INSTALL_VOLUME"/./Library/Frameworks/MacFUSE.framework   |  \
     "$INSTALL_VOLUME"/./Library/Frameworks/MacFUSE.framework/* |  \
+    "$INSTALL_VOLUME"/./Library/Application\ Support/Developer/Shared/Xcode/Project\ Templates/* |  \
     "$INSTALL_VOLUME"/Library/Receipts/MacFUSE\ Core.pkg       |  \
     "$INSTALL_VOLUME"/Library/Receipts/MacFUSE\ Core.pkg/*)
       # These are all ok to process.
@@ -191,6 +192,8 @@ fi
 kextunload -b com.google.filesystems.fusefs > /dev/null 2>&1
 
 # 2. Remove files and symlinks
+OLD_IFS="$IFS"
+IFS=$'\n'
 for x in `/usr/bin/lsbom -slf "$BOMFILE"` 
 do
   remove_file "$INSTALL_VOLUME/$x"
@@ -199,11 +202,14 @@ do
     IS_BOTCHED_UNINSTALL=1
   fi
 done
+IFS="$OLD_IFS"
 
 # 3. Remove autoinstaller
 remove_file "$INSTALL_VOLUME/./Library/Filesystems/fusefs.fs/Support/autoinstall-macfuse-core"
 
 # 4. Remove the directories
+OLD_IFS="$IFS"
+IFS=$'\n'
 for x in `/usr/bin/lsbom -sd "$BOMFILE" | /usr/bin/sort -r`
 do
   remove_dir "$INSTALL_VOLUME/$x"
@@ -212,6 +218,7 @@ do
     IS_BOTCHED_UNINSTALL=1
   fi
 done
+IFS="$OLD_IFS"
 
 # 5. Remove the Receipt.
 if [ $IS_BOTCHED_UNINSTALL -eq 0 ]
