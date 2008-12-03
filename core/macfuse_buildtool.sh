@@ -1219,7 +1219,7 @@ function m_handler_smalldist()
 
     if [ "$m_platform" != "10.4" ]
     then
-        mv "$ms_macfuse_root"/usr/local/lib/*.dSYM "$ms_macfuse_root"/Library/Frameworks/MacFUSE.framework/Resources/Debug/"
+        mv "$ms_macfuse_root"/usr/local/lib/*.dSYM "$ms_macfuse_root"/Library/Frameworks/MacFUSE.framework/Resources/Debug/
         mkdir -p "$ms_macfuse_root/Library/Application Support/Developer/Shared/Xcode/Project Templates"
         m_exit_on_error "cannot create directory for Xcode templates."
         ln -s "$ms_macfuse_root/Library/Frameworks/MacFUSE.framework/Resources/ProjectTemplates/" "$ms_macfuse_root/Library/Application Support/Developer/Shared/Xcode/Project Templates/MacFUSE"
