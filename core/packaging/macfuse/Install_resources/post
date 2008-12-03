@@ -192,6 +192,9 @@ then
   fi
 fi
 
+# Make Spotlight aware of debug symbols for libfuse and the Objective-C framework.
+mdimport /Library/Frameworks/MacFUSE.framework/Resources/Debug/
+
 # Remove our receipt; MacFUSE.pkg doesn't have a payload.
 rm -rf "$FINAL_RECEIPT"
 
