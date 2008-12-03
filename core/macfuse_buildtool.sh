@@ -1187,6 +1187,12 @@ function m_handler_smalldist()
         rm -f "$ms_macfuse_root"/usr/local/include/*ulockmgr*
         # ignore any errors
 
+        # generate dsym
+        dsymutil "$ms_macfuse_root"/usr/local/lib/libfuse.dylib
+        m_exit_on_error "cannot generate debugging information for libfuse."
+        dsymutil "$ms_macfuse_root"/usr/local/lib/libfuse_ino64.dylib
+        m_exit_on_error "cannot generate debugging information for libfuse_ino64."
+
     fi # ino64 on > Tiger
 
     # Build MacFUSE.framework
@@ -1210,6 +1216,15 @@ function m_handler_smalldist()
 
     cp -pRX build/"$m_configuration"/*.framework "$ms_macfuse_root/Library/Frameworks/"
     m_exit_on_error "cannot copy 'MacFUSE.framework' to destination."
+
+    if [ "$m_platform" != "10.4" ]
+    then
+        mv "$ms_macfuse_root"/usr/local/lib/*.dSYM "$ms_macfuse_root"/Library/Frameworks/MacFUSE.framework/Resources/Debug/"
+        mkdir -p "$ms_macfuse_root/Library/Application Support/Developer/Shared/Xcode/Project Templates"
+        m_exit_on_error "cannot create directory for Xcode templates."
+        ln -s "$ms_macfuse_root/Library/Frameworks/MacFUSE.framework/Resources/ProjectTemplates/" "$ms_macfuse_root/Library/Application Support/Developer/Shared/Xcode/Project Templates/MacFUSE"
+        m_exit_on_error "cannot create symlink for Xcode templates."
+    fi
 
     m_set_suprompt "to chown '$ms_macfuse_root/*'"
     sudo -p "$m_suprompt" chown -R root:wheel "$ms_macfuse_root"/*
