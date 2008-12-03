@@ -193,7 +193,8 @@ then
 fi
 
 # Make Spotlight aware of debug symbols for libfuse and the Objective-C framework.
-mdimport /Library/Frameworks/MacFUSE.framework/Resources/Debug/
+# We do this for the user that is logged in at the console.
+sudo -u `stat -f %Su /dev/console` mdimport /Library/Frameworks/MacFUSE.framework/Resources/Debug/
 
 # Remove our receipt; MacFUSE.pkg doesn't have a payload.
 rm -rf "$FINAL_RECEIPT"
