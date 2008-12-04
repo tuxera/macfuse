@@ -21,6 +21,7 @@ function log() {
 }
 
 PACKAGE_RECEIPT="$INSTALL_VOLUME/Library/Receipts/MacFUSE Core.pkg"
+OUTER_PACKAGE_RECEIPT="$INSTALL_VOLUME/Library/Receipts/MacFUSE.pkg"
 BOMFILE="$PACKAGE_RECEIPT/Contents/Archive.bom"
 
 # Check to make sure that operations (such as rm, rmdir) are relatively
@@ -45,6 +46,8 @@ function is_safe_prefix() {
     "$INSTALL_VOLUME"/./System/Library/Filesystems/fusefs.fs/* |  \
     "$INSTALL_VOLUME"/./Library/Frameworks/MacFUSE.framework   |  \
     "$INSTALL_VOLUME"/./Library/Frameworks/MacFUSE.framework/* |  \
+    "$INSTALL_VOLUME"/Library/Receipts/MacFUSE.pkg             |  \
+    "$INSTALL_VOLUME"/Library/Receipts/MacFUSE.pkg/*           |  \
     "$INSTALL_VOLUME"/Library/Receipts/MacFUSE\ Core.pkg       |  \
     "$INSTALL_VOLUME"/Library/Receipts/MacFUSE\ Core.pkg/*)
       # These are all ok to process.
@@ -224,6 +227,8 @@ then
   then
     IS_BOTCHED_UNINSTALL=1
   fi
+  # Best effort removal of MacFUSE.pkg
+  remove_tree "$OUTER_PACKAGE_RECEIPT"
 fi
 
 exit $IS_BOTCHED_UNINSTALL

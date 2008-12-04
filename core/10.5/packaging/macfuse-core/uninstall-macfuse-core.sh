@@ -42,6 +42,8 @@ function is_safe_prefix() {
     "$INSTALL_VOLUME"/./Library/Frameworks/MacFUSE.framework   |  \
     "$INSTALL_VOLUME"/./Library/Frameworks/MacFUSE.framework/* |  \
     "$INSTALL_VOLUME"/./Library/Application\ Support/Developer/Shared/Xcode/Project\ Templates/* |  \
+    "$INSTALL_VOLUME"/Library/Receipts/MacFUSE.pkg             |  \
+    "$INSTALL_VOLUME"/Library/Receipts/MacFUSE.pkg/*           |  \
     "$INSTALL_VOLUME"/Library/Receipts/MacFUSE\ Core.pkg       |  \
     "$INSTALL_VOLUME"/Library/Receipts/MacFUSE\ Core.pkg/*)
       # These are all ok to process.
@@ -171,6 +173,7 @@ case "$OS_RELEASE" in
     ;;
   9*)
     PACKAGE_RECEIPT="$INSTALL_VOLUME/Library/Receipts/MacFUSE Core.pkg"
+    OUTER_PACKAGE_RECEIPT="$INSTALL_VOLUME/Library/Receipts/MacFUSE.pkg"
     BOMFILE="$PACKAGE_RECEIPT/Contents/Archive.bom"
     ;;
   10*)
@@ -249,17 +252,19 @@ then
     then
       IS_BOTCHED_UNINSTALL=1
     fi
+    # Best effort remove of MacFUSE.pkg
+    if [ ! -z "$OUTER_PACKAGE_RECEIPT" ]
+    then
+      remove_tree "$OUTER_PACKAGE_RECEIPT"
+    fi
   else 
     /usr/sbin/pkgutil --forget com.google.macfuse.core
     if [ $? -ne 0 ]
     then
       IS_BOTCHED_UNINSTALL=1
     fi
+    # Best effort remove of MacFUSE.pkg.
     /usr/sbin/pkgutil --forget com.google.macfuse
-    if [ $? -ne 0 ]
-    then
-      IS_BOTCHED_UNINSTALL=1
-    fi
   fi
 fi
 
