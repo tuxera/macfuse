@@ -28,8 +28,8 @@ readonly M_DEFAULT_VALUE=__default__
 readonly M_CONFIGURATIONS="Debug Release" # default is Release
 readonly M_PLATFORMS="10.4 10.5 10.6"     # default is native
 readonly M_PLATFORMS_REALISTIC="10.4 10.5"
-readonly M_TARGETS="clean dist examples lib reload smalldist swconfigure"
-readonly M_TARGETS_WITH_PLATFORM="examples lib smalldist swconfigure"
+readonly M_TARGETS="clean dist examples lib libsrc reload smalldist swconfigure"
+readonly M_TARGETS_WITH_PLATFORM="examples lib libsrc smalldist swconfigure"
 
 readonly M_DEFAULT_PLATFORM="$M_DEFAULT_VALUE"
 readonly M_DEFAULT_TARGET="$M_DEFAULT_VALUE"
@@ -92,6 +92,7 @@ The target keywords mean the following:
     dist        create a multiplatform distribution package
     examples    build example file systems (e.g. fusexmp_fh and hello)
     lib         build the user-space library (e.g. to run fusexmp_fh)
+    libsrc      unpack and patch the user-space library source
     reload      rebuild and reload the kernel extension
     smalldist   create a platform-specific distribution package
     swconfigure configure software (e.g. sshfs) for compilation
@@ -270,6 +271,74 @@ function m_build_pkg()
           -r "$bp_output_dir/$M_INSTALL_RESOURCES_DIR" -i "$bp_infoplist_out" \
           -d "$bp_descriptionplist" >$m_stdout 2>$m_stderr
     m_exit_on_error "cannot create package '$bp_pkgname'."
+
+    return 0
+}
+
+# Prepare the user-space library source
+#
+function m_handler_libsrc()
+{
+    m_active_target="libsrc"
+
+    m_set_platform
+
+    m_set_srcroot "$m_platform"
+
+    local lib_dir="$m_srcroot"/core/"$m_platform"/libfuse
+    if [ ! -d "$lib_dir" ]
+    then
+        false
+        m_exit_on_error "cannot access directory '$lib_dir'."
+    fi
+
+    local kernel_dir="$m_srcroot"/core/"$m_platform"/fusefs
+    if [ ! -d "$kernel_dir" ]
+    then
+        false
+        m_exit_on_error "cannot access directory '$kernel_dir'."
+    fi
+
+    local package_dir=`tar -tzvf "$lib_dir/$M_LIBFUSE_SRC" | head -1 | awk '{print $NF}'`
+    if [ "x$package_dir" == "x" ]
+    then
+        false
+        m_exit_on_error "cannot determine MacFUSE library version."
+    fi
+
+    local package_name=`basename "$package_dir"`
+
+    if [ "x$package_name" == "x" ]
+    then
+        false
+        m_exit_on_error "cannot determine MacFUSE library version."
+    fi
+
+    rm -rf "$M_CONF_TMPDIR/$package_name"
+
+    if [ "$1" == "clean" ]
+    then
+        local retval=$?
+        m_log "cleaned (platform $m_platform)"
+        return $retval
+    fi
+
+    m_log "initiating Universal build for $m_platform"
+
+    tar -C "$M_CONF_TMPDIR" -xzvf "$lib_dir/$M_LIBFUSE_SRC" \
+        >$m_stdout 2>$m_stderr
+    m_exit_on_error "cannot untar MacFUSE library source from '$M_LIBFUSE_SRC'."
+
+    cd "$M_CONF_TMPDIR/$package_name"
+    m_exit_on_error "cannot access MacFUSE library source in '$M_CONF_TMPDIR/$package_name'."
+
+    m_log "preparing library source"
+    patch -p1 < "$lib_dir/$M_LIBFUSE_PATCH" >$m_stdout 2>$m_stderr
+    m_exit_on_error "cannot patch MacFUSE library source."
+
+    echo >$m_stdout
+    m_log "succeeded, results in '$M_CONF_TMPDIR/$package_name'."
+    echo >$m_stdout
 
     return 0
 }
@@ -1595,6 +1664,10 @@ function m_handler()
 
     "lib")
         m_handler_lib
+    ;;
+
+    "libsrc")
+        m_handler_libsrc
     ;;
 
     "reload")
