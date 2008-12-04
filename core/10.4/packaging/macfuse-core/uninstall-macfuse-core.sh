@@ -4,21 +4,24 @@
 #
 # Uninstalls the "MacFUSE Core.pkg".
 
-# Make sure this script runs as root
-if [ "$EUID" -ne 0 ]
-then
-  echo $0: Sudoing...
-  sudo $0 "$@"
-  exit $?
-fi
-
 INSTALL_VOLUME="/"
+
+LOG_SYSLOG=1
+LOG_STDOUT=1
+function log() {
+  local msg="$1"
+  if [ $LOG_SYSLOG -eq 1 ]
+  then
+    syslog -l Notice -s "MacFUSE Uninstaller: $msg"
+  fi
+  if [ $LOG_STDOUT -eq 1 ]
+  then
+    echo "MacFUSE Uninstaller: $msg"
+  fi
+}
+
 PACKAGE_RECEIPT="$INSTALL_VOLUME/Library/Receipts/MacFUSE Core.pkg"
 BOMFILE="$PACKAGE_RECEIPT/Contents/Archive.bom"
-
-# Set to 1 if at any point it looks like the uninstall did not proceed
-# smoothly. If IS_BOTCHED_UNINSTALL then we don't remove the Receipt. 
-IS_BOTCHED_UNINSTALL=0
 
 # Check to make sure that operations (such as rm, rmdir) are relatively
 # safe. This should only allow operations throught that would operate on
@@ -60,25 +63,25 @@ function remove_file() {
   if [ $allow -ne 1 ]
   then
     # We ignore this file, which is fine.
-    echo "Ignoring file '$path'"
+    log "Ignoring file '$path'"
     return 0;
   fi
 
   if [ \( ! -e "$path" \) -a \( ! -L "$path" \) ]
   then
     # No longer exists
-    echo "Skipping file: '$path' since it no longer exists."
+    log "Skipping file: '$path' since it no longer exists."
     return 0;
   fi
 
   if [ \( ! -f "$path" \) -a \( ! -L "$path" \) ]
   then
     # This is no longer a file?
-    echo "Skipping file: '$path' since it is no longer a file or symlink?"
+    log "Skipping file: '$path' since it is no longer a file or symlink?"
     return 1;
   fi
 
-  echo "Removing file: '$path'"
+  log "Removing file: '$path'"
   rm -f "$path"
 }
 
@@ -91,25 +94,25 @@ function remove_dir() {
   if [ $allow -ne 1 ]
   then
     # We ignore this directory.
-    echo "Ignoring dir: '$path'"
+    log "Ignoring dir: '$path'"
     return 0;
   fi
 
   if [ ! -e "$path" ]
   then
     # No longer exists
-    echo "Skipping dir: '$path' since it no longer exists."
+    log "Skipping dir: '$path' since it no longer exists."
     return 0;
   fi
 
   if [ ! -d "$path" ]
   then
     # Not a directory?
-    echo "Skipping dir: '$path' since it is either gone or no longer a dir."
+    log "Skipping dir: '$path' since it is either gone or no longer a dir."
     return 1;
   fi
 
-  echo "Removing dir: '$path'"
+  log "Removing dir: '$path'"
   rmdir "$path"
 }
 
@@ -121,45 +124,63 @@ function remove_tree() {
   if [ $allow -ne 1 ]
   then
     # We ignore this tree.
-    echo "Ignoring tree: '$path'"
+    log "Ignoring tree: '$path'"
     return 0;
   fi
 
   if [ ! -e "$path" ]
   then
     # No longer exists
-    echo "Skipping tree: '$path' since it no longer exists."
+    log "Skipping tree: '$path' since it no longer exists."
     return 0;
   fi
 
   if [ ! -d "$path" ]
   then
     # Not a directory?
-    echo "Skipping tree: '$path' since it is not a directory."
+    log "Skipping tree: '$path' since it is not a directory."
     return 1;
   fi
 
-  echo "Removing tree: '$path'"
+  log "Removing tree: '$path'"
   rm -rf "$path"
 }
 
+### MAIN
+
+# Set to 1 if at any point it looks like the uninstall did not proceed
+# smoothly. If IS_BOTCHED_UNINSTALL then we don't remove the Receipt.
+IS_BOTCHED_UNINSTALL=0
+
+# Do they want quiet mode?
+if [ "$1" = "-q" ]
+then
+  LOG_STDOUT=0
+fi
+
+# Make sure this script runs as root
+if [ "$EUID" -ne 0 ]
+then
+  log "Sudoing..."
+  sudo $0 "$@"
+  exit $?
+fi
 
 # Make sure the INSTALL_VOLUME is ok.
 if [ ! -d "$INSTALL_VOLUME" ]; then
-  echo "Foo"
-  echo "Install volume '$INSTALL_VOLUME' is not a directory."
+  log "Install volume '$INSTALL_VOLUME' is not a directory."
   exit 2
 fi
 
 # Make sure that MacFUSE Core is installed and the Archive.bom is present.
 if [ ! -d "$PACKAGE_RECEIPT" ]
 then
-  echo "It appears that MacFUSE Core is not installed."
+  log "It appears that MacFUSE Core is not installed."
   exit 3
 fi
 if [ ! -f "$BOMFILE" ]
 then
-  echo "Can't find the Archive.bom for MacFUSE Core package."
+  log "Can't find the Archive.bom for MacFUSE Core package."
   exit 4
 fi
 
@@ -167,6 +188,8 @@ fi
 kextunload -b com.google.filesystems.fusefs > /dev/null 2>&1
 
 # 2. Remove files and symlinks
+OLD_IFS="$IFS"
+IFS=$'\n'
 for x in `/usr/bin/lsbom -slf "$BOMFILE"` 
 do
   remove_file "$INSTALL_VOLUME/$x"
@@ -175,11 +198,14 @@ do
     IS_BOTCHED_UNINSTALL=1
   fi
 done
+IFS="$OLD_IFS"
 
 # 3. Best effort remove autoinstaller
 remove_file "$INSTALL_VOLUME/./System/Library/Filesystems/fusefs.fs/Support/autoinstall-macfuse-core"
 
 # 4. Remove the directories
+OLD_IFS="$IFS"
+IFS=$'\n'
 for x in `/usr/bin/lsbom -sd "$BOMFILE" | /usr/bin/sort -r`
 do
   remove_dir "$INSTALL_VOLUME/$x"
@@ -188,6 +214,7 @@ do
     IS_BOTCHED_UNINSTALL=1
   fi
 done
+IFS="$OLD_IFS"
 
 # 5. Remove the Receipt.
 if [ $IS_BOTCHED_UNINSTALL -eq 0 ]
