@@ -58,7 +58,11 @@
                      @"key1='val1'",
                      @"key2='val2'",
                      @"", nil];
-  STAssertEqualObjects([logger writer], expect, nil);
+	// [NSDictionary description] isn't deterministic 
+	// cast needed since return value of [logger writer] is id<NSLoggerWriter>
+	NSArray *output = [(NSArray *)[logger writer] sortedArrayUsingSelector:@selector(compare:)];
+	expect = [expect sortedArrayUsingSelector:@selector(compare:)];
+	STAssertEqualObjects(output, expect, nil);	
 }
 
 - (void)testBasePrinterTwoUpdates {
@@ -90,7 +94,11 @@
                      @"key2='val2'",
                      @"", nil];
   
-  STAssertEqualObjects([logger writer], expect, nil);
+  // [NSDictionary description] isn't deterministic 
+  // cast needed since return value of [logger writer] is id<NSLoggerWriter>
+  NSArray *output = [(NSArray *)[logger writer] sortedArrayUsingSelector:@selector(compare:)];
+  expect = [expect sortedArrayUsingSelector:@selector(compare:)];
+  STAssertEqualObjects(output, expect, nil);
 }
 
 - (void)testPlistPrinterOneUpdate {
