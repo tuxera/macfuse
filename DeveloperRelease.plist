@@ -6,52 +6,52 @@
 	<array>
 		<dict>
 			<key>Codebase</key>
-			<string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-1.9.dmg</string>
+			<string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-2.1.dmg</string>
 			<key>Hash</key>
-			<string>SYXKkl5/zC10a4Y1MH9KW86F0S8=</string>
+			<string>dKIhYoiX9zXqQvz0Vdt659mRosM=</string>
 			<key>Predicate</key>
-			<string>SystemVersion.ProductVersion beginswith "10.6" AND Ticket.version != "1.9.57"</string>
+			<string>SystemVersion.ProductVersion beginswith "10.6" AND Ticket.version != "2.1.1"</string>
 			<key>ProductID</key>
 			<string>com.google.filesystems.fusefs</string>
 			<key>Size</key>
-			<string>3412016</string>
+			<string>3413178</string>
 			<key>Version</key>
-			<string>1.9.57</string>
+			<string>2.1.1</string>
 		</dict>
 		<dict>
 			<key>Codebase</key>
-			<string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-1.9.dmg</string>
+			<string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-2.1.dmg</string>
 			<key>Hash</key>
-			<string>SYXKkl5/zC10a4Y1MH9KW86F0S8=</string>
+			<string>dKIhYoiX9zXqQvz0Vdt659mRosM=</string>
 			<key>Predicate</key>
-			<string>SystemVersion.ProductVersion beginswith "10.5" AND Ticket.version != "1.9.57"</string>
+			<string>SystemVersion.ProductVersion beginswith "10.5" AND Ticket.version != "2.1.1"</string>
 			<key>ProductID</key>
 			<string>com.google.filesystems.fusefs</string>
 			<key>Size</key>
-			<string>3412016</string>
+			<string>3413178</string>
 			<key>Version</key>
-			<string>1.9.57</string>
+			<string>2.1.1</string>
 		</dict>
 		<dict>
 			<key>Codebase</key>
-			<string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-1.9.dmg</string>
+			<string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-2.1.dmg</string>
 			<key>Hash</key>
-			<string>SYXKkl5/zC10a4Y1MH9KW86F0S8=</string>
+			<string>dKIhYoiX9zXqQvz0Vdt659mRosM=</string>
 			<key>Predicate</key>
-			<string>SystemVersion.ProductVersion beginswith "10.4" AND Ticket.version != "1.9.56"</string>
+			<string>SystemVersion.ProductVersion beginswith "10.4" AND Ticket.version != "2.1.0"</string>
 			<key>ProductID</key>
 			<string>com.google.filesystems.fusefs</string>
 			<key>Size</key>
-			<string>3412016</string>
+			<string>3413178</string>
 			<key>Version</key>
-			<string>1.9.56</string>
+			<string>2.1.0</string>
 		</dict>
 	</array>
 	<key>Signature</key>
 	<data>
-	mtnl1KPmFZmNbQwAJxVQJDczPkTBVtDPv/27dCecnflVu0JpmsRGOjvNMdOqkjyVpmRv
-	rklInu9Lqd1sMoehAdweAkCZzzBDIklQdLfjXMxQZrkkERHfjrol75xqFfdGH1WO8odQ
-	IgbeaSTdVTAM+wcb1B1Iw8mGUaU41u3lNHM=
+	C8w/Bbqx3Rhxe9SjJ4HeXTH4sY+tg090L/KyS83ISZ4OPZlqOQ0mPfOJZtqZDAHxVtTW
+	wHs6axJJw0BQYHgbFG/QYfwTk6EaKVTsWE/wAkkvRJvS6zqcyR80S59w7rArtLPBvwp0
+	CLsMyMKNzOdldouO7xNq70TCs4huwiUMB3k=
 	</data>
 </dict>
 </plist>
