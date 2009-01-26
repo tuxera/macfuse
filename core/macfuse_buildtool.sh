@@ -1119,7 +1119,7 @@ function m_handler_smalldist()
 
     if [ "$m_developer" == "0" ]
     then
-        xcodebuild MACFUSE_BUILD_FLAVOR=Mainstream -configuration "$m_configuration" -target All >$m_stdout 2>$m_stderr
+        xcodebuild -configuration "$m_configuration" -target All >$m_stdout 2>$m_stderr
     else
         xcodebuild MACFUSE_BUILD_FLAVOR=Beta -configuration "$m_configuration" -target All >$m_stdout 2>$m_stderr
 
