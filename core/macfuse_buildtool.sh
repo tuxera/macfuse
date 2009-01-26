@@ -1117,7 +1117,12 @@ function m_handler_smalldist()
 
     m_log "building MacFUSE kernel extension and tools"
 
-    xcodebuild -configuration "$m_configuration" -target All >$m_stdout 2>$m_stderr
+    if [ "$m_developer" == "0" ]
+    then
+        xcodebuild MACFUSE_BUILD_FLAVOR=Mainstream -configuration "$m_configuration" -target All >$m_stdout 2>$m_stderr
+    else
+        xcodebuild MACFUSE_BUILD_FLAVOR=Beta -configuration "$m_configuration" -target All >$m_stdout 2>$m_stderr
+
     m_exit_on_error "xcodebuild cannot build configuration $m_configuration."
 
     # Go for it
