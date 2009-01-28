@@ -1122,6 +1122,7 @@ function m_handler_smalldist()
         xcodebuild -configuration "$m_configuration" -target All >$m_stdout 2>$m_stderr
     else
         xcodebuild MACFUSE_BUILD_FLAVOR=Beta -configuration "$m_configuration" -target All >$m_stdout 2>$m_stderr
+    fi
 
     m_exit_on_error "xcodebuild cannot build configuration $m_configuration."
 
