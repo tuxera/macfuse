@@ -60,21 +60,26 @@ static BOOL IsTiger(void) {
 //   MOUNT_FUSEFS_CALL_BY_LIB=1 .../mount_fusefs --version
 //
 static NSString *GetMacFUSEVersion(void) {
-  NSString *mountFusePath =
-    @"/Library/Filesystems/fusefs.fs/Support/mount_fusefs";
+  NSString *fusePListPath =
+    @"/Library/Filesystems/fusefs.fs/Contents/Info.plist";
+  NSString *version = nil;
   
   if (IsTiger()) {
-    mountFusePath = [@"/System" stringByAppendingPathComponent:mountFusePath];
+    fusePListPath = [@"/System" stringByAppendingPathComponent:fusePListPath];
   }
   
-  NSString *cmd = [NSString stringWithFormat:
-                   @"MOUNT_FUSEFS_CALL_BY_LIB=1 "
-                   @"%@ --version 2>&1 | /usr/bin/grep -i version |"
-                   @"/usr/bin/awk '{print $NF}'",
-                   mountFusePath];
-  
-  GTMScriptRunner *runner = [GTMScriptRunner runnerWithBash];
-  return [runner run:cmd];
+  NSDictionary *fusePlist 
+    = [NSDictionary dictionaryWithContentsOfFile:fusePListPath];
+  if (fusePListPath) {
+    version = [fusePlist objectForKey:@"CFBundleShortVersionString"];
+    if ([version length]) {
+      NSString *flavor = [fusePlist objectForKey:@"BuildFlavor"];
+      if ([flavor length]) {
+        version = [NSString stringWithFormat:@"%@ (%@)", version, flavor];
+      }
+    }
+  }
+  return version;
 }
 
 
