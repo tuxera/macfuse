@@ -8,50 +8,50 @@
 			<key>Codebase</key>
 			<string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-2.1.dmg</string>
 			<key>Hash</key>
-			<string>91SGJYAfUZMCGEuL8/vZ5kBHaEU=</string>
+			<string>CI7Ds+EgWOHCs+K2pi1J83ZrPCM=</string>
 			<key>Predicate</key>
-			<string>SystemVersion.ProductVersion beginswith "10.6" AND Ticket.version != "2.1.7"</string>
+			<string>SystemVersion.ProductVersion beginswith "10.6" AND Ticket.version != "2.1.7 (Beta)"</string>
 			<key>ProductID</key>
 			<string>com.google.filesystems.fusefs</string>
 			<key>Size</key>
-			<string>3413451</string>
+			<string>3413202</string>
 			<key>Version</key>
-			<string>2.1.7</string>
+			<string>2.1.7 (Beta)</string>
 		</dict>
 		<dict>
 			<key>Codebase</key>
 			<string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-2.1.dmg</string>
 			<key>Hash</key>
-			<string>91SGJYAfUZMCGEuL8/vZ5kBHaEU=</string>
+			<string>CI7Ds+EgWOHCs+K2pi1J83ZrPCM=</string>
 			<key>Predicate</key>
-			<string>SystemVersion.ProductVersion beginswith "10.5" AND Ticket.version != "2.1.7"</string>
+			<string>SystemVersion.ProductVersion beginswith "10.5" AND Ticket.version != "2.1.7 (Beta)"</string>
 			<key>ProductID</key>
 			<string>com.google.filesystems.fusefs</string>
 			<key>Size</key>
-			<string>3413451</string>
+			<string>3413202</string>
 			<key>Version</key>
-			<string>2.1.7</string>
+			<string>2.1.7 (Beta)</string>
 		</dict>
 		<dict>
 			<key>Codebase</key>
 			<string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-2.1.dmg</string>
 			<key>Hash</key>
-			<string>91SGJYAfUZMCGEuL8/vZ5kBHaEU=</string>
+			<string>CI7Ds+EgWOHCs+K2pi1J83ZrPCM=</string>
 			<key>Predicate</key>
-			<string>SystemVersion.ProductVersion beginswith "10.4" AND Ticket.version != "2.1.6"</string>
+			<string>SystemVersion.ProductVersion beginswith "10.4" AND Ticket.version != "2.1.6 (Beta)"</string>
 			<key>ProductID</key>
 			<string>com.google.filesystems.fusefs</string>
 			<key>Size</key>
-			<string>3413451</string>
+			<string>3413202</string>
 			<key>Version</key>
-			<string>2.1.6</string>
+			<string>2.1.6 (Beta)</string>
 		</dict>
 	</array>
 	<key>Signature</key>
 	<data>
-	F15CMNA2bhhuK8Ue8pJ8uDYgPD6m86gbtBIXx8h/V+x+u7/yRKRnH5YO96qLAR0zojcN
-	bkabg1WcON7r15Tt5dXZpdgdQ1gjJqHXEbBFpMa0kk+w3Djwv4IHvGzpOEtsxxoA2UBe
-	XjqBvnu7xIEOALHgIaCGdrFwTfi2NE9c1zk=
+	LFQ14nyVEwIfeWkRFNSLodSMCOOQWCXjqFlQfsnPrX8/STdgQmn8Fiw7UXYA6fDGHovY
+	QmgTkaRQVK1ROM0zCv0n+JzVwbzRrQDGR18H9UBWpTUn3zGFBgavAR9mSjTIP+2ymwDn
+	Oxv6najis/9OzNoa3+kW/N+Psxw9jV/Umn0=
 	</data>
 </dict>
 </plist>
