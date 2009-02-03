@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Rules</key>
+	<array>
+		<dict>
+			<key>Codebase</key>
+			<string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-2.1.dmg</string>
+			<key>Hash</key>
+			<string>pm9QMjMlNRYtRm4GbAkiGxeKa7g=</string>
+			<key>Predicate</key>
+			<string>SystemVersion.ProductVersion beginswith "10.6" AND Ticket.version != "2.1.5"</string>
+			<key>ProductID</key>
+			<string>com.google.filesystems.fusefs</string>
+			<key>Size</key>
+			<string>3413563</string>
+			<key>Version</key>
+			<string>2.1.5</string>
+		</dict>
+		<dict>
+			<key>Codebase</key>
+			<string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-2.1.dmg</string>
+			<key>Hash</key>
+			<string>pm9QMjMlNRYtRm4GbAkiGxeKa7g=</string>
+			<key>Predicate</key>
+			<string>SystemVersion.ProductVersion beginswith "10.5" AND Ticket.version != "2.1.5"</string>
+			<key>ProductID</key>
+			<string>com.google.filesystems.fusefs</string>
+			<key>Size</key>
+			<string>3413563</string>
+			<key>Version</key>
+			<string>2.1.5</string>
+		</dict>
+		<dict>
+			<key>Codebase</key>
+			<string>http://macfuse.googlecode.com/svn/releases/developer/MacFUSE-2.1.dmg</string>
+			<key>Hash</key>
+			<string>pm9QMjMlNRYtRm4GbAkiGxeKa7g=</string>
+			<key>Predicate</key>
+			<string>SystemVersion.ProductVersion beginswith "10.4" AND Ticket.version != "2.1.4"</string>
+			<key>ProductID</key>
+			<string>com.google.filesystems.fusefs</string>
+			<key>Size</key>
+			<string>3413563</string>
+			<key>Version</key>
+			<string>2.1.4</string>
+		</dict>
+	</array>
+	<key>Signature</key>
+	<data>
+	PquLN2rhEsfyY5qzuuacEJqWIzHVN257CEiwADE2yHkNQ3DNZs68pjvthy9ER4grUuPu
+	s13Z6x8HXD48HqYYO9BN+c+7ZIu3/Pv49y2eYfgYNs9y5Zfcc+ryH4XyAGnTX15W1oEm
+	UtqYtW7yciXliO3XmoLSWBmnLl5i30JVP8g=
+	</data>
+</dict>
+</plist>
