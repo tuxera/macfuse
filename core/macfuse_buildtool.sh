@@ -1,5 +1,5 @@
 #! /bin/bash
-# Copyright (C) 2008 Google. All Rights Reserved.
+# Copyright (C) 2008-2009 Google. All Rights Reserved.
 #
 # Amit Singh <singh@>
 # Repurposes code from several earlier scripts by Ted Bonkenburg.
