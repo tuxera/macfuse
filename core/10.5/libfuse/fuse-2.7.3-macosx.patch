@@ -37607,7 +37607,7 @@ diff -Naur old/darwin_configure.sh new/darwin_configure.sh
 +MACFUSE_SRCROOT=${MACFUSE_SRCROOT:-$1}
 +MACFUSE_SRCROOT=${MACFUSE_SRCROOT:?}
 +
-+CFLAGS="-D__FreeBSD__=10 -D_POSIX_C_SOURCE=200112L -I$MACFUSE_SRCROOT/common -O -gdwarf-2 -arch i386 -arch ppc -arch x86_64 -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5" LDFLAGS="-arch i386 -arch ppc -arch x86_64 -framework CoreFoundation" ./configure --prefix=/usr/local --disable-dependency-tracking --disable-static
++CFLAGS="-D__FreeBSD__=10 -D_POSIX_C_SOURCE=200112L -I$MACFUSE_SRCROOT/common -O -gdwarf-2 -arch i386 -arch ppc -arch x86_64 -arch ppc64 -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5" LDFLAGS="-arch i386 -arch ppc -arch x86_64 -framework CoreFoundation" ./configure --prefix=/usr/local --disable-dependency-tracking --disable-static
 diff -Naur old/darwin_configure_ino64.sh new/darwin_configure_ino64.sh
 --- old/darwin_configure_ino64.sh	1969-12-31 16:00:00.000000000 -0800
 +++ new/darwin_configure_ino64.sh	2009-10-18 19:42:37.000000000 -0700
@@ -37617,7 +37617,7 @@ diff -Naur old/darwin_configure_ino64.sh new/darwin_configure_ino64.sh
 +MACFUSE_SRCROOT=${MACFUSE_SRCROOT:-$1}
 +MACFUSE_SRCROOT=${MACFUSE_SRCROOT:?}
 +
-+CFLAGS="-D__DARWIN_64_BIT_INO_T=1 -D__FreeBSD__=10 -D_POSIX_C_SOURCE=200112L -I$MACFUSE_SRCROOT/common -O -gdwarf-2 -arch i386 -arch ppc -arch x86_64 -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5" LDFLAGS="-arch i386 -arch ppc -arch x86_64 -framework CoreFoundation" ./configure --prefix=/usr/local --disable-dependency-tracking --disable-static
++CFLAGS="-D__DARWIN_64_BIT_INO_T=1 -D__FreeBSD__=10 -D_POSIX_C_SOURCE=200112L -I$MACFUSE_SRCROOT/common -O -gdwarf-2 -arch i386 -arch ppc -arch x86_64 -arch ppc64 -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5" LDFLAGS="-arch i386 -arch ppc -arch x86_64 -framework CoreFoundation" ./configure --prefix=/usr/local --disable-dependency-tracking --disable-static
 diff -Naur old/example/Makefile.am new/example/Makefile.am
 --- old/example/Makefile.am	2008-02-19 11:51:22.000000000 -0800
 +++ new/example/Makefile.am	2009-10-18 19:42:37.000000000 -0700
