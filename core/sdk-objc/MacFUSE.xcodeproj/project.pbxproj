@@ -480,6 +480,7 @@
 			baseConfigurationReference = 28D5261B0EA80E7000B7CF7B /* MacFUSE.xcconfig */;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
