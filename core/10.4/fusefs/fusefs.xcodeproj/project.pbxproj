@@ -685,7 +685,7 @@
 					i386,
 					ppc,
 				);
-				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_VERSION = 4.0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -700,7 +700,7 @@
 				);
 				PREBINDING = NO;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.4u.sdk";
-				STRIP_INSTALLED_PRODUCT = NO;
+				SEPARATE_STRIP = YES;
 			};
 			name = Release;
 		};
