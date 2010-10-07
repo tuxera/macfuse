@@ -1228,6 +1228,10 @@ function m_handler_smalldist()
     rm -f "ms_macfuse_root"/usr/local/include/*ulockmgr*
     # ignore any errors
 
+    # generate dsym
+    dsymutil "$ms_macfuse_root"/usr/local/lib/libfuse.dylib
+    m_exit_on_error "cannot generate debugging information for libfuse."
+
     # Now build again, if necessary, with 64-bit inode support
     #
 
@@ -1263,8 +1267,6 @@ function m_handler_smalldist()
         # ignore any errors
 
         # generate dsym
-        dsymutil "$ms_macfuse_root"/usr/local/lib/libfuse.dylib
-        m_exit_on_error "cannot generate debugging information for libfuse."
         dsymutil "$ms_macfuse_root"/usr/local/lib/libfuse_ino64.dylib
         m_exit_on_error "cannot generate debugging information for libfuse_ino64."
 
