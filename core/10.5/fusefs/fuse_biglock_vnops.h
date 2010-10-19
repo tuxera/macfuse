@@ -7,6 +7,7 @@
 #define _FUSE_BIGLOCK_VNOPS_H_
 
 #include <fuse_param.h>
+#include "fuse_locking.h"
 
 #if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK
 
@@ -61,6 +62,7 @@
 #define fuse_biglock_lock(lock) fuse_hugelock_lock()
 #define fuse_biglock_unlock(lock) fuse_hugelock_unlock()
 #else
+#define fuse_biglock fusefs_recursive_lock
 #define fuse_biglock_lock(lock) \
 	do { \
 		log("%s: Aquiring biglock %p...", __FUNCTION__, lock); \
