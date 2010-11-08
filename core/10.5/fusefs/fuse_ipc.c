@@ -437,7 +437,7 @@ fdata_alloc(struct proc *p)
 
 #if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK
 #if !M_MACFUSE_ENABLE_HUGE_LOCK
-    data->biglock        = fusefs_recursive_lock_alloc();
+    data->biglock        = lck_mtx_alloc_init(fuse_lock_group, fuse_lock_attr);
 #endif /* !M_MACFUSE_ENABLE_HUGE_LOCK */
 #endif /* M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK */
 
@@ -468,8 +468,8 @@ fdata_destroy(struct fuse_data *data)
 
 #if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK
 #if !M_MACFUSE_ENABLE_HUGE_LOCK
-    fusefs_recursive_lock_free(data->biglock);
-	data->biglock = NULL;
+    lck_mtx_free(data->biglock, fuse_lock_group);
+    data->biglock = NULL;
 #endif /* !M_MACFUSE_ENABLE_HUGE_LOCK */
 #endif /* M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK */
 

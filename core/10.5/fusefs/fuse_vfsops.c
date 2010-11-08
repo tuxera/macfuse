@@ -173,7 +173,7 @@ fuse_vfsop_mount(mount_t mp, __unused vnode_t devvp, user_addr_t udata,
     struct vfsstatfs  *vfsstatfsp = vfs_statfs(mp);
 
 #if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK && !M_MACFUSE_ENABLE_HUGE_LOCK
-    fusefs_recursive_lock     *biglock;
+    fuse_biglock      *biglock;
 #endif
 
     fuse_trace_printf_vfsop();
@@ -669,7 +669,13 @@ fuse_vfsop_unmount(mount_t mp, int mntflags, vfs_context_t context)
 
     fuse_rootvp = data->rootvp;
 
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK && !M_MACFUSE_ENABLE_HUGE_LOCK
+    fuse_biglock_unlock(data->biglock);
+#endif
     err = vflush(mp, fuse_rootvp, flags);
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK && !M_MACFUSE_ENABLE_HUGE_LOCK
+    fuse_biglock_lock(data->biglock);
+#endif
     if (err) {
 #if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK && !M_MACFUSE_ENABLE_HUGE_LOCK
         fuse_biglock_unlock(data->biglock);
@@ -707,11 +713,23 @@ alreadydead:
     needsignal = data->dataflags & FSESS_KILL_ON_UNMOUNT;
     daemonpid = data->daemonpid;
 
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK && !M_MACFUSE_ENABLE_HUGE_LOCK
+    fuse_biglock_unlock(data->biglock);
+#endif
     vnode_rele(fuse_rootvp); /* We got this reference in fuse_vfsop_mount(). */
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK && !M_MACFUSE_ENABLE_HUGE_LOCK
+    fuse_biglock_lock(data->biglock);
+#endif
 
     data->rootvp = NULLVP;
 
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK && !M_MACFUSE_ENABLE_HUGE_LOCK
+    fuse_biglock_unlock(data->biglock);
+#endif
     (void)vflush(mp, NULLVP, FORCECLOSE);
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK && !M_MACFUSE_ENABLE_HUGE_LOCK
+    fuse_biglock_lock(data->biglock);
+#endif
 
     fuse_device_lock(fdev);
 
@@ -1251,7 +1269,14 @@ fuse_vfsop_sync(mount_t mp, int waitfor, vfs_context_t context)
     args.waitfor = waitfor;
     args.error = 0;
 
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK && !M_MACFUSE_ENABLE_HUGE_LOCK
+    struct fuse_data *data = fuse_get_mpdata(mp);
+    fuse_biglock_unlock(data->biglock);
+#endif
     vnode_iterate(mp, 0, fuse_sync_callback, (void *)&args);
+#if M_MACFUSE_ENABLE_INTERIM_FSNODE_LOCK && !M_MACFUSE_ENABLE_HUGE_LOCK
+    fuse_biglock_lock(data->biglock);
+#endif
 
     if (args.error) {
         allerror = args.error;
