@@ -420,7 +420,16 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8B84BDD20ED63320003D9F0F /* DebugTigerOrLater.xcconfig */;
 			buildSettings = {
-				"ARCHS[sdk=macosx10.5*]" = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					i386,
+					x86_64,
+					ppc,
+				);
+				"GCC_ENABLE_OBJC_GC[arch=x86_64]" = supported;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				"MACOSX_DEPLOYMENT_TARGET[arch=x86_64]" = 10.5;
+				SDKROOT = macosx10.4;
+				"SDKROOT[arch=x86_64]" = macosx10.5;
 			};
 			name = Debug;
 		};
@@ -428,7 +437,16 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8B84BDD10ED63320003D9F0F /* ReleaseTigerOrLater.xcconfig */;
 			buildSettings = {
-				"ARCHS[sdk=macosx10.5*]" = "$(ARCHS_STANDARD_32_BIT)";
+				ARCHS = (
+					i386,
+					x86_64,
+					ppc,
+				);
+				"GCC_ENABLE_OBJC_GC[arch=x86_64]" = supported;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				"MACOSX_DEPLOYMENT_TARGET[arch=x86_64]" = 10.5;
+				SDKROOT = macosx10.4;
+				"SDKROOT[arch=x86_64]" = macosx10.5;
 			};
 			name = Release;
 		};
