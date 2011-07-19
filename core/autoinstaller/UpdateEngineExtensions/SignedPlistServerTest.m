@@ -108,7 +108,7 @@ static NSString *const kSignedPlist =
   STAssertNotNil(signer_, nil);
   
   url_ = [[NSURL alloc] initWithString:
-           @"http://macfuse.googlecode.com/svn/trunk/CurrentRelease.plist"];
+           @"http://www.tuxera.com/mac/macfuse/CurrentRelease.plist"];
   STAssertNotNil(url_, nil);
   
   server_ = [[SignedPlistServer alloc] initWithURL:url_

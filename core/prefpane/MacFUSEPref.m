@@ -14,7 +14,7 @@ static NSString *kAutoInstallToolName = @"autoinstall-macfuse-core";
 static NSString *kRemoveToolPath = @"/Library/Filesystems/fusefs.fs/Support/uninstall-macfuse-core.sh";
 static NSString *kPreferencesName = @"com.google.macfuse.plist";
 static NSString *kURLKey = @"URL";
-static NSString *kBetaValue = @"http://macfuse.googlecode.com/svn/trunk/DeveloperRelease.plist";
+static NSString *kBetaValue = @"http://www.tuxera.com/mac/macfuse/DeveloperRelease.plist";
 static const NSTimeInterval kNetworkTimeOutInterval = 15; 
 
 @interface MacFUSEPref (PrivateMethods)
