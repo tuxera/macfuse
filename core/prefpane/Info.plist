@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>${PRODUCT_NAME}</string>
+	<string>${PRODUCT_NAME} (Tuxera)</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>
@@ -27,7 +27,7 @@
 	<key>NSPrefPaneIconFile</key>
 	<string>MacFUSE.icns</string>
 	<key>NSPrefPaneIconLabel</key>
-	<string>MacFUSE</string>
+	<string>MacFUSE\n(Tuxera)</string>
 	<key>NSPrefPaneSearchParameters</key>
 	<string>MacFUSE</string>
 	<key>NSPrincipalClass</key>

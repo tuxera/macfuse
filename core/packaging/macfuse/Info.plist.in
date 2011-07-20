@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleName</key>
-	<string>MacFUSE</string>
+	<string>MacFUSE (Tuxera)</string>
 	<key>CFBundleGetInfoString</key>
-	<string>MACFUSE_PKG_VERSION_LITERAL, MacFUSE Project</string>
+	<string>MACFUSE_PKG_VERSION_LITERAL, MacFUSE Project / Tuxera Inc.</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.google.macfuse</string>
 	<key>CFBundleShortVersionString</key>

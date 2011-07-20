@@ -15,8 +15,8 @@ http://code.google.com/p/macfuse/
 
 for further details.</string>
 	<key>IFPkgDescriptionTitle</key>
-	<string>MacFUSE</string>
+	<string>MacFUSE (Tuxera)</string>
 	<key>IFPkgDescriptionVersion</key>
-	<string>MacFUSE, © 2007-2008 Google Inc.</string>
+	<string>MacFUSE (Tuxera), © 2007-2008 Google Inc., © 2010-2011 Tuxera Inc.</string>
 </dict>
 </plist>

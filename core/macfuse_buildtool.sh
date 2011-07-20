@@ -876,7 +876,7 @@ function m_handler_dist()
 
     # Create the distribution volume
     #
-    local md_volume_name="MacFUSE $m_release"
+    local md_volume_name="MacFUSE (Tuxera) $m_release"
     local md_scratch_dmg="$md_macfuse_out/macfuse-scratch.dmg"
     hdiutil create -layout NONE -megabytes 10 -fs HFS+ \
         -volname "$md_volume_name" "$md_scratch_dmg" >$m_stdout 2>$m_stderr
@@ -943,7 +943,7 @@ __END_ENGINE_INSTALL
 
     # Convert to a read-only compressed dmg
     #
-    local md_dmg_name="MacFUSE-$m_release.dmg"
+    local md_dmg_name="MacFUSE-Tuxera-$m_release.dmg"
     local md_dmg_path="$md_macfuse_out/$md_dmg_name"
     hdiutil convert -imagekey zlib-level=9 -format UDZO "$md_scratch_dmg" \
         -o "$md_dmg_path" >$m_stdout 2>$m_stderr
