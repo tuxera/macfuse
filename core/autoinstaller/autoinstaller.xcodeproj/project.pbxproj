@@ -23,6 +23,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		03B0B89113D6C8BE00C5D389 /* GDataHTTPFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 03B0B88113D6C81200C5D389 /* GDataHTTPFetcher.m */; };
 		F92468FF0E3164AA004ADF93 /* SignerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F92468FE0E316468004ADF93 /* SignerTest.m */; };
 		F924691D0E31689E004ADF93 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
 		F92469A80E316B5A004ADF93 /* SignedPlistServerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F92469A70E316B5A004ADF93 /* SignedPlistServerTest.m */; };
@@ -37,7 +38,6 @@
 		F93100220E92D4FE009FB4B0 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F95A05210E25327300A22FA6 /* Carbon.framework */; };
 		F931005D0E92D7D3009FB4B0 /* EngineDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F954C0CD0E2D6C6400E776EB /* EngineDelegate.m */; };
 		F931005E0E92D7D3009FB4B0 /* GTMBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = F931FA590E92B699009FB4B0 /* GTMBase64.m */; };
-		F931005F0E92D7D3009FB4B0 /* GTMHTTPFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = F931FA6A0E92B699009FB4B0 /* GTMHTTPFetcher.m */; };
 		F93100600E92D7D3009FB4B0 /* GTMLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = F931FA730E92B699009FB4B0 /* GTMLogger.m */; };
 		F93100610E92D7D3009FB4B0 /* GTMLoggerRingBufferWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = F931FA750E92B699009FB4B0 /* GTMLoggerRingBufferWriter.m */; };
 		F93100620E92D7D3009FB4B0 /* GTMMethodCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = F931FA550E92B699009FB4B0 /* GTMMethodCheck.m */; };
@@ -124,6 +124,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		03B0B88013D6C81200C5D389 /* GDataHTTPFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GDataHTTPFetcher.h; sourceTree = "<group>"; };
+		03B0B88113D6C81200C5D389 /* GDataHTTPFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GDataHTTPFetcher.m; sourceTree = "<group>"; };
+		03B0B88E13D6C87500C5D389 /* GDataDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GDataDefines.h; sourceTree = "<group>"; };
 		08FB7796FE84155DC02AAC07 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		08FB779EFE84155DC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32A70AAB03705E1F00C91783 /* autoinstaller_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = autoinstaller_Prefix.pch; sourceTree = "<group>"; };
@@ -214,8 +217,6 @@
 		F931FA580E92B699009FB4B0 /* GTMBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMBase64.h; sourceTree = "<group>"; };
 		F931FA590E92B699009FB4B0 /* GTMBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTMBase64.m; sourceTree = "<group>"; };
 		F931FA640E92B699009FB4B0 /* GTMGarbageCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMGarbageCollection.h; sourceTree = "<group>"; };
-		F931FA690E92B699009FB4B0 /* GTMHTTPFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMHTTPFetcher.h; sourceTree = "<group>"; };
-		F931FA6A0E92B699009FB4B0 /* GTMHTTPFetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTMHTTPFetcher.m; sourceTree = "<group>"; };
 		F931FA720E92B699009FB4B0 /* GTMLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMLogger.h; sourceTree = "<group>"; };
 		F931FA730E92B699009FB4B0 /* GTMLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTMLogger.m; sourceTree = "<group>"; };
 		F931FA740E92B699009FB4B0 /* GTMLoggerRingBufferWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTMLoggerRingBufferWriter.h; sourceTree = "<group>"; };
@@ -288,6 +289,32 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		03B0B86F13D6C75300C5D389 /* gdata-objectivec-client */ = {
+			isa = PBXGroup;
+			children = (
+				03B0B87C13D6C7C100C5D389 /* Source */,
+			);
+			path = "gdata-objectivec-client";
+			sourceTree = "<group>";
+		};
+		03B0B87C13D6C7C100C5D389 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				03B0B88E13D6C87500C5D389 /* GDataDefines.h */,
+				03B0B87E13D6C7E500C5D389 /* Networking */,
+			);
+			path = Source;
+			sourceTree = "<group>";
+		};
+		03B0B87E13D6C7E500C5D389 /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				03B0B88013D6C81200C5D389 /* GDataHTTPFetcher.h */,
+				03B0B88113D6C81200C5D389 /* GDataHTTPFetcher.m */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
 		08FB7794FE84155DC02AAC07 /* autoinstaller */ = {
 			isa = PBXGroup;
 			children = (
@@ -448,6 +475,7 @@
 			isa = PBXGroup;
 			children = (
 				F931FA280E92B699009FB4B0 /* google-toolbox-for-mac */,
+				03B0B86F13D6C75300C5D389 /* gdata-objectivec-client */,
 			);
 			path = externals;
 			sourceTree = "<group>";
@@ -478,8 +506,6 @@
 				F931FA580E92B699009FB4B0 /* GTMBase64.h */,
 				F931FA590E92B699009FB4B0 /* GTMBase64.m */,
 				F931FA640E92B699009FB4B0 /* GTMGarbageCollection.h */,
-				F931FA690E92B699009FB4B0 /* GTMHTTPFetcher.h */,
-				F931FA6A0E92B699009FB4B0 /* GTMHTTPFetcher.m */,
 				F931FA720E92B699009FB4B0 /* GTMLogger.h */,
 				F931FA730E92B699009FB4B0 /* GTMLogger.m */,
 				F931FA740E92B699009FB4B0 /* GTMLoggerRingBufferWriter.h */,
@@ -699,7 +725,6 @@
 			files = (
 				F931005D0E92D7D3009FB4B0 /* EngineDelegate.m in Sources */,
 				F931005E0E92D7D3009FB4B0 /* GTMBase64.m in Sources */,
-				F931005F0E92D7D3009FB4B0 /* GTMHTTPFetcher.m in Sources */,
 				F93100600E92D7D3009FB4B0 /* GTMLogger.m in Sources */,
 				F93100610E92D7D3009FB4B0 /* GTMLoggerRingBufferWriter.m in Sources */,
 				F93100620E92D7D3009FB4B0 /* GTMMethodCheck.m in Sources */,
@@ -707,6 +732,7 @@
 				F93100640E92D7D3009FB4B0 /* GTMObjC2Runtime.m in Sources */,
 				F93100650E92D7D3009FB4B0 /* GTMPath.m in Sources */,
 				F93100660E92D7D3009FB4B0 /* GTMScriptRunner.m in Sources */,
+				03B0B89113D6C8BE00C5D389 /* GDataHTTPFetcher.m in Sources */,
 				F93100670E92D7D3009FB4B0 /* KSAction.m in Sources */,
 				F93100680E92D7D3009FB4B0 /* KSActionPipe.m in Sources */,
 				F93100690E92D7D3009FB4B0 /* KSActionProcessor.m in Sources */,
