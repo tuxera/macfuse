@@ -294,16 +294,17 @@ static const NSTimeInterval kNetworkTimeOutInterval = 15;
   NSString *buttonText = nil;
   NSString *updateString = nil;
   SEL selector = nil;
-  [self setUpdateAvailable:availableVersion != nil];
   if ([availableVersion length] && installedVersion) {
     NSString *formatString = NSLocalizedString(@"Update Available: %@", nil);
     updateString = [NSString stringWithFormat:formatString, availableVersion];
     buttonText = NSLocalizedString(@"Update MacFUSE", nil);
     selector = @selector(updateMacFUSE:);
+    [self setUpdateAvailable: YES];
   } else if (availableVersion && installedVersion) {
     updateString = NSLocalizedString(@"No Updates Available At This Time", nil);
     buttonText = NSLocalizedString(@"Check For Updates", nil);
     selector = @selector(checkForUpdates:);
+    [self setUpdateAvailable: NO];
   } else {
     if ([availableVersion length]) {
       NSString *formatString 
@@ -311,10 +312,12 @@ static const NSTimeInterval kNetworkTimeOutInterval = 15;
       updateString = [NSString stringWithFormat:formatString, availableVersion];
       buttonText = NSLocalizedString(@"Install MacFUSE", nil);
       selector = @selector(updateMacFUSE:);
+      [self setUpdateAvailable: YES];
     } else {
       updateString = NSLocalizedString(@"Unable To Contact Update Server", nil);
       buttonText = NSLocalizedString(@"Check For Updates", nil);
       selector = @selector(checkForUpdates:);
+      [self setUpdateAvailable: NO];
     }
   }
   [self setMessageText:updateString];
