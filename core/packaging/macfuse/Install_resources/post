@@ -1,6 +1,7 @@
 #!/bin/bash
 #
 # Copyright (C) 2008 Google. All Rights Reserved.
+# Copyright (C) 2011 Tuxera. All Rights Reserved.
 #
 
 INSTALL_LOG="/tmp/.macfuse-install.log"
@@ -138,6 +139,123 @@ then
   fi
 fi
 
+# Hard coded copies of error message strings from various versions of Mac OS X.
+# These strings were from different localizations of the key
+# TARGET_VOLUME_VERS_CONFLICT in 'Distribution.strings' of:
+# /System/Library/PrivateFrameworks/Install.framework
+
+readonly INSTALLER_ERROR_NEWER_VERSION_STRINGS_10_4=( \
+    "Der findes en nyere version af denne software på denne enhed." \
+    "Er is al een nieuwere versie van deze software op dit volume geïnstalleerd." \
+    "A newer version of this software already exists on this volume." \
+    "Taltiolla on jo uudempi versio ohjelmistosta." \
+    "Une version plus récente de ce logiciel est déjà présente sur ce volume." \
+    "Auf diesem Volume ist bereits eine neuere Version dieser Software installiert." \
+    "Esiste già una versione più recente del software su questo volume." \
+    "このソフトウェアの新しいバージョンがこのボリュームにすでに存在します。" \
+    "이 소프트웨어의 최신 버전이 이미 이 볼륨에 설치되어 있습니다." \
+    "En nyere versjon av denne programvaren finnes allerede på dette volumet." \
+    "Uma versão posterior deste software já existe neste volume." \
+    "Hay una versión más reciente de este software instalada en este volumen." \
+    "Det finns redan en nyare version av programmet på enheten." \
+    "此宗卷中已存在该软件的更新版本。" \
+    "這個卷宗上已存在一個此軟體的較新版本。" \
+)
+
+readonly INSTALLER_ERROR_NEWER_VERSION_STRINGS_10_5=( \
+    "Der findes en nyere version af denne software på denne enhed." \
+    "Er is al een nieuwere versie van deze software op dit volume geïnstalleerd." \
+    "A newer version of this software already exists on this volume." \
+    "Taltiolla on jo uudempi versio ohjelmistosta." \
+    "Une version plus récente de ce logiciel est déjà présente sur ce volume." \
+    "Auf diesem Volume ist bereits eine neuere Version dieser Software installiert." \
+    "Esiste già una versione più recente del software su questo volume." \
+    "このソフトウェアの新しいバージョンがこのボリュームにすでに存在します。" \
+    "이 소프트웨어의 새로운 버전이 이미 이 볼륨에 설치되어 있습니다." \
+    "En nyere versjon av denne programvaren finnes allerede på dette volumet." \
+    "Na tym woluminie jest już nowsza wersja tego oprogramowania." \
+    "Uma versão posterior deste software já existe neste volume." \
+    "Versão mais recente deste software já existente neste volume." \
+    "Более новая версия этого программного обеспечения уже существует в этом томе." \
+    "Hay una versión más reciente de este software instalada en este volumen." \
+    "Det finns redan en nyare version av programmet på volymen." \
+    "此宗卷中已存在该软件的更新版本。" \
+    "這個卷宗上已存在一個此軟體的較新版本。" \
+)
+
+readonly INSTALLER_ERROR_NEWER_VERSION_STRINGS_10_6=( \
+    "Der findes en nyere version af softwaren på denne disk." \
+    "Er is al een nieuwere versie van deze software op deze schijf geïnstalleerd." \
+    "A newer version of this software already exists on this disk." \
+    "Uudempi versio tästä ohjelmistosta on jo tällä levyllä." \
+    "Une version plus récente de ce logiciel est déjà présente sur ce disque." \
+    "Auf diesem Volume ist bereits eine neuere Version dieser Software installiert." \
+    "Esiste già una versione più recente del software su questo disco." \
+    "このソフトウェアの新しいバージョンがこのディスクにすでに存在します。" \
+    "이 소프트웨어의 새로운 버전이 이미 이 디스크에 설치되어 있습니다." \
+    "En nyere versjon av denne programvaren finnes allerede på denne disken." \
+    "Na tym dysku jest już nowsza wersja tego oprogramowania." \
+    "Uma versão posterior deste software já existe neste disco." \
+    "Já existe uma versão mais recente deste software no disco." \
+    "На этом диске уже установлена более новая версия этого ПО." \
+    "Hay una versión más reciente de este software instalada en este disco." \
+    "Det finns redan en nyare version av programmet på skivan." \
+    "该软件的较新版本已经存在于此磁盘上。" \
+    "此磁碟上已存在一個此軟體的較新版本。" \
+)
+
+readonly INSTALLER_ERROR_NEWER_VERSION_STRINGS_10_7=( \ \
+    "هناك إصدار أحدث من هذا البرنامج موجود بالفعل على هذا القرص." \
+    "Na tomto disku již existuje novější verze tohoto softwaru." \
+    "Der findes en nyere version af softwaren på denne disk." \
+    "Er is al een nieuwere versie van deze software op deze schijf geïnstalleerd." \
+    "A newer version of this software already exists on this disk." \
+    "Uudempi versio tästä ohjelmistosta on jo tällä levyllä." \
+    "Une version plus récente de ce logiciel est déjà présente sur ce disque." \
+    "Auf diesem Volume ist bereits eine neuere Version dieser Software installiert." \
+    "A szoftvernek már létezik egy újabb verziója ezen a lemezen." \
+    "Esiste già una versione più recente del software su questo disco." \
+    "このソフトウェアの新しいバージョンがこのディスクにすでに存在します。" \
+    "이 소프트웨어의 새로운 버전이 이미 이 디스크에 설치되어 있습니다." \
+    "En nyere versjon av denne programvaren finnes allerede på denne disken." \
+    "Na tym dysku jest już nowsza wersja tego oprogramowania." \
+    "Uma versão posterior deste software já existe neste disco." \
+    "Já existe uma versão mais recente deste software no disco." \
+    "На этом диске уже установлена более новая версия этого ПО." \
+    "Hay una versión más reciente de este software instalada en este disco." \
+    "Det finns redan en nyare version av programmet på skivan." \
+    "Bu yazılımın daha yeni bir sürümü zaten bu diskte var." \
+    "该软件的较新版本已经存在于此磁盘上。" \
+    "此磁碟上已存在一個此軟體的較新版本。" \
+)
+
+function installerErrorNewerVersion ()
+{
+    GREP_RC=1
+
+    for i in "${INSTALLER_ERROR_NEWER_VERSION_STRINGS_10_4[@]}"; do
+	echo "$1" | grep -F "$i" > /dev/null
+	GREP_RC=$?; if [ ${GREP_RC} -eq 0 ]; then return ${GREP_RC}; fi
+    done
+
+    for i in "${INSTALLER_ERROR_NEWER_VERSION_STRINGS_10_5[@]}"; do
+	echo "$1" | grep -F "$i" > /dev/null
+	GREP_RC=$?; if [ ${GREP_RC} -eq 0 ]; then return ${GREP_RC}; fi
+    done
+
+    for i in "${INSTALLER_ERROR_NEWER_VERSION_STRINGS_10_6[@]}"; do
+	echo "$1" | grep -F "$i" > /dev/null
+	GREP_RC=$?; if [ ${GREP_RC} -eq 0 ]; then return ${GREP_RC}; fi
+    done
+
+    for i in "${INSTALLER_ERROR_NEWER_VERSION_STRINGS_10_7[@]}"; do
+	echo "$1" | grep -F "$i" > /dev/null
+	GREP_RC=$?; if [ ${GREP_RC} -eq 0 ]; then return ${GREP_RC}; fi
+    done
+
+    return ${GREP_RC}
+}
+
 # Maybe try to install our embedded MacFUSE Core.pkg.
 if [ $INSTALL_EMBEDDED_PKG -eq 1 ]
 then
@@ -180,8 +298,7 @@ then
   else
     # If the install failed due to an existing newer version then it is OK.
     # TODO: This grep is sort of lame and dependent on installer (and lang?)
-    echo "$INSTALLER_OUTPUT" | \
-          grep "newer version of this software already exists" > /dev/null
+    installerErrorNewerVersion "$INSTALLER_OUTPUT"
     if [ $? -eq 0 ]
     then
       echo "Embedded package was older than what is already installed (status OK)."
