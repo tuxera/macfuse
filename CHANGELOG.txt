@@ -1,6 +1,6 @@
 = Changes and Feature Additions in MacFUSE Binary Releases =
 
-== MacFUSE current (...) ==
+== MacFUSE (Tuxera) 2.2 (July 22, 2011) ==
 
   * Feature: 64-bit kernel support, inlcuding Mac OS X 10.7 (Lion).
 

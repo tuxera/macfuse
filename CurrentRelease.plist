@@ -6,52 +6,74 @@
 	<array>
 		<dict>
 			<key>Codebase</key>
-			<string>http://macfuse.googlecode.com/svn/releases/MacFUSE-2.0.dmg</string>
+			<string>http://www.tuxera.com/mac/macfuse/MacFUSE-Tuxera-2.2.dmg</string>
 			<key>Hash</key>
-			<string>bAaZ92riRo9NFeYeVFWTF39H9w4=</string>
+			<string>92S+lJnNEf3F40n3xQUu9Zs6VYs=</string>
 			<key>Predicate</key>
-			<string>SystemVersion.ProductVersion beginswith "10.6" AND Ticket.version != "2.0.3"</string>
+			<string>SystemVersion.ProductVersion beginswith "10.7" AND Ticket.version != "2.2.1"</string>
 			<key>ProductID</key>
 			<string>com.google.filesystems.fusefs</string>
 			<key>Size</key>
-			<string>3413303</string>
+			<string>3741900</string>
 			<key>Version</key>
-			<string>2.0.3</string>
+			<string>2.2.1</string>
 		</dict>
 		<dict>
 			<key>Codebase</key>
-			<string>http://macfuse.googlecode.com/svn/releases/MacFUSE-2.0.dmg</string>
+			<string>http://www.tuxera.com/mac/macfuse/MacFUSE-Tuxera-2.2.dmg</string>
 			<key>Hash</key>
-			<string>bAaZ92riRo9NFeYeVFWTF39H9w4=</string>
+			<string>92S+lJnNEf3F40n3xQUu9Zs6VYs=</string>
 			<key>Predicate</key>
-			<string>SystemVersion.ProductVersion beginswith "10.5" AND Ticket.version != "2.0.3"</string>
+			<string>SystemVersion.ProductVersion beginswith "10.6" AND Ticket.version != "2.2.1"</string>
 			<key>ProductID</key>
 			<string>com.google.filesystems.fusefs</string>
 			<key>Size</key>
-			<string>3413303</string>
+			<string>3741900</string>
 			<key>Version</key>
-			<string>2.0.3</string>
+			<string>2.2.1</string>
 		</dict>
 		<dict>
 			<key>Codebase</key>
-			<string>http://macfuse.googlecode.com/svn/releases/MacFUSE-2.0.dmg</string>
+			<string>http://www.tuxera.com/mac/macfuse/MacFUSE-Tuxera-2.2.dmg</string>
 			<key>Hash</key>
-			<string>bAaZ92riRo9NFeYeVFWTF39H9w4=</string>
+			<string>92S+lJnNEf3F40n3xQUu9Zs6VYs=</string>
 			<key>Predicate</key>
-			<string>SystemVersion.ProductVersion beginswith "10.4" AND Ticket.version != "2.0.2"</string>
+			<string>SystemVersion.ProductVersion beginswith "10.5" AND Ticket.version != "2.2.1"</string>
 			<key>ProductID</key>
 			<string>com.google.filesystems.fusefs</string>
 			<key>Size</key>
-			<string>3413303</string>
+			<string>3741900</string>
 			<key>Version</key>
-			<string>2.0.2</string>
+			<string>2.2.1</string>
+		</dict>
+		<dict>
+			<key>Codebase</key>
+			<string>http://www.tuxera.com/mac/macfuse/MacFUSE-Tuxera-2.2.dmg</string>
+			<key>Hash</key>
+			<string>92S+lJnNEf3F40n3xQUu9Zs6VYs=</string>
+			<key>Predicate</key>
+			<string>SystemVersion.ProductVersion beginswith "10.4" AND Ticket.version != "2.2.0"</string>
+			<key>ProductID</key>
+			<string>com.google.filesystems.fusefs</string>
+			<key>Size</key>
+			<string>3741900</string>
+			<key>Version</key>
+			<string>2.2.0</string>
 		</dict>
 	</array>
 	<key>Signature</key>
 	<data>
-	dD0dwdGiu+pCJmbemF50ILzzddFNNZRdL/J6NAdG4SHcZZJgF9V/AbSILh++u6QhVgIH
-	F6iYjYYVTSohLIETD1KluDxxWDmX2gVpjly5XDfExOGMA9yBd1/0AztkuWIUygTavK56
-	n0mvXdAo1VfiaiQbyW6qJ2kmBbNcZ42PoDU=
+	WrZJuutP6ifkZ4ze1MRDg/i4liULxjqq5KUrcFsotu+JWKbMS1xop2NRVtj+/pa1NE3D
+	jhNKi+JOeZcdQqaEF69EvmmPb7uKcWxgsM6efZ13EDjY0UYpaN7VeUWQtZJNcv0F3n3y
+	cKpzycoKuRbIBODqRYPJO7aGvVEuYNVaVCY/t1ec9HDKEMtYlOKjdtmpi77UEoL4PIMi
+	0hqobSwFtdHscgnKli5lu1nauXRfxiaGXS/m2wTtXE5n3d42K41IfpgMFak6j36p9HxZ
+	LeWAMWEbYT5aZN5Ox7b0+Y7lCxY0/DLjWE3hBTYuo417DSxhEVLST2sjQ+U78kpnfD2Q
+	f61EbqQKozT9Pwkore0GAiGR6n7tKyhxV/3FqpmclQ07tmotA9xpH1+CJBMlFdR4LnFF
+	EwQeYSQRF6jxZ4jUPD2tXRWWujymY3/RuG2RzEy1tx429Pf9N8FjY/xnyODMMVF9nInA
+	Ya3jjc46bfiHor+BaWYWPw5uMQaki+jPQLdECYAMBftzfeDLyb0lkPGcvj7bz7mDqyaR
+	QZVDD5ZZpn1AJdXhwDGp8IrBva1Mu9JKx0BnPNyjsB4egYLNsTb6+prVIRnwN6/5gbPT
+	MPwPU8MJdyXLVL/UhAdbsKp8eTrCIOTUy8fNLrK8tKt873WxgXjEDpEybzFlirRXdf/g
+	qNM=
 	</data>
 </dict>
 </plist>
