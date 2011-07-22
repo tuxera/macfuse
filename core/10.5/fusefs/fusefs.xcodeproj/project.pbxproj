@@ -684,7 +684,9 @@
 			buildSettings = {
 				ARCHS = (
 					i386,
+					x86_64,
 					ppc,
+					ppc64,
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -703,7 +705,9 @@
 			buildSettings = {
 				ARCHS = (
 					i386,
+					x86_64,
 					ppc,
+					ppc64,
 				);
 				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
