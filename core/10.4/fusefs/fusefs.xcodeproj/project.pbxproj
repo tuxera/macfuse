@@ -404,7 +404,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 1DEB91C708733DAC0010E9CD /* Build configuration list for PBXProject "fusefs" */;
 			compatibilityVersion = "Xcode 3.0";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 089C166AFE841209C02AAC07 /* fusefs */;
 			productRefGroup = 540966F20C33BEC900F5E227 /* Products */;
 			projectDirPath = "";
@@ -457,7 +464,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/bin/gcc -E -x assembler-with-cpp -Wno-trigraphs -I\"$SRCROOT\" -P \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist | $SED -e '/^$/d' > \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist.new\n/bin/mv \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist.new \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist\n/usr/bin/gcc -E -x assembler-with-cpp -Wno-trigraphs -I\"$SRCROOT\" -P \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist | $SED -e '/^$/d' > \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist.new\n/bin/mv \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist.new \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist";
+			shellScript = "/usr/bin/cpp -I\"$SRCROOT\" -P \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist | $SED -e '/^$/d' > \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist.new\n/bin/mv \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist.new \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist\n/usr/bin/cpp -I\"$SRCROOT\" -P \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist | $SED -e '/^$/d' > \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist.new\n/bin/mv \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist.new \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -540,10 +547,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5436C6550C9E753F00E78222 /* MacFUSE.xcconfig */;
 			buildSettings = {
-				ARCHS = (
-					i386,
-					ppc,
-				);
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -597,10 +600,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5436C6550C9E753F00E78222 /* MacFUSE.xcconfig */;
 			buildSettings = {
-				ARCHS = (
-					i386,
-					ppc,
-				);
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_POSTPROCESSING = YES;
@@ -836,10 +835,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5436C6550C9E753F00E78222 /* MacFUSE.xcconfig */;
 			buildSettings = {
-				ARCHS = (
-					i386,
-					ppc,
-				);
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -882,10 +877,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5436C6550C9E753F00E78222 /* MacFUSE.xcconfig */;
 			buildSettings = {
-				ARCHS = (
-					i386,
-					ppc,
-				);
 				COPY_PHASE_STRIP = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;

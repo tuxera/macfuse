@@ -472,8 +472,8 @@
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = "/bin/sh -x";
-			shellScript = "/usr/bin/gcc -E -x assembler-with-cpp -Wno-trigraphs \"-DMACFUSE_BUILD_FLAVOR=${MACFUSE_BUILD_FLAVOR}\" \"-I${SRCROOT}\" -P \"${BUILT_PRODUCTS_DIR}/${TARGET_NAME}/Contents/Info.plist\" | $SED -e '/^$/d' > \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist.new\n/bin/mv \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist.new \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist\n/usr/bin/gcc -E -x assembler-with-cpp -Wno-trigraphs -I\"$SRCROOT\" -P \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist | $SED -e '/^$/d' > \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist.new\n/bin/mv \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist.new \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist";
+			shellPath = /bin/sh;
+			shellScript = "/usr/bin/cpp -DMACFUSE_BUILD_FLAVOR=\"$MACFUSE_BUILD_FLAVOR\" -I\"$SRCROOT\" -P \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist | $SED -e '/^$/d' > \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist.new\n/bin/mv \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist.new \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/Info.plist\n/usr/bin/cpp -I\"$SRCROOT\" -P \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist | $SED -e '/^$/d' > \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist.new\n/bin/mv \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist.new \"$BUILT_PRODUCTS_DIR\"/\"$TARGET_NAME\"/Contents/version.plist";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -558,8 +558,8 @@
 			baseConfigurationReference = 54A06B920C9DE6060045DC0D /* MacFUSE.xcconfig */;
 			buildSettings = {
 				ARCHS = (
-					x86_64,
 					i386,
+					x86_64,
 					ppc,
 				);
 				COPY_PHASE_STRIP = NO;
@@ -571,7 +571,7 @@
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_NONCONFORMANT_CODE_ERRORS_AS_WARNINGS = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
-				"GCC_VERSION[sdk=macosx10.6][arch=x86_64]" = 4.2;
+				"GCC_VERSION[arch=x86_64]" = 4.2;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
@@ -599,7 +599,7 @@
 				INFOPLIST_PREPROCESSOR_DEFINITIONS = "";
 				INSTALL_PATH = "$(SYSTEM_LIBRARY_DIR)/Extensions";
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				"MACOSX_DEPLOYMENT_TARGET[sdk=macosx10.6][arch=x86_64]" = 10.6;
+				"MACOSX_DEPLOYMENT_TARGET[arch=x86_64]" = 10.6;
 				MODULE_NAME = com.google.filesystems.fusefs;
 				MODULE_START = fusefs_start;
 				MODULE_STOP = fusefs_stop;
@@ -620,8 +620,8 @@
 			baseConfigurationReference = 54A06B920C9DE6060045DC0D /* MacFUSE.xcconfig */;
 			buildSettings = {
 				ARCHS = (
-					x86_64,
 					i386,
+					x86_64,
 					ppc,
 				);
 				COPY_PHASE_STRIP = YES;
@@ -633,7 +633,7 @@
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_NONCONFORMANT_CODE_ERRORS_AS_WARNINGS = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
-				"GCC_VERSION[sdk=macosx10.6][arch=x86_64]" = 4.2;
+				"GCC_VERSION[arch=x86_64]" = 4.2;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
@@ -661,7 +661,7 @@
 				INFOPLIST_PREPROCESSOR_DEFINITIONS = "";
 				INSTALL_PATH = "$(SYSTEM_LIBRARY_DIR)/Extensions";
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				"MACOSX_DEPLOYMENT_TARGET[sdk=macosx10.6][arch=x86_64]" = 10.6;
+				"MACOSX_DEPLOYMENT_TARGET[arch=x86_64]" = 10.6;
 				MODULE_NAME = com.google.filesystems.fusefs;
 				MODULE_START = fusefs_start;
 				MODULE_STOP = fusefs_stop;
@@ -684,7 +684,9 @@
 			buildSettings = {
 				ARCHS = (
 					i386,
+					x86_64,
 					ppc,
+					ppc64,
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -703,7 +705,9 @@
 			buildSettings = {
 				ARCHS = (
 					i386,
+					x86_64,
 					ppc,
+					ppc64,
 				);
 				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
@@ -721,7 +725,6 @@
 		540966220C33B4F800F5E227 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -764,7 +767,6 @@
 		540966230C33B4F800F5E227 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -856,7 +858,6 @@
 		54D47B910B4F614B00A8FE1C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -899,7 +900,6 @@
 		54D47B920B4F614B00A8FE1C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				COPY_PHASE_STRIP = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;

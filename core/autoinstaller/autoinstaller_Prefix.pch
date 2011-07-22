@@ -3,9 +3,12 @@
 //
 
 #ifdef __OBJC__
+
   #import <Foundation/Foundation.h>
-  #import "GTMLogger.h"
-  
+
+  // Define _GTMDevLog messages to show up as GTMLoggerInfo calls.
   #define _GTMDevLog GTMLoggerInfo
+  #import "GTMLogger.h"
   #import "GTMDefines.h"
+
 #endif

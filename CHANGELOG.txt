@@ -1,5 +1,13 @@
 = Changes and Feature Additions in MacFUSE Binary Releases =
 
+== MacFUSE current (...) ==
+
+  * Feature: 64-bit kernel support, inlcuding Mac OS X 10.7 (Lion).
+
+  * Bugfix: A null pointer dereference in fuse_vnop_blockmap could cause a kernel panic.
+
+  * Fix: Enabled support for 64-bit PowerPC userspace file system binaries.
+
 == MacFUSE 2.0 (December 8, 2008) ==
 
   * Feature: MacFUSE Preference Pane. Makes it easy and straightforward to keep up-to-date with MacFUSE releases, with the user in full control.
