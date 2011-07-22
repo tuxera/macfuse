@@ -547,10 +547,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5436C6550C9E753F00E78222 /* MacFUSE.xcconfig */;
 			buildSettings = {
-				ARCHS = (
-					i386,
-					ppc,
-				);
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -604,10 +600,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5436C6550C9E753F00E78222 /* MacFUSE.xcconfig */;
 			buildSettings = {
-				ARCHS = (
-					i386,
-					ppc,
-				);
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_POSTPROCESSING = YES;
@@ -843,10 +835,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5436C6550C9E753F00E78222 /* MacFUSE.xcconfig */;
 			buildSettings = {
-				ARCHS = (
-					i386,
-					ppc,
-				);
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -889,10 +877,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5436C6550C9E753F00E78222 /* MacFUSE.xcconfig */;
 			buildSettings = {
-				ARCHS = (
-					i386,
-					ppc,
-				);
 				COPY_PHASE_STRIP = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;

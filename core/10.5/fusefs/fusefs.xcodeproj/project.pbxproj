@@ -558,8 +558,8 @@
 			baseConfigurationReference = 54A06B920C9DE6060045DC0D /* MacFUSE.xcconfig */;
 			buildSettings = {
 				ARCHS = (
-					x86_64,
 					i386,
+					x86_64,
 					ppc,
 				);
 				COPY_PHASE_STRIP = NO;
@@ -571,7 +571,7 @@
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_NONCONFORMANT_CODE_ERRORS_AS_WARNINGS = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
-				"GCC_VERSION[sdk=macosx10.6][arch=x86_64]" = 4.2;
+				"GCC_VERSION[arch=x86_64]" = 4.2;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
@@ -599,7 +599,7 @@
 				INFOPLIST_PREPROCESSOR_DEFINITIONS = "";
 				INSTALL_PATH = "$(SYSTEM_LIBRARY_DIR)/Extensions";
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				"MACOSX_DEPLOYMENT_TARGET[sdk=macosx10.6][arch=x86_64]" = 10.6;
+				"MACOSX_DEPLOYMENT_TARGET[arch=x86_64]" = 10.6;
 				MODULE_NAME = com.google.filesystems.fusefs;
 				MODULE_START = fusefs_start;
 				MODULE_STOP = fusefs_stop;
@@ -620,8 +620,8 @@
 			baseConfigurationReference = 54A06B920C9DE6060045DC0D /* MacFUSE.xcconfig */;
 			buildSettings = {
 				ARCHS = (
-					x86_64,
 					i386,
+					x86_64,
 					ppc,
 				);
 				COPY_PHASE_STRIP = YES;
@@ -633,7 +633,7 @@
 				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
 				GCC_TREAT_NONCONFORMANT_CODE_ERRORS_AS_WARNINGS = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
-				"GCC_VERSION[sdk=macosx10.6][arch=x86_64]" = 4.2;
+				"GCC_VERSION[arch=x86_64]" = 4.2;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
@@ -661,7 +661,7 @@
 				INFOPLIST_PREPROCESSOR_DEFINITIONS = "";
 				INSTALL_PATH = "$(SYSTEM_LIBRARY_DIR)/Extensions";
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				"MACOSX_DEPLOYMENT_TARGET[sdk=macosx10.6][arch=x86_64]" = 10.6;
+				"MACOSX_DEPLOYMENT_TARGET[arch=x86_64]" = 10.6;
 				MODULE_NAME = com.google.filesystems.fusefs;
 				MODULE_START = fusefs_start;
 				MODULE_STOP = fusefs_stop;
